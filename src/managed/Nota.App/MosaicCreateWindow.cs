@@ -181,7 +181,7 @@ public sealed class MosaicCreateWindow : NotaWindow
             var b = new Border
             {
                 Padding = new Thickness(6, 4), CornerRadius = NotaRadius.Badge, BorderThickness = new Thickness(1), Cursor = new Cursor(StandardCursorType.Hand),
-                BorderBrush = sel ? NotaPalette.BorderBrass : Brushes.Transparent, Background = sel ? NotaPalette.AccentSubtle : Brushes.Transparent, Child = g,
+                BorderBrush = sel ? NotaPalette.BorderBrass : Brushes.Transparent, Background = sel ? NotaPalette.SurfaceHover : Brushes.Transparent, Child = g,
             };
             b.PointerPressed += (_, e) => { if (e.Source is CheckBox) return; _sel = iv; Paint(); };
             _instList.Children.Add(b);

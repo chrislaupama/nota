@@ -259,7 +259,7 @@ public sealed class ModularView : UserControl
         var color = ArrangementView.TrackBrush(ArrangementView.EffectiveColorIndex(_engine, trackId));
         var row = new Border
         {
-            Height = 34, Background = active ? NotaPalette.AccentSubtle : Brushes.Transparent,
+            Height = 34, Background = active ? NotaPalette.SurfaceHover : Brushes.Transparent,
             BorderBrush = color, BorderThickness = new Thickness(3, 0, 0, 0),
             Cursor = new Cursor(StandardCursorType.Hand), Tag = trackId,   // Tag → cross-track CV drop target
             Child = new TextBlock { Text = name, FontSize = 11, FontWeight = active ? FontWeight.SemiBold : FontWeight.Normal, Foreground = active ? Text1 : Text2, VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(10, 0) },
@@ -1101,9 +1101,9 @@ public sealed class ModularView : UserControl
         var b = new Border
         {
             Height = 13, CornerRadius = NotaRadius.Badge, Padding = new Thickness(5, 0),
-            Background = NotaPalette.AccentSubtle, BorderBrush = NotaPalette.Accent, BorderThickness = new Thickness(1),
+            Background = NotaPalette.SurfaceRaised, BorderBrush = NotaPalette.Seam, BorderThickness = new Thickness(1),
             Cursor = new Cursor(StandardCursorType.Hand), VerticalAlignment = VerticalAlignment.Center,
-            Child = new TextBlock { Text = synced ? "Sync" : "Free", FontSize = 8, FontWeight = FontWeight.SemiBold, Foreground = BrassBright, HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center },
+            Child = new TextBlock { Text = synced ? "Sync" : "Free", FontSize = 8, FontWeight = FontWeight.SemiBold, Foreground = NotaPalette.TextPrimary, HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center },
         };
         b.PointerPressed += (_, e) => { _engine.ModulatorSet(_trackId, modId, 1, synced ? 0f : 1f); Rebuild(); e.Handled = true; };
         return b;
@@ -1114,10 +1114,10 @@ public sealed class ModularView : UserControl
         var b = new Border
         {
             Height = 20, MinWidth = 30, CornerRadius = NotaRadius.Badge,
-            BorderBrush = active ? NotaPalette.Accent : BorderStrong, BorderThickness = new Thickness(1),
-            Background = active ? NotaPalette.AccentSubtle : Brushes.Transparent,
+            BorderBrush = active ? NotaPalette.Accent : NotaPalette.Seam, BorderThickness = new Thickness(1),
+            Background = active ? NotaPalette.Accent : NotaPalette.SurfaceRaised,
             Padding = new Thickness(6, 0), Cursor = new Cursor(StandardCursorType.Hand),
-            Child = new TextBlock { Text = text, FontSize = 9, FontWeight = FontWeight.SemiBold, Foreground = active ? BrassBright : Text2, HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center },
+            Child = new TextBlock { Text = text, FontSize = 9, FontWeight = FontWeight.SemiBold, Foreground = active ? NotaPalette.TextOnAccent : Text2, HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center },
         };
         b.PointerPressed += (_, e) => { onClick(); e.Handled = true; };
         return b;

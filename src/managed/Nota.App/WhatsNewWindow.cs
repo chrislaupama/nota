@@ -91,7 +91,7 @@ public sealed class WhatsNewWindow : NotaWindow
             Text = "Version " + entry.Version,
             FontSize = 15,
             FontWeight = FontWeight.SemiBold,
-            Foreground = Brush("Brush.Accent"),
+            Foreground = Brush("Brush.TextHeading"),
             VerticalAlignment = VerticalAlignment.Center,
         });
         if (!string.IsNullOrWhiteSpace(entry.Date))

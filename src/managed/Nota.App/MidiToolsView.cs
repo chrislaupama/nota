@@ -268,7 +268,7 @@ public sealed class MidiToolsView : UserControl
             var row = new Border
             {
                 Height = 26, CornerRadius = NotaRadius.Badge, Padding = new Thickness(10, 0),
-                Background = active ? NotaPalette.AccentSubtle : Brushes.Transparent,
+                Background = active ? NotaPalette.SurfaceHover : Brushes.Transparent,
                 Cursor = new Cursor(StandardCursorType.Hand),
                 Child = new Grid
                 {

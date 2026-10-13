@@ -2203,10 +2203,10 @@ public sealed partial class ArrangementView : UserControl
         };
         void Paint()
         {
-            // Engaged: the brass wash + edge of M/S; at rest a neutral chip.
-            chip.Background = Brush(state ? "Brush.AccentSubtle" : "Brush.SurfaceRaised");
-            chip.BorderBrush = Brush(state ? "Brush.BorderBrass" : "Brush.BorderDefault");
-            glyph.Foreground = Brush(state ? "Brush.AccentHover" : "Brush.TextStrong");
+            // Engaged: a solid accent key with derived ink (toggled on); at rest a raised key.
+            chip.Background = Brush(state ? "Brush.Accent" : "Brush.SurfaceRaised");
+            chip.BorderBrush = Brush(state ? "Brush.Accent" : "Brush.Seam");
+            glyph.Foreground = Brush(state ? "Brush.TextOnAccent" : "Brush.TextSecondary");
             chip.Opacity = usable ? 1.0 : 0.4;
             ToolTip.SetTip(chip, usable
                 ? (state ? "Monitoring input — click to stop" : "Monitor input: hear it live through this track")
@@ -2490,7 +2490,7 @@ public sealed partial class ArrangementView : UserControl
         grid.Children.Add(body);
 
         bool sel = trackId > 0 && trackId == SelTrackId;
-        if (sel) spine.Background = NotaPalette.Accent;   // selected: brass stripe, name stays Ink 1
+        if (sel) spine.Background = NotaPalette.Accent;   // selected: accent stripe, name stays primary
         var card = new Border
         {
             Width = HeaderW, Height = FooterRowH, ClipToBounds = true,

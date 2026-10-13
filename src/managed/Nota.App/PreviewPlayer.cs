@@ -453,19 +453,19 @@ public sealed class PreviewPlayer : UserControl
     {
         _loop = on;
         try { _engine?.SetPreviewLoop(on); } catch { }
-        _loopBtn.Background = on ? NotaPalette.AccentSubtle : Brushes.Transparent;
-        _loopBtn.BorderBrush = on ? NotaPalette.AccentEdge : NotaPalette.BorderDefault;
-        _loopIcon.Stroke = on ? NotaPalette.Accent : NotaPalette.TextTertiary;
+        _loopBtn.Background = on ? NotaPalette.Accent : Brushes.Transparent;
+        _loopBtn.BorderBrush = on ? NotaPalette.Accent : NotaPalette.Seam;
+        _loopIcon.Stroke = on ? NotaPalette.TextOnAccent : NotaPalette.TextTertiary;
         if (persist && _settings is not null) { _settings.Current.BrowserPreviewLoop = on; _settings.Save(); }
     }
 
     private void SetAuto(bool on, bool persist)
     {
         if (_filesContext) _autoFiles = on; else _autoPresets = on;
-        _autoBtn.Background = on ? NotaPalette.AccentSubtle : Brushes.Transparent;
-        _autoBtn.BorderBrush = on ? NotaPalette.AccentEdge : NotaPalette.BorderDefault;
-        _autoDot.Fill = on ? NotaPalette.Accent : NotaPalette.BorderStrong;
-        _autoText.Foreground = on ? NotaPalette.AccentHover : NotaPalette.TextMuted;
+        _autoBtn.Background = on ? NotaPalette.Accent : Brushes.Transparent;
+        _autoBtn.BorderBrush = on ? NotaPalette.Accent : NotaPalette.Seam;
+        _autoDot.Fill = on ? NotaPalette.TextOnAccent : NotaPalette.BorderStrong;
+        _autoText.Foreground = on ? NotaPalette.TextOnAccent : NotaPalette.TextMuted;
         ToolTip.SetTip(_autoBtn, _filesContext ? "Auto-audition: play a sample on select" : "Auto-audition: play a preset or device on select");
         if (persist && _settings is not null)
         {
@@ -1117,8 +1117,8 @@ public sealed class PreviewWaveform : Control
         }
 
         // WAVE · SPEC, the active one in brass, top-right.
-        var wave = NotaGraph.AxisText("WAVE", _spectrum ? NotaPalette.TextTertiary : NotaPalette.Accent, 7);
-        var spec = NotaGraph.AxisText("SPEC", _spectrum ? NotaPalette.Accent : NotaPalette.TextTertiary, 7);
+        var wave = NotaGraph.AxisText("Wave", _spectrum ? NotaPalette.TextTertiary : NotaPalette.Accent, 7);
+        var spec = NotaGraph.AxisText("Spec", _spectrum ? NotaPalette.Accent : NotaPalette.TextTertiary, 7);
         double lw = wave.Width + 5 + spec.Width, lx = w - lw - 5, ly = 3;
         _toggleRect = new Rect(lx - 4, 0, lw + 9, ly + wave.Height + 3);
         ctx.FillRectangle(NotaPalette.BgSunken, new Rect(lx - 2, ly - 1, lw + 4, wave.Height + 2), 2);

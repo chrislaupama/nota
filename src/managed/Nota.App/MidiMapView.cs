@@ -69,7 +69,7 @@ public sealed class MidiMapView : UserControl
         Grid.SetColumn(del, 1);
         top.Children.Add(del);
 
-        var src = new TextBlock { Text = _learn.SourceLabel(m), FontSize = 10, Foreground = NotaPalette.Accent, VerticalAlignment = VerticalAlignment.Center };
+        var src = new TextBlock { Text = _learn.SourceLabel(m), FontSize = 10, Foreground = NotaPalette.TextSecondary, VerticalAlignment = VerticalAlignment.Center };
         src.BindResource(TextBlock.FontFamilyProperty, "Font.Mono");
         // Source on the left; the invert toggle rides the right of the same line so the
         // range row below has room for just MIN / MAX.
@@ -80,7 +80,7 @@ public sealed class MidiMapView : UserControl
             var phone = new Border
             {
                 Width = 7, Height = 11, CornerRadius = NotaRadius.Bar, BorderThickness = new Avalonia.Thickness(1.3),
-                BorderBrush = NotaPalette.AccentBright, VerticalAlignment = VerticalAlignment.Center,
+                BorderBrush = NotaPalette.TextSecondary, VerticalAlignment = VerticalAlignment.Center,
             };
             srcRow.Children.Add(new StackPanel { Orientation = Orientation.Horizontal, Spacing = 6, Children = { phone, src } });
         }

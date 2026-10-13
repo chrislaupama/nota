@@ -283,7 +283,7 @@ public sealed partial class PreferencesWindow
         {
             _storeCounts[i].Text = _storePlugins is null || installed is null ? "" : _storePlugins.Count(p => MatchesFilter(p, i, installed)).ToString();
             // On the brass segment the count drops to the brass edge; off it, Ink 6.
-            _storeCounts[i].Foreground = i == _storeFilter ? NotaPalette.AccentEdge : TextDisabled;
+            _storeCounts[i].Foreground = i == _storeFilter ? NotaPalette.TextPrimary : TextDisabled;
         }
     }
 

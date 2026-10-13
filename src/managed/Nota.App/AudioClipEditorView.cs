@@ -282,7 +282,7 @@ public sealed class AudioClipEditorView : UserControl
         {
             _pitch = (int)Math.Round(ai.PitchSemitones);
             _pitchText.Text = Semis(_pitch);
-            _pitchText.Foreground = _pitch != 0 ? NotaPalette.AccentBright : NotaPalette.TextPrimary;
+            _pitchText.Foreground = _pitch != 0 ? NotaPalette.TextPrimary : NotaPalette.TextSecondary;
             _gain = ai.Gain;
             _syncGain();
             _wave.SetGain(ai.Gain);
@@ -623,8 +623,8 @@ public sealed class AudioClipEditorView : UserControl
         private bool _bpmScrubMoved;   // a plain click (no drag) must not re-warp the clip
 
         // Volume envelope (M9 follow-up): points (beat, value 0..1) in clip-local beats.
-        private static readonly IPen EnvPen = new Pen(NotaPalette.Accent, 1.8);
-        private static readonly IPen EnvPenDim = new Pen(NotaPalette.Wash(NotaPalette.Accent, 0x60), 1);
+        private static readonly IPen EnvPen = new Pen(NotaPalette.VizInk, 1.8);      // the curve at rest: neutral
+        private static readonly IPen EnvPenDim = new Pen(NotaPalette.Wash(NotaPalette.VizInk, 0x60), 1);
         private static readonly IBrush EnvWash = NotaPalette.Wash(NotaPalette.BgSunken, 0x99);
         private static readonly IBrush NodeFill = NotaPalette.TextSecondary;
         private static readonly IBrush NodeHot = NotaPalette.Accent;

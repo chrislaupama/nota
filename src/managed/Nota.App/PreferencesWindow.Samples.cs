@@ -224,7 +224,7 @@ public sealed partial class PreferencesWindow
         for (int i = 0; i < _packCounts.Length; i++)
         {
             _packCounts[i].Text = _packs is null || installed is null ? "" : _packs.Count(p => MatchesPackFilter(p, i, installed)).ToString();
-            _packCounts[i].Foreground = i == _packFilter ? NotaPalette.AccentEdge : TextDisabled;
+            _packCounts[i].Foreground = i == _packFilter ? NotaPalette.TextPrimary : TextDisabled;
         }
     }
 

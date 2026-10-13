@@ -227,10 +227,10 @@ public sealed partial class PreferencesWindow : NotaWindow
         {
             bool on = i == index;
             var n = _navItems[i];
-            n.Root.Background = on ? AccentSubtle : Brushes.Transparent;
+            n.Root.Background = on ? NotaPalette.SurfaceHover : Brushes.Transparent;
             n.Edge.Background = on ? Brass : Brushes.Transparent;
             n.Icon.Stroke = on ? Brass : TextTertiary;
-            n.Label.Foreground = on ? AccentHover : TextSecondary;
+            n.Label.Foreground = on ? TextPrimary : TextSecondary;
             n.Label.FontWeight = on ? FontWeight.SemiBold : FontWeight.Normal;
         }
 
@@ -460,7 +460,7 @@ public sealed partial class PreferencesWindow : NotaWindow
             {
                 string uid = dev.Uid;
                 bool on = engine.IsMidiInputEnabled(uid);
-                var dot = Dot(on ? Brass : BorderStrong);
+                var dot = Dot(on ? NotaPalette.Success : BorderStrong);   // enabled: positive status
                 var name = new TextBlock
                 {
                     Text = dev.Name, FontSize = 12, Foreground = on ? TextPrimary : TextTertiary,
@@ -469,7 +469,7 @@ public sealed partial class PreferencesWindow : NotaWindow
                 var sw = new ToggleSwitch(on, large: true) { VerticalAlignment = VerticalAlignment.Center };
                 sw.Changed += v =>
                 {
-                    dot.Fill = v ? Brass : BorderStrong;
+                    dot.Fill = v ? NotaPalette.Success : BorderStrong;
                     name.Foreground = v ? TextPrimary : TextTertiary;
                     engine.SetMidiInputEnabled(uid, v);
                     _main.ApplyMidiSettings();

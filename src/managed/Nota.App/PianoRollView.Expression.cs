@@ -38,12 +38,13 @@ public sealed partial class PianoRollView
     private readonly Grid _laneRow;
     private LaneMode _laneMode;
 
-    private static readonly IPen CurvePen = new Pen(NotaPalette.AccentBright, 1.5, lineCap: PenLineCap.Round, lineJoin: PenLineJoin.Round);
-    private static readonly IPen NeutralPen = new Pen(NotaPalette.Wash(NotaPalette.AccentBright, 0x70), 1, new DashStyle(new double[] { 3, 3 }, 0));
+    // The expression curve at rest is neutral viz ink; only the point under the pointer is the accent.
+    private static readonly IPen CurvePen = new Pen(NotaPalette.VizInk, 1.5, lineCap: PenLineCap.Round, lineJoin: PenLineJoin.Round);
+    private static readonly IPen NeutralPen = new Pen(NotaPalette.Wash(NotaPalette.VizInk, 0x70), 1, new DashStyle(new double[] { 3, 3 }, 0));
     private static readonly IPen ZeroPen = new Pen(NotaPalette.BorderStrong, 1);
-    private static readonly IBrush SpanWash = NotaPalette.Wash(NotaPalette.AccentBright, 0x14);
-    private static readonly IBrush PointFill = NotaPalette.AccentBright;
-    private static readonly IBrush PointHot = NotaPalette.AccentPale;
+    private static readonly IBrush SpanWash = NotaPalette.Wash(NotaPalette.VizInk, 0x14);
+    private static readonly IBrush PointFill = NotaPalette.VizInk;
+    private static readonly IBrush PointHot = NotaPalette.Accent;
     private static readonly IBrush TabActive = NotaPalette.AccentBright;
 
     internal LaneMode Lane => _laneMode;

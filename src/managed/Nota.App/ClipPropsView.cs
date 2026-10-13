@@ -121,7 +121,7 @@ public sealed class ClipPropsView : UserControl
     private void PaintTranspose()
     {
         _transposeText.Text = Semis(_transpose);
-        _transposeText.Foreground = _transpose != 0 ? NotaPalette.AccentBright : NotaPalette.TextPrimary;
+        _transposeText.Foreground = _transpose != 0 ? NotaPalette.TextPrimary : NotaPalette.TextSecondary;
     }
 
     private void PaintSelection()

@@ -319,7 +319,7 @@ internal sealed class CommandPaletteView : UserControl
         line1.Children.Add(name);
         line1.Children.Add(sub);
         var text = new StackPanel { Spacing = 2, VerticalAlignment = VerticalAlignment.Center, Children = { line1 } };
-        if (reason.Length > 0) text.Children.Add(Mono(10, NotaPalette.AccentHover, reason));
+        if (reason.Length > 0) text.Children.Add(Mono(10, NotaPalette.TextSecondary, reason));
 
         var right = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 3, VerticalAlignment = VerticalAlignment.Center };
         if (hit.Disabled && hit.Why.Length > 0)
@@ -370,7 +370,7 @@ internal sealed class CommandPaletteView : UserControl
             {
                 Foreground = kind switch
                 {
-                    2 => disabled ? NotaPalette.AccentDim : NotaPalette.AccentHover,
+                    2 => disabled ? NotaPalette.TextFaint : NotaPalette.TextSecondary,
                     1 => NotaPalette.TextTertiary,
                     _ => disabled ? NotaPalette.TextMuted : NotaPalette.TextPrimary,
                 },

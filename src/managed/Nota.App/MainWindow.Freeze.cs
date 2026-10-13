@@ -276,7 +276,7 @@ public partial class MainWindow
         };
 
     private Control GlyphIcon(GlyphKind glyph, bool accent)
-        => new Glyph(glyph, 11) { Foreground = accent ? NotaPalette.AccentBright : NotaPalette.TextTertiary };
+        => new Glyph(glyph, 11) { Foreground = accent ? NotaPalette.TextPrimary : NotaPalette.TextTertiary };
 
     // --- Flatten -----------------------------------------------------------
 

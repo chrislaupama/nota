@@ -224,7 +224,7 @@ public sealed class ClipEditorView : UserControl
     // linear. A brass line; nodes in Ink 3 ringed with the well, the one in hand in brass.
     private sealed class EnvCanvas : Control
     {
-        private static readonly IPen EnvPen = new Pen(NotaPalette.Accent, 1.8);
+        private static readonly IPen EnvPen = new Pen(NotaPalette.VizInk, 1.8);      // the curve at rest: neutral
         private static readonly IBrush NodeFill = NotaPalette.TextSecondary;
         private static readonly IBrush NodeHot = NotaPalette.Accent;
         private static readonly IPen NodeRing = new Pen(NotaPalette.BgSunken, 2);

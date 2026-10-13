@@ -1369,7 +1369,7 @@ public sealed class BrowserView : UserControl
         if (colorHex is not null)
             content.Children.Add(new Ellipse { Width = 6, Height = 6, VerticalAlignment = VerticalAlignment.Center, Fill = BrushFromHex(colorHex) });
         var tb = new TextBlock { Text = text, FontSize = 11, VerticalAlignment = VerticalAlignment.Center };
-        tb.BindResource(TextBlock.ForegroundProperty, active ? "Brush.AccentHover" : "Brush.TextStrong");
+        tb.BindResource(TextBlock.ForegroundProperty, active ? "Brush.TextOnAccent" : "Brush.TextPrimary");
         content.Children.Add(tb);
 
         var chip = new ChipBorder
@@ -1379,8 +1379,8 @@ public sealed class BrowserView : UserControl
             BorderThickness = new Thickness(1),
             Cursor = new Cursor(StandardCursorType.Hand), Child = content,
         };
-        chip.BindResource(Border.BackgroundProperty, active ? "Brush.AccentSubtle" : "Brush.SurfaceRaised");
-        chip.BindResource(Border.BorderBrushProperty, active ? "Brush.BorderBrass" : "Brush.BorderDefault");
+        chip.BindResource(Border.BackgroundProperty, active ? "Brush.Accent" : "Brush.SurfaceRaised");
+        chip.BindResource(Border.BorderBrushProperty, active ? "Brush.Accent" : "Brush.Seam");
         chip.PointerPressed += (_, e) =>
         {
             if (!e.GetCurrentPoint(chip).Properties.IsLeftButtonPressed) return;
