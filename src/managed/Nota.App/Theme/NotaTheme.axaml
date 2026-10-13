@@ -20,14 +20,16 @@
            keeps the two files equal.
 
            Radius follows the size of the object, not its role. -->
-      <CornerRadius x:Key="Radius.Bar">1</CornerRadius>      <!-- spectrum / level bar -->
-      <CornerRadius x:Key="Radius.Clip">2</CornerRadius>     <!-- clip, indicator, slider track -->
-      <CornerRadius x:Key="Radius.Badge">3</CornerRadius>    <!-- small segment, badge inside a device -->
-      <CornerRadius x:Key="Radius.Control">4</CornerRadius>  <!-- graph window, button, dropdown -->
-      <CornerRadius x:Key="Radius.Tile">5</CornerRadius>     <!-- transport button, search field, tile -->
-      <CornerRadius x:Key="Radius.Panel">6</CornerRadius>    <!-- panel, device section, transport module -->
-      <CornerRadius x:Key="Radius.Body">8</CornerRadius>     <!-- device body, outer window frame -->
-      <CornerRadius x:Key="Radius.Pill">999</CornerRadius>   <!-- filter chip, toggle: half the height -->
+      <CornerRadius x:Key="Radius.Docked">0</CornerRadius>   <!-- a docked panel: it meets its neighbours on a seam -->
+      <CornerRadius x:Key="Radius.Bar">1</CornerRadius>      <!-- spectrum / level bar inside a plot -->
+      <CornerRadius x:Key="Radius.Clip">2</CornerRadius>     <!-- clip, row highlight, menu item, slider track -->
+      <CornerRadius x:Key="Radius.Badge">2</CornerRadius>    <!-- inner key, badge inside a device -->
+      <CornerRadius x:Key="Radius.Control">3</CornerRadius>  <!-- button, field, dropdown, graph window, popover -->
+      <CornerRadius x:Key="Radius.Tile">3</CornerRadius>     <!-- transport key, search field, tile -->
+      <CornerRadius x:Key="Radius.Panel">3</CornerRadius>    <!-- device section, segmented group -->
+      <CornerRadius x:Key="Radius.Body">3</CornerRadius>     <!-- device card -->
+      <CornerRadius x:Key="Radius.Pill">3</CornerRadius>     <!-- chip, switch: Saine has no pills -->
+      <CornerRadius x:Key="Radius.Modal">4</CornerRadius>    <!-- modal window, command palette, splash -->   <!-- filter chip, toggle: half the height -->
 
       <!-- Heights and fixed widths already settled in the designs -->
       <sys:Double x:Key="Control.Chip">20</sys:Double>        <!-- filter chip -->
@@ -70,100 +72,115 @@
                Void · App · Gutter · Well · Panel · Card · Raised · Hover · Track off.
                Depth is lightness plus a hairline, never a shadow. Three levels of
                nesting is the limit; a fourth means the layout is wrong. -->
-          <SolidColorBrush x:Key="Brush.SurfaceAbyss">#0A0908</SolidColorBrush>  <!-- Void: deepest recess, under the transport -->
-          <SolidColorBrush x:Key="Brush.BgApp">#0B0A09</SolidColorBrush>         <!-- App: window ground and plugin body -->
-          <SolidColorBrush x:Key="Brush.Gutter">#0C0B09</SolidColorBrush>        <!-- Gutter: the gaps panels float in -->
-          <SolidColorBrush x:Key="Brush.BgSunken">#100F0D</SolidColorBrush>      <!-- Well: graph windows, inputs, slider tracks -->
-          <SolidColorBrush x:Key="Brush.Panel">#141310</SolidColorBrush>         <!-- Panel: browser, headers, inspector -->
-          <SolidColorBrush x:Key="Brush.SurfaceCard">#171613</SolidColorBrush>   <!-- Card: a section inside a device -->
-          <SolidColorBrush x:Key="Brush.SurfaceRaised">#1C1A16</SolidColorBrush> <!-- Raised: button at rest -->
-          <SolidColorBrush x:Key="Brush.SurfaceHover">#252219</SolidColorBrush>  <!-- Hover: button or list row under the pointer -->
-          <SolidColorBrush x:Key="Brush.SurfaceHoverClear">#00252219</SolidColorBrush> <!-- Hover at zero alpha: resting row, so the fade doesn't pass through white -->
-          <SolidColorBrush x:Key="Brush.TrackOff">#26231E</SolidColorBrush>      <!-- Track off: the track of an off toggle -->
+          <SolidColorBrush x:Key="Brush.SurfaceAbyss">#17181A</SolidColorBrush>  <!-- Void: deepest recess, under the transport -->
+          <SolidColorBrush x:Key="Brush.BgApp">#1E1F22</SolidColorBrush>         <!-- App: window ground and plugin body -->
+          <SolidColorBrush x:Key="Brush.Gutter">#141517</SolidColorBrush>        <!-- Gutter: the gaps panels float in -->
+          <SolidColorBrush x:Key="Brush.BgSunken">#17181A</SolidColorBrush>      <!-- Well: graph windows, inputs, slider tracks -->
+          <SolidColorBrush x:Key="Brush.Panel">#2B2D31</SolidColorBrush>         <!-- Panel: browser, headers, inspector -->
+          <SolidColorBrush x:Key="Brush.SurfaceCard">#2B2D31</SolidColorBrush>   <!-- Card: a section inside a device -->
+          <SolidColorBrush x:Key="Brush.SurfaceRaised">#34363B</SolidColorBrush> <!-- Raised: button at rest -->
+          <SolidColorBrush x:Key="Brush.SurfaceHover">#393C41</SolidColorBrush>  <!-- Hover: button or list row under the pointer -->
+          <SolidColorBrush x:Key="Brush.SurfaceHoverClear">#00393C41</SolidColorBrush> <!-- Hover at zero alpha: resting row, so the fade doesn't pass through white -->
+          <SolidColorBrush x:Key="Brush.TrackOff">#17181A</SolidColorBrush>      <!-- Track off: the track of an off toggle -->
           <!-- Pressed goes *into* the recess rather than to a fourth raised step. -->
-          <SolidColorBrush x:Key="Brush.SurfaceActive">#100F0D</SolidColorBrush>
-          <SolidColorBrush x:Key="Brush.LaneB">#131210</SolidColorBrush>         <!-- alternating lane, one hair above the well -->
-          <SolidColorBrush x:Key="Brush.ChromeBg">#100F0D</SolidColorBrush>      <!-- alias of Well -->
+          <SolidColorBrush x:Key="Brush.SurfaceActive">#17181A</SolidColorBrush>
+          <SolidColorBrush x:Key="Brush.LaneB">#222326</SolidColorBrush>         <!-- alternating lane, one hair above the well -->
+          <SolidColorBrush x:Key="Brush.ChromeBg">#17181A</SolidColorBrush>      <!-- alias of Well -->
           <!-- Selected row: opaque brass wash, not an alpha tint — the almanac wants a
                predictable colour, and alpha over two different grounds is not one. -->
-          <SolidColorBrush x:Key="Brush.SurfaceSelected">#241F17</SolidColorBrush>
+          <SolidColorBrush x:Key="Brush.SurfaceSelected">#393C41</SolidColorBrush>
 
           <!-- Lines and frames -->
-          <SolidColorBrush x:Key="Brush.Hairline">#221F1A</SolidColorBrush>      <!-- row dividers, graph-window frame -->
-          <SolidColorBrush x:Key="Brush.BorderDefault">#2C2923</SolidColorBrush>
-          <SolidColorBrush x:Key="Brush.BorderStrong">#3A362D</SolidColorBrush>  <!-- knob cap, hovered border -->
-          <SolidColorBrush x:Key="Brush.BorderBrass">#6B5326</SolidColorBrush>   <!-- border of an engaged button: brass at 40% -->
-          <SolidColorBrush x:Key="Brush.GridBeat">#1E1C18</SolidColorBrush>      <!-- grid inside graphs, zero axis -->
-          <SolidColorBrush x:Key="Brush.GridBar">#2A2721</SolidColorBrush>
+          <SolidColorBrush x:Key="Brush.Hairline">#45484E</SolidColorBrush>      <!-- row dividers, graph-window frame -->
+          <SolidColorBrush x:Key="Brush.BorderDefault">#141517</SolidColorBrush>
+          <SolidColorBrush x:Key="Brush.BorderStrong">#45484E</SolidColorBrush>  <!-- knob cap, hovered border -->
+          <SolidColorBrush x:Key="Brush.BorderBrass">#BF7D22</SolidColorBrush>   <!-- border of an engaged button: brass at 40% -->
+          <SolidColorBrush x:Key="Brush.GridBeat">#2A2C30</SolidColorBrush>      <!-- grid inside graphs, zero axis -->
+          <SolidColorBrush x:Key="Brush.GridBar">#3A3C41</SolidColorBrush>
 
           <!-- === Text: eight steps, strictly by descending importance === -->
-          <SolidColorBrush x:Key="Brush.TextHeading">#F2EDE1</SolidColorBrush>   <!-- Ink 0: page titles, project name. Rare. -->
-          <SolidColorBrush x:Key="Brush.TextPrimary">#E9E4D8</SolidColorBrush>   <!-- Ink 1: device, track and preset names, values -->
-          <SolidColorBrush x:Key="Brush.TextStrong">#C7C0B0</SolidColorBrush>    <!-- Ink 2: button text, transport readouts -->
-          <SolidColorBrush x:Key="Brush.TextSecondary">#A39D8F</SolidColorBrush> <!-- Ink 3: inactive but readable, metadata -->
-          <SolidColorBrush x:Key="Brush.TextMuted">#8D8779</SolidColorBrush>     <!-- Ink 4: explanations, units, hints -->
-          <SolidColorBrush x:Key="Brush.TextTertiary">#6E6A5E</SolidColorBrush>  <!-- Ink 5: caps labels above parameters -->
-          <SolidColorBrush x:Key="Brush.TextDisabled">#55514A</SolidColorBrush>  <!-- Ink 6: search placeholder, disabled action -->
-          <SolidColorBrush x:Key="Brush.TextAxis">#4A463D</SolidColorBrush>      <!-- Ink 7: axis labels inside graphs only, mono 7-8px -->
-          <SolidColorBrush x:Key="Brush.TextOnAccent">#171613</SolidColorBrush>
+          <SolidColorBrush x:Key="Brush.TextHeading">#F4F5F6</SolidColorBrush>   <!-- Ink 0: page titles, project name. Rare. -->
+          <SolidColorBrush x:Key="Brush.TextPrimary">#E8E9EB</SolidColorBrush>   <!-- Ink 1: device, track and preset names, values -->
+          <SolidColorBrush x:Key="Brush.TextStrong">#D4D6DA</SolidColorBrush>    <!-- Ink 2: button text, transport readouts -->
+          <SolidColorBrush x:Key="Brush.TextSecondary">#C0C4C9</SolidColorBrush> <!-- Ink 3: inactive but readable, metadata -->
+          <SolidColorBrush x:Key="Brush.TextMuted">#A4A9B0</SolidColorBrush>     <!-- Ink 4: explanations, units, hints -->
+          <SolidColorBrush x:Key="Brush.TextTertiary">#92969D</SolidColorBrush>  <!-- Ink 5: caps labels above parameters -->
+          <SolidColorBrush x:Key="Brush.TextDisabled">#82868C</SolidColorBrush>  <!-- Ink 6: search placeholder, disabled action -->
+          <SolidColorBrush x:Key="Brush.TextAxis">#82868C</SolidColorBrush>      <!-- Ink 7: axis labels inside graphs only, mono 7-8px -->
+          <SolidColorBrush x:Key="Brush.TextOnAccent">#17181A</SolidColorBrush>
 
           <!-- === Brass: the one accent. "Active, selected, changed" and nothing
                else. A second accent must never enter the system. === -->
-          <SolidColorBrush x:Key="Brush.Accent">#D8A03D</SolidColorBrush>        <!-- arc, fill, playhead, solid button -->
-          <SolidColorBrush x:Key="Brush.AccentBright">#F0C060</SolidColorBrush>  <!-- Brass Light: text and knob pointer on dark -->
-          <SolidColorBrush x:Key="Brush.AccentHover">#E9BE6A</SolidColorBrush>   <!-- hover on brass text and links -->
-          <SolidColorBrush x:Key="Brush.AccentDeep">#B08536</SolidColorBrush>    <!-- press, left half of the loop -->
-          <SolidColorBrush x:Key="Brush.AccentDim">#8A6B2E</SolidColorBrush>     <!-- Brass Dim: eyebrows, mono section marks -->
-          <SolidColorBrush x:Key="Brush.AccentEdge">#5E4A22</SolidColorBrush>    <!-- Brass Edge: chip border, link underline -->
-          <SolidColorBrush x:Key="Brush.AccentSubtle">#241F17</SolidColorBrush>  <!-- Brass Wash: selected-row ground -->
+          <SolidColorBrush x:Key="Brush.Accent">#FF9F1C</SolidColorBrush>        <!-- arc, fill, playhead, solid button -->
+          <SolidColorBrush x:Key="Brush.AccentBright">#FFB547</SolidColorBrush>  <!-- Brass Light: text and knob pointer on dark -->
+          <SolidColorBrush x:Key="Brush.AccentHover">#FFB547</SolidColorBrush>   <!-- hover on brass text and links -->
+          <SolidColorBrush x:Key="Brush.AccentDeep">#C77612</SolidColorBrush>    <!-- press, left half of the loop -->
+          <SolidColorBrush x:Key="Brush.AccentDim">#C77612</SolidColorBrush>     <!-- Brass Dim: eyebrows, mono section marks -->
+          <SolidColorBrush x:Key="Brush.AccentEdge">#BF7D22</SolidColorBrush>    <!-- Brass Edge: chip border, link underline -->
+          <SolidColorBrush x:Key="Brush.AccentSubtle">#4D3F2E</SolidColorBrush>  <!-- Brass Wash: selected-row ground -->
 
           <!-- === Semantic: by purpose only === -->
-          <SolidColorBrush x:Key="Brush.Record">#C25B44</SolidColorBrush>        <!-- active recording. The only claim on red. -->
-          <SolidColorBrush x:Key="Brush.RecordInk">#F4E3DC</SolidColorBrush>     <!-- the disc on an engaged record button -->
-          <SolidColorBrush x:Key="Brush.Danger">#C2554A</SolidColorBrush>        <!-- Alert: overload, clipping -->
-          <SolidColorBrush x:Key="Brush.DangerHover">#D0685C</SolidColorBrush>
-          <SolidColorBrush x:Key="Brush.DangerBright">#E08A72</SolidColorBrush>  <!-- Alert Light: overload readout text on dark -->
-          <SolidColorBrush x:Key="Brush.DangerSubtle">#33C2554A</SolidColorBrush>
-          <SolidColorBrush x:Key="Brush.Warning">#D9C34C</SolidColorBrush>       <!-- Caution: meter -6..0 dB -->
-          <SolidColorBrush x:Key="Brush.Success">#58B368</SolidColorBrush>       <!-- Signal: working meter zone -->
-          <SolidColorBrush x:Key="Brush.SuccessDim">#7FB069</SolidColorBrush>    <!-- Signal Dim: transport input, metronome -->
+          <SolidColorBrush x:Key="Brush.Record">#F06A6E</SolidColorBrush>        <!-- active recording. The only claim on red. -->
+          <SolidColorBrush x:Key="Brush.RecordInk">#FFFFFF</SolidColorBrush>     <!-- the disc on an engaged record button -->
+          <SolidColorBrush x:Key="Brush.Danger">#F06A6E</SolidColorBrush>        <!-- Alert: overload, clipping -->
+          <SolidColorBrush x:Key="Brush.DangerHover">#F48386</SolidColorBrush>
+          <SolidColorBrush x:Key="Brush.DangerBright">#F58F92</SolidColorBrush>  <!-- Alert Light: overload readout text on dark -->
+          <SolidColorBrush x:Key="Brush.DangerSubtle">#33F06A6E</SolidColorBrush>
+          <SolidColorBrush x:Key="Brush.Warning">#F2B53C</SolidColorBrush>       <!-- Caution: meter -6..0 dB -->
+          <SolidColorBrush x:Key="Brush.Success">#6CC673</SolidColorBrush>       <!-- Signal: working meter zone -->
+          <SolidColorBrush x:Key="Brush.SuccessDim">#3F8A45</SolidColorBrush>    <!-- Signal Dim: transport input, metronome -->
 
           <!-- === Role chromas: inside visualisers only, never on a button ===
                When two or three sources share one graph they take these in order. -->
-          <SolidColorBrush x:Key="Brush.ChromaTeal">#5B9E9C</SolidColorBrush>    <!-- 2nd layer: lows, early reflections, input -->
-          <SolidColorBrush x:Key="Brush.ChromaTealLight">#7FC0BE</SolidColorBrush>
-          <SolidColorBrush x:Key="Brush.ChromaRose">#B57286</SolidColorBrush>    <!-- 3rd layer: right channel, highs, tail -->
-          <SolidColorBrush x:Key="Brush.ChromaRoseLight">#D79BAB</SolidColorBrush>
-          <SolidColorBrush x:Key="Brush.ChromaSteel">#6D8FB5</SolidColorBrush>   <!-- 4th layer, used rarely -->
+          <SolidColorBrush x:Key="Brush.ChromaTeal">#5FB3A8</SolidColorBrush>    <!-- 2nd layer: lows, early reflections, input -->
+          <SolidColorBrush x:Key="Brush.ChromaTealLight">#86C9C0</SolidColorBrush>
+          <SolidColorBrush x:Key="Brush.ChromaRose">#D77A8F</SolidColorBrush>    <!-- 3rd layer: right channel, highs, tail -->
+          <SolidColorBrush x:Key="Brush.ChromaRoseLight">#E49EAE</SolidColorBrush>
+          <SolidColorBrush x:Key="Brush.ChromaSteel">#6A9FD8</SolidColorBrush>   <!-- 4th layer, used rarely -->
 
           <!-- Retint Fluent's built-in accent (slider fills, checkboxes, focus) to
                brass so stock controls match the palette instead of the default blue. -->
-          <Color x:Key="SystemAccentColor">#D8A03D</Color>
-          <Color x:Key="SystemAccentColorLight1">#DEAB52</Color>
-          <Color x:Key="SystemAccentColorLight2">#E4B667</Color>
-          <Color x:Key="SystemAccentColorLight3">#EAC17C</Color>
-          <Color x:Key="SystemAccentColorDark1">#C2902F</Color>
-          <Color x:Key="SystemAccentColorDark2">#A87C28</Color>
-          <Color x:Key="SystemAccentColorDark3">#8E6820</Color>
+          <Color x:Key="SystemAccentColor">#FF9F1C</Color>
+          <Color x:Key="SystemAccentColorLight1">#FFAB37</Color>
+          <Color x:Key="SystemAccentColorLight2">#FFB652</Color>
+          <Color x:Key="SystemAccentColorLight3">#FFC26E</Color>
+          <Color x:Key="SystemAccentColorDark1">#E68F19</Color>
+          <Color x:Key="SystemAccentColorDark2">#CC7F16</Color>
+          <Color x:Key="SystemAccentColorDark3">#B26F14</Color>
 
           <!-- === Track palette: nine roles, one lightness, no track louder than
                another. A group sets the hue; its tracks take neighbouring shades. -->
-          <SolidColorBrush x:Key="Brush.Track1">#58B368</SolidColorBrush> <!-- Drums -->
-          <SolidColorBrush x:Key="Brush.Track2">#4E9E7A</SolidColorBrush> <!-- Perc -->
-          <SolidColorBrush x:Key="Brush.Track3">#3E8E8E</SolidColorBrush> <!-- Bass -->
-          <SolidColorBrush x:Key="Brush.Track4">#5AA0B8</SolidColorBrush> <!-- Keys -->
-          <SolidColorBrush x:Key="Brush.Track5">#C77F55</SolidColorBrush> <!-- Texture -->
-          <SolidColorBrush x:Key="Brush.Track6">#7A6FB0</SolidColorBrush> <!-- FX -->
-          <SolidColorBrush x:Key="Brush.Track7">#B05A7A</SolidColorBrush> <!-- Brass -->
-          <SolidColorBrush x:Key="Brush.Track8">#9AA64A</SolidColorBrush> <!-- Vox -->
-          <SolidColorBrush x:Key="Brush.Track9">#7FA88E</SolidColorBrush> <!-- Return -->
-          <SolidColorBrush x:Key="Brush.ReturnA">#7FA88E</SolidColorBrush>
-          <SolidColorBrush x:Key="Brush.ReturnB">#6B907B</SolidColorBrush>
-          <SolidColorBrush x:Key="Brush.Master">#D8A03D</SolidColorBrush>
+          <!-- Studio roles Ember lacked: seam / rule, faint ink, mute amber, solo blue,
+               the neutral ink graphs draw in at rest, and the modal scrim. -->
+          <SolidColorBrush x:Key="Brush.Seam">#141517</SolidColorBrush>
+          <SolidColorBrush x:Key="Brush.Rule">#45484E</SolidColorBrush>
+          <SolidColorBrush x:Key="Brush.TextFaint">#82868C</SolidColorBrush>
+          <SolidColorBrush x:Key="Brush.Mute">#F2B53C</SolidColorBrush>
+          <SolidColorBrush x:Key="Brush.Solo">#6A9FD8</SolidColorBrush>
+          <SolidColorBrush x:Key="Brush.VizInk">#D7D8DA</SolidColorBrush>
+          <SolidColorBrush x:Key="Brush.VizGrid">#2E2F32</SolidColorBrush>
+          <SolidColorBrush x:Key="Brush.Scrim">#6B000000</SolidColorBrush>
 
-          <!-- Depth: an inner top line, never a drop shadow -->
-          <BoxShadows x:Key="Shadow.Sunken">inset 0 1 0 0 #80000000</BoxShadows>
-          <BoxShadows x:Key="Shadow.Raised">inset 0 1 0 0 #08FFFFFF</BoxShadows>
+          <SolidColorBrush x:Key="Brush.Track1">#7FB87A</SolidColorBrush> <!-- Drums -->
+          <SolidColorBrush x:Key="Brush.Track2">#5FB3A8</SolidColorBrush> <!-- Perc -->
+          <SolidColorBrush x:Key="Brush.Track3">#5AA6C4</SolidColorBrush> <!-- Bass -->
+          <SolidColorBrush x:Key="Brush.Track4">#6A9FD8</SolidColorBrush> <!-- Keys -->
+          <SolidColorBrush x:Key="Brush.Track5">#E0A84A</SolidColorBrush> <!-- Texture -->
+          <SolidColorBrush x:Key="Brush.Track6">#9D90C9</SolidColorBrush> <!-- FX -->
+          <SolidColorBrush x:Key="Brush.Track7">#D77A8F</SolidColorBrush> <!-- Brass -->
+          <SolidColorBrush x:Key="Brush.Track8">#B3B45E</SolidColorBrush> <!-- Vox -->
+          <SolidColorBrush x:Key="Brush.Track9">#8E9DB0</SolidColorBrush> <!-- Return -->
+          <SolidColorBrush x:Key="Brush.ReturnA">#8E9DB0</SolidColorBrush>
+          <SolidColorBrush x:Key="Brush.ReturnB">#7A889A</SolidColorBrush>
+          <SolidColorBrush x:Key="Brush.Master">#A4A9B0</SolidColorBrush>
+
+          <!-- Depth (Saine): a raised control carries a faint top bevel and a seam ring; a
+               recessed field an inset rule. Only floating layers (menus, popovers, tooltips,
+               modals) cast a blurred shadow — anything docked is flat. -->
+          <BoxShadows x:Key="Shadow.Sunken">inset 0 0 0 1 #45484E</BoxShadows>
+          <BoxShadows x:Key="Shadow.Raised">inset 0 1 0 0 #12FFFFFF, 0 0 0 1 #141517</BoxShadows>
+          <BoxShadows x:Key="Shadow.Popover">0 0 0 1 #141517, 0 10 28 0 #6B000000</BoxShadows>
+          <BoxShadows x:Key="Shadow.Modal">0 0 0 1 #141517, 0 24 64 0 #80000000</BoxShadows>
         </ResourceDictionary>
 
         <ResourceDictionary x:Key="Light">
@@ -171,91 +188,104 @@
                ground; brass darkens to bronze so a mark carries the same emphasis.
                Derived with NotaPalette.DeriveLight where that reads true, authored by
                hand for the ramps it inverts (ink, brass structure, track hues). -->
-          <SolidColorBrush x:Key="Brush.SurfaceAbyss">#D8D1BE</SolidColorBrush>
-          <SolidColorBrush x:Key="Brush.BgApp">#DCD6C5</SolidColorBrush>
-          <SolidColorBrush x:Key="Brush.Gutter">#E0DAC9</SolidColorBrush>
-          <SolidColorBrush x:Key="Brush.BgSunken">#E4DFD1</SolidColorBrush>
-          <SolidColorBrush x:Key="Brush.Panel">#EAE5D7</SolidColorBrush>
-          <SolidColorBrush x:Key="Brush.SurfaceCard">#EFEADE</SolidColorBrush>
-          <SolidColorBrush x:Key="Brush.SurfaceRaised">#F8F5EC</SolidColorBrush>
-          <SolidColorBrush x:Key="Brush.SurfaceHover">#E7E1D0</SolidColorBrush>
-          <SolidColorBrush x:Key="Brush.SurfaceHoverClear">#00E7E1D0</SolidColorBrush>
-          <SolidColorBrush x:Key="Brush.TrackOff">#DBD4C0</SolidColorBrush>
-          <SolidColorBrush x:Key="Brush.SurfaceActive">#D5CEBB</SolidColorBrush>
-          <SolidColorBrush x:Key="Brush.LaneB">#E7E2D4</SolidColorBrush>
-          <SolidColorBrush x:Key="Brush.ChromeBg">#E4DFD1</SolidColorBrush>
-          <SolidColorBrush x:Key="Brush.SurfaceSelected">#F2E4C4</SolidColorBrush>
+          <SolidColorBrush x:Key="Brush.SurfaceAbyss">#D6D8DB</SolidColorBrush>
+          <SolidColorBrush x:Key="Brush.BgApp">#C9CBCF</SolidColorBrush>
+          <SolidColorBrush x:Key="Brush.Gutter">#9DA0A6</SolidColorBrush>
+          <SolidColorBrush x:Key="Brush.BgSunken">#D6D8DB</SolidColorBrush>
+          <SolidColorBrush x:Key="Brush.Panel">#E4E5E7</SolidColorBrush>
+          <SolidColorBrush x:Key="Brush.SurfaceCard">#E4E5E7</SolidColorBrush>
+          <SolidColorBrush x:Key="Brush.SurfaceRaised">#EEEFF1</SolidColorBrush>
+          <SolidColorBrush x:Key="Brush.SurfaceHover">#F7F8F9</SolidColorBrush>
+          <SolidColorBrush x:Key="Brush.SurfaceHoverClear">#00F7F8F9</SolidColorBrush>
+          <SolidColorBrush x:Key="Brush.TrackOff">#D6D8DB</SolidColorBrush>
+          <SolidColorBrush x:Key="Brush.SurfaceActive">#D6D8DB</SolidColorBrush>
+          <SolidColorBrush x:Key="Brush.LaneB">#C4C6CA</SolidColorBrush>
+          <SolidColorBrush x:Key="Brush.ChromeBg">#D6D8DB</SolidColorBrush>
+          <SolidColorBrush x:Key="Brush.SurfaceSelected">#F7F8F9</SolidColorBrush>
 
           <!-- Lines and frames -->
-          <SolidColorBrush x:Key="Brush.Hairline">#D5CFBE</SolidColorBrush>
-          <SolidColorBrush x:Key="Brush.BorderDefault">#D5CEBB</SolidColorBrush>
-          <SolidColorBrush x:Key="Brush.BorderStrong">#BDB5A0</SolidColorBrush>
-          <SolidColorBrush x:Key="Brush.BorderBrass">#C9A254</SolidColorBrush>
-          <SolidColorBrush x:Key="Brush.GridBeat">#DED8C8</SolidColorBrush>
-          <SolidColorBrush x:Key="Brush.GridBar">#CFC8B4</SolidColorBrush>
+          <SolidColorBrush x:Key="Brush.Hairline">#B3B6BB</SolidColorBrush>
+          <SolidColorBrush x:Key="Brush.BorderDefault">#9DA0A6</SolidColorBrush>
+          <SolidColorBrush x:Key="Brush.BorderStrong">#B3B6BB</SolidColorBrush>
+          <SolidColorBrush x:Key="Brush.BorderBrass">#ECA54E</SolidColorBrush>
+          <SolidColorBrush x:Key="Brush.GridBeat">#BDC0C4</SolidColorBrush>
+          <SolidColorBrush x:Key="Brush.GridBar">#ADB0B5</SolidColorBrush>
 
           <!-- Text: warm near-black, same eight steps -->
-          <SolidColorBrush x:Key="Brush.TextHeading">#1A150E</SolidColorBrush>
-          <SolidColorBrush x:Key="Brush.TextPrimary">#241F17</SolidColorBrush>
-          <SolidColorBrush x:Key="Brush.TextStrong">#3E382C</SolidColorBrush>
-          <SolidColorBrush x:Key="Brush.TextSecondary">#5E5849</SolidColorBrush>
-          <SolidColorBrush x:Key="Brush.TextMuted">#746D5C</SolidColorBrush>
-          <SolidColorBrush x:Key="Brush.TextTertiary">#8A8474</SolidColorBrush>
-          <SolidColorBrush x:Key="Brush.TextDisabled">#9E9786</SolidColorBrush>
-          <SolidColorBrush x:Key="Brush.TextAxis">#ADA694</SolidColorBrush>
-          <SolidColorBrush x:Key="Brush.TextOnAccent">#FFFBF2</SolidColorBrush>
+          <SolidColorBrush x:Key="Brush.TextHeading">#0E0F11</SolidColorBrush>
+          <SolidColorBrush x:Key="Brush.TextPrimary">#16171A</SolidColorBrush>
+          <SolidColorBrush x:Key="Brush.TextStrong">#282A2E</SolidColorBrush>
+          <SolidColorBrush x:Key="Brush.TextSecondary">#3A3D42</SolidColorBrush>
+          <SolidColorBrush x:Key="Brush.TextMuted">#4F535A</SolidColorBrush>
+          <SolidColorBrush x:Key="Brush.TextTertiary">#65696F</SolidColorBrush>
+          <SolidColorBrush x:Key="Brush.TextDisabled">#797C81</SolidColorBrush>
+          <SolidColorBrush x:Key="Brush.TextAxis">#797C81</SolidColorBrush>
+          <SolidColorBrush x:Key="Brush.TextOnAccent">#17181A</SolidColorBrush>
 
           <!-- Accent: bronze — brass darkened to hold its emphasis on paper -->
-          <SolidColorBrush x:Key="Brush.Accent">#A87415</SolidColorBrush>
-          <SolidColorBrush x:Key="Brush.AccentBright">#744D07</SolidColorBrush>
-          <SolidColorBrush x:Key="Brush.AccentHover">#8F6110</SolidColorBrush>
-          <SolidColorBrush x:Key="Brush.AccentDeep">#7A5008</SolidColorBrush>
-          <SolidColorBrush x:Key="Brush.AccentDim">#9C8034</SolidColorBrush>
-          <SolidColorBrush x:Key="Brush.AccentEdge">#D3B173</SolidColorBrush>
-          <SolidColorBrush x:Key="Brush.AccentSubtle">#F2E4C4</SolidColorBrush>
+          <SolidColorBrush x:Key="Brush.Accent">#EF8A0C</SolidColorBrush>
+          <SolidColorBrush x:Key="Brush.AccentBright">#C46A00</SolidColorBrush>
+          <SolidColorBrush x:Key="Brush.AccentHover">#C46A00</SolidColorBrush>
+          <SolidColorBrush x:Key="Brush.AccentDeep">#D47800</SolidColorBrush>
+          <SolidColorBrush x:Key="Brush.AccentDim">#F7C27A</SolidColorBrush>
+          <SolidColorBrush x:Key="Brush.AccentEdge">#ECA54E</SolidColorBrush>
+          <SolidColorBrush x:Key="Brush.AccentSubtle">#E6D6C4</SolidColorBrush>
 
           <!-- Semantic -->
-          <SolidColorBrush x:Key="Brush.Record">#B54A32</SolidColorBrush>
-          <SolidColorBrush x:Key="Brush.RecordInk">#FFF4EE</SolidColorBrush>
-          <SolidColorBrush x:Key="Brush.Danger">#B13E33</SolidColorBrush>
-          <SolidColorBrush x:Key="Brush.DangerHover">#C64A36</SolidColorBrush>
-          <SolidColorBrush x:Key="Brush.DangerBright">#A3391B</SolidColorBrush>
-          <SolidColorBrush x:Key="Brush.DangerSubtle">#33B13E33</SolidColorBrush>
-          <SolidColorBrush x:Key="Brush.Warning">#837010</SolidColorBrush>
-          <SolidColorBrush x:Key="Brush.Success">#2C7A3E</SolidColorBrush>
-          <SolidColorBrush x:Key="Brush.SuccessDim">#609548</SolidColorBrush>
+          <SolidColorBrush x:Key="Brush.Record">#B3262C</SolidColorBrush>
+          <SolidColorBrush x:Key="Brush.RecordInk">#FFFFFF</SolidColorBrush>
+          <SolidColorBrush x:Key="Brush.Danger">#B3262C</SolidColorBrush>
+          <SolidColorBrush x:Key="Brush.DangerHover">#C2343A</SolidColorBrush>
+          <SolidColorBrush x:Key="Brush.DangerBright">#9C1F24</SolidColorBrush>
+          <SolidColorBrush x:Key="Brush.DangerSubtle">#33B3262C</SolidColorBrush>
+          <SolidColorBrush x:Key="Brush.Warning">#7A4F00</SolidColorBrush>
+          <SolidColorBrush x:Key="Brush.Success">#22692B</SolidColorBrush>
+          <SolidColorBrush x:Key="Brush.SuccessDim">#79B880</SolidColorBrush>
 
           <!-- Role chromas -->
-          <SolidColorBrush x:Key="Brush.ChromaTeal">#2F7472</SolidColorBrush>
-          <SolidColorBrush x:Key="Brush.ChromaTealLight">#3E8A88</SolidColorBrush>
-          <SolidColorBrush x:Key="Brush.ChromaRose">#86465B</SolidColorBrush>
-          <SolidColorBrush x:Key="Brush.ChromaRoseLight">#7F2D43</SolidColorBrush>
-          <SolidColorBrush x:Key="Brush.ChromaSteel">#3E6288</SolidColorBrush>
+          <SolidColorBrush x:Key="Brush.ChromaTeal">#3A8A7F</SolidColorBrush>
+          <SolidColorBrush x:Key="Brush.ChromaTealLight">#2E7067</SolidColorBrush>
+          <SolidColorBrush x:Key="Brush.ChromaRose">#B4566B</SolidColorBrush>
+          <SolidColorBrush x:Key="Brush.ChromaRoseLight">#93404F</SolidColorBrush>
+          <SolidColorBrush x:Key="Brush.ChromaSteel">#3F78B8</SolidColorBrush>
 
-          <Color x:Key="SystemAccentColor">#A87415</Color>
-          <Color x:Key="SystemAccentColorLight1">#B98219</Color>
-          <Color x:Key="SystemAccentColorLight2">#CA901D</Color>
-          <Color x:Key="SystemAccentColorLight3">#DB9E22</Color>
-          <Color x:Key="SystemAccentColorDark1">#966611</Color>
-          <Color x:Key="SystemAccentColorDark2">#83590E</Color>
-          <Color x:Key="SystemAccentColorDark3">#6F4B0B</Color>
+          <Color x:Key="SystemAccentColor">#EF8A0C</Color>
+          <Color x:Key="SystemAccentColorLight1">#F19829</Color>
+          <Color x:Key="SystemAccentColorLight2">#F3A646</Color>
+          <Color x:Key="SystemAccentColorLight3">#F5B463</Color>
+          <Color x:Key="SystemAccentColorDark1">#D77C0B</Color>
+          <Color x:Key="SystemAccentColorDark2">#BF6E0A</Color>
+          <Color x:Key="SystemAccentColorDark3">#A76108</Color>
 
           <!-- Track palette — the same nine roles, darkened so a clip's content reads -->
-          <SolidColorBrush x:Key="Brush.Track1">#328140</SolidColorBrush> <!-- Drums -->
-          <SolidColorBrush x:Key="Brush.Track2">#306F53</SolidColorBrush> <!-- Perc -->
-          <SolidColorBrush x:Key="Brush.Track3">#256464</SolidColorBrush> <!-- Bass -->
-          <SolidColorBrush x:Key="Brush.Track4">#317187</SolidColorBrush> <!-- Keys -->
-          <SolidColorBrush x:Key="Brush.Track5">#985127</SolidColorBrush> <!-- Texture -->
-          <SolidColorBrush x:Key="Brush.Track6">#4B4082</SolidColorBrush> <!-- FX -->
-          <SolidColorBrush x:Key="Brush.Track7">#7F3450</SolidColorBrush> <!-- Brass -->
-          <SolidColorBrush x:Key="Brush.Track8">#6C752C</SolidColorBrush> <!-- Vox -->
-          <SolidColorBrush x:Key="Brush.Track9">#4D7A5D</SolidColorBrush> <!-- Return -->
-          <SolidColorBrush x:Key="Brush.ReturnA">#4D7A5D</SolidColorBrush>
-          <SolidColorBrush x:Key="Brush.ReturnB">#3E6A4D</SolidColorBrush>
-          <SolidColorBrush x:Key="Brush.Master">#A87415</SolidColorBrush>
+          <!-- Studio roles Ember lacked: seam / rule, faint ink, mute amber, solo blue,
+               the neutral ink graphs draw in at rest, and the modal scrim. -->
+          <SolidColorBrush x:Key="Brush.Seam">#9DA0A6</SolidColorBrush>
+          <SolidColorBrush x:Key="Brush.Rule">#B3B6BB</SolidColorBrush>
+          <SolidColorBrush x:Key="Brush.TextFaint">#797C81</SolidColorBrush>
+          <SolidColorBrush x:Key="Brush.Mute">#7A4F00</SolidColorBrush>
+          <SolidColorBrush x:Key="Brush.Solo">#3F78B8</SolidColorBrush>
+          <SolidColorBrush x:Key="Brush.VizInk">#252629</SolidColorBrush>
+          <SolidColorBrush x:Key="Brush.VizGrid">#C0C3C6</SolidColorBrush>
+          <SolidColorBrush x:Key="Brush.Scrim">#4D1E2024</SolidColorBrush>
 
-          <BoxShadows x:Key="Shadow.Sunken">inset 0 1 0 0 #1F000000</BoxShadows>
-          <BoxShadows x:Key="Shadow.Raised">inset 0 1 0 0 #66FFFFFF</BoxShadows>
+          <SolidColorBrush x:Key="Brush.Track1">#4A7F46</SolidColorBrush> <!-- Drums -->
+          <SolidColorBrush x:Key="Brush.Track2">#3A8A7F</SolidColorBrush> <!-- Perc -->
+          <SolidColorBrush x:Key="Brush.Track3">#357C99</SolidColorBrush> <!-- Bass -->
+          <SolidColorBrush x:Key="Brush.Track4">#3F78B8</SolidColorBrush> <!-- Keys -->
+          <SolidColorBrush x:Key="Brush.Track5">#B8862F</SolidColorBrush> <!-- Texture -->
+          <SolidColorBrush x:Key="Brush.Track6">#7363A8</SolidColorBrush> <!-- FX -->
+          <SolidColorBrush x:Key="Brush.Track7">#B4566B</SolidColorBrush> <!-- Brass -->
+          <SolidColorBrush x:Key="Brush.Track8">#7E7F2F</SolidColorBrush> <!-- Vox -->
+          <SolidColorBrush x:Key="Brush.Track9">#5D6C80</SolidColorBrush> <!-- Return -->
+          <SolidColorBrush x:Key="Brush.ReturnA">#5D6C80</SolidColorBrush>
+          <SolidColorBrush x:Key="Brush.ReturnB">#4E5B6D</SolidColorBrush>
+          <SolidColorBrush x:Key="Brush.Master">#4F535A</SolidColorBrush>
+
+          <BoxShadows x:Key="Shadow.Sunken">inset 0 0 0 1 #B3B6BB</BoxShadows>
+          <BoxShadows x:Key="Shadow.Raised">inset 0 1 0 0 #B3FFFFFF, 0 0 0 1 #9DA0A6</BoxShadows>
+          <BoxShadows x:Key="Shadow.Popover">0 0 0 1 #9DA0A6, 0 10 28 0 #381E2024</BoxShadows>
+          <BoxShadows x:Key="Shadow.Modal">0 0 0 1 #9DA0A6, 0 24 64 0 #401E2024</BoxShadows>
         </ResourceDictionary>
 
       </ResourceDictionary.ThemeDictionaries>

@@ -8,7 +8,7 @@
 // Themable by construction: a slot hands out one long-lived SolidColorBrush whose
 // *Color* is re-pointed when the variant changes. Call sites (and the private static
 // readonly fields that alias them all over the view layer) keep the same brush object,
-// so switching Ember Graphite ↔ Ember Paper needs no rebuild — only a repaint, which
+// so switching dark ↔ light needs no rebuild — only a repaint, which
 // NotaThemeService triggers. Never wrap a slot in `new SolidColorBrush(slot.Color)`:
 // that snapshots the colour and freezes the view in one theme.
 //
@@ -47,7 +47,7 @@ internal static class NotaPalette
     /// drop colour caches they derived themselves (per-index clip brushes, gradients…).</summary>
     public static event Action? Changed;
 
-    // A named token: the Ember Graphite value and its Ember Paper counterpart.
+    // A named token: the dark value and its light counterpart.
     private static SolidColorBrush T(string dark, string light)
     {
         var d = Color.Parse(dark);
@@ -110,6 +110,41 @@ internal static class NotaPalette
         return b;
     }
 
+    /// <summary>Ink for text or a glyph on a solid <paramref name="fill"/> — dark ink or white,
+    /// whichever has the higher contrast on the fill's current colour, recomputed on a variant
+    /// change. Fills are tokens that differ per variant, so the ink on them is derived, never
+    /// fixed. Cached per fill.</summary>
+    public static SolidColorBrush InkOn(SolidColorBrush fill)
+    {
+        if (InkOnCache.TryGetValue(fill, out var b)) return b;
+        b = Derived(() => ReadableInkOn(fill.Color));
+        InkOnCache[fill] = b;
+        return b;
+    }
+
+    private static readonly Dictionary<SolidColorBrush, SolidColorBrush> InkOnCache = new();
+
+    /// <summary>Dark ink (#17181A) or white, whichever reads better on <paramref name="fill"/>
+    /// (WCAG contrast ratio). For views that compute a fill at draw time.</summary>
+    public static Color ReadableInkOn(Color fill)
+    {
+        var dark = Color.FromRgb(0x17, 0x18, 0x1A);
+        var white = Color.FromRgb(0xFF, 0xFF, 0xFF);
+        return Contrast(dark, fill) >= Contrast(white, fill) ? dark : white;
+    }
+
+    private static double Contrast(Color a, Color b)
+    {
+        double la = Luminance(a), lb = Luminance(b);
+        return (Math.Max(la, lb) + 0.05) / (Math.Min(la, lb) + 0.05);
+    }
+
+    private static double Luminance(Color c)
+    {
+        static double Ch(byte v) { double x = v / 255.0; return x <= 0.03928 ? x / 12.92 : Math.Pow((x + 0.055) / 1.055, 2.4); }
+        return 0.2126 * Ch(c.R) + 0.7152 * Ch(c.G) + 0.0722 * Ch(c.B);
+    }
+
     /// <summary>A top-to-bottom gradient over palette slots. A LinearGradientBrush snapshots
     /// its stop Colors, so unlike a fill it cannot ride a slot on its own — this registers it
     /// for re-tinting. Registration is permanent: only ever assign the result to a static
@@ -128,14 +163,16 @@ internal static class NotaPalette
 
     /// <summary>The identity hue of one visualiser or picker swatch — a colour that means
     /// "this band / this quadrant / this tag", not a role in the design system. Give the
-    /// Ember Graphite value; the Ember Paper counterpart is derived (same hue, darkened so
-    /// it reads on paper) unless <see cref="InkOverrides"/> pins one.</summary>
+    /// dark value; the light counterpart is derived (same hue, darkened so it reads on the
+    /// light grey ground) unless <see cref="InkOverrides"/> pins one.</summary>
     public static SolidColorBrush Ink(string darkHex)
     {
         var key = darkHex.ToUpperInvariant();
         if (InkCache.TryGetValue(key, out var b)) return b;
-        // A hex that already is a role token (brass, teal, rose, steel…) resolves to that token,
-        // so it gets the designed light value instead of a derived one — never a second brass.
+        // A hex that already is a role token resolves to that token, so it gets the designed
+        // light value instead of a derived one. Hexes that were Ember role tokens (views still
+        // name a few) resolve to the role's current slot, so no Ember hue survives the switch.
+        if (LegacyRole(key) is { } role) { InkCache[key] = role; return role; }
         var dark = Color.Parse(darkHex);
         foreach (var slot in Slots)
             if (slot.Dark == dark) { InkCache[key] = slot.Brush; return slot.Brush; }
@@ -144,22 +181,35 @@ internal static class NotaPalette
         return b;
     }
 
+    // Ember role hexes that views pass to Ink() → the slot that plays that role now. A method,
+    // not a table: the slots it names are initialised further down this file.
+    private static SolidColorBrush? LegacyRole(string hex) => hex switch
+    {
+        "#D8A03D" => Accent,      // brass
+        "#5B9E9C" => Teal,
+        "#B57286" => Rose,
+        "#6D8FB5" => Steel,
+        "#B8862E" => Threshold,   // brass-adjacent data fill → amber
+        "#2A2317" => AccentSubtle, // brass wash band
+        _ => null,
+    };
+
     /// <summary>The Color of an <see cref="Ink"/> hue, for the call sites that mix or
     /// interpolate rather than fill. Read it at draw time — it changes with the theme.</summary>
     public static Color InkColor(string darkHex) => Ink(darkHex).Color;
 
-    // Ember Paper counterparts that the generic derivation gets wrong — a hue whose job
-    // is to be *pale* on graphite (a highlight) or whose saturation collapses when darkened.
+    // Light counterparts that the generic derivation gets wrong — a hue whose job
+    // is to be *pale* on the dark ground (a highlight) or whose saturation collapses when darkened.
     private static readonly Dictionary<string, string> InkOverrides = new()
     {
         ["#8A8F98"] = "#5A6068",   // tag "slate": derivation leaves it near-neutral mud
-        ["#CDEEF8"] = "#0E5470",   // resize-edge / bracket highlight: hottest ink on paper is darkest
+        ["#CDEEF8"] = "#0E5470",   // resize-edge / bracket highlight: hottest ink on light is darkest
         ["#12181B"] = "#DCE6E8",   // BPM chip ground — a surface, so it lightens rather than darkens
         ["#1A2B31"] = "#C8DEE4",   // …and its hot state
     };
 
-    // Same hue and saturation, lightness reflected onto the paper ground: the brighter a
-    // hue reads on graphite, the darker it must read on paper to carry the same emphasis.
+    // Same hue and saturation, lightness reflected onto the light ground: the brighter a
+    // hue reads on dark, the darker it must read on light to carry the same emphasis.
     private static string DeriveLight(Color c)
     {
         var (h, s, l) = ToHsl(c);
@@ -191,140 +241,153 @@ internal static class NotaPalette
     }
 
     // =======================================================================
-    // Tokens.  dark = "Ember Graphite"        light = "Ember Paper"
+    // Tokens — the Studio palette (after Saine): neutral greys, one orange accent.
+    // dark = Saine's dark preset, light = Saine's light preset (same roles).
     // =======================================================================
 
-    // ---- Surfaces: the nine steps of the almanac, far to near -------------
-    // Void · App · Gutter · Well · Panel · Card · Raised · Hover · Track off.
-    // Depth is lightness plus a hairline, never a shadow, and three levels of
-    // nesting is the limit — a fourth means the layout is wrong, not the palette.
-    public static readonly SolidColorBrush SurfaceAbyss  = T("#0A0908", "#D8D1BE"); // Brush.SurfaceAbyss — Void
-    public static readonly SolidColorBrush BgApp         = T("#0B0A09", "#DCD6C5"); // Brush.BgApp — window ground, plugin body
-    public static readonly SolidColorBrush Gutter        = T("#0C0B09", "#E0DAC9"); // Brush.Gutter — the gaps panels float in
-    public static readonly SolidColorBrush BgSunken      = T("#100F0D", "#E4DFD1"); // Brush.BgSunken / ChromeBg — Well
-    public static readonly SolidColorBrush CanvasBg      = T("#121110", "#E6E1D3"); // modular canvas, just above the well
-    public static readonly SolidColorBrush SurfaceDeep   = T("#131210", "#E7E2D4"); // step-sequencer ground
-    public static readonly SolidColorBrush LaneB         = T("#131210", "#E7E2D4"); // Brush.LaneB (alternating lane)
-    public static readonly SolidColorBrush Panel         = T("#141310", "#EAE5D7"); // Brush.Panel — browser, headers, inspector
-    public static readonly SolidColorBrush SurfaceCard   = T("#171613", "#EFEADE"); // Brush.SurfaceCard — a section inside a device
-    public static readonly SolidColorBrush SurfaceInset  = T("#1A1815", "#E9E4D6"); // rail / sunken chip
-    public static readonly SolidColorBrush SurfaceRaised = T("#1C1A16", "#F8F5EC"); // Brush.SurfaceRaised — button at rest
-    public static readonly SolidColorBrush SurfaceHover  = T("#252219", "#E7E1D0"); // Brush.SurfaceHover
-    public static readonly SolidColorBrush TrackOff      = T("#26231E", "#DBD4C0"); // Brush.TrackOff — track of an off toggle
+    // ---- Surfaces: Saine's grey ladder, far to near -----------------------
+    // Well (recess) · Ground (bg-base) · Panel · Raised · Raised hover. Ember's nine
+    // steps collapse onto these; the extra slots sit between two of them. Depth is
+    // tone plus a 1 px seam; only floating layers cast a shadow.
+    public static readonly SolidColorBrush SurfaceAbyss  = T("#17181A", "#D6D8DB"); // Brush.SurfaceAbyss — well: the transport console recess
+    public static readonly SolidColorBrush BgApp         = T("#1E1F22", "#C9CBCF"); // Brush.BgApp — ground: window, arrangement, plugin body
+    public static readonly SolidColorBrush Gutter        = T("#141517", "#9DA0A6"); // Brush.Gutter — the seam the docked panels meet on
+    public static readonly SolidColorBrush BgSunken      = T("#17181A", "#D6D8DB"); // Brush.BgSunken / ChromeBg — Well
+    public static readonly SolidColorBrush CanvasBg      = T("#1E1F22", "#C9CBCF"); // modular canvas, just above the well
+    public static readonly SolidColorBrush SurfaceDeep   = T("#1B1C1F", "#CFD1D4"); // step-sequencer ground
+    public static readonly SolidColorBrush LaneB         = T("#222326", "#C4C6CA"); // Brush.LaneB (alternating lane)
+    public static readonly SolidColorBrush Panel         = T("#2B2D31", "#E4E5E7"); // Brush.Panel — browser, headers, inspector
+    public static readonly SolidColorBrush SurfaceCard   = T("#2B2D31", "#E4E5E7"); // Brush.SurfaceCard — a section inside a device (panel tone; divided by rules)
+    public static readonly SolidColorBrush SurfaceInset  = T("#232427", "#DCDEE0"); // rail / sunken chip
+    public static readonly SolidColorBrush SurfaceRaised = T("#34363B", "#EEEFF1"); // Brush.SurfaceRaised — button at rest
+    public static readonly SolidColorBrush SurfaceHover  = T("#393C41", "#F7F8F9"); // Brush.SurfaceHover
+    public static readonly SolidColorBrush TrackOff      = T("#17181A", "#D6D8DB"); // Brush.TrackOff — track of an off toggle
     // Pressed goes *into* the recess rather than to a fourth raised step.
-    public static readonly SolidColorBrush SurfaceActive = T("#100F0D", "#D5CEBB"); // Brush.SurfaceActive
+    public static readonly SolidColorBrush SurfaceActive = T("#17181A", "#D6D8DB"); // Brush.SurfaceActive
 
     // ---- Grid + graph lines (kept under ~12% contrast against their lane) -
-    public static readonly SolidColorBrush GridSubBeat = T("#191712", "#E5DFCE"); // finer than a beat
-    public static readonly SolidColorBrush GridBeat    = T("#1E1C18", "#DED8C8"); // Brush.GridBeat — grid inside graphs, zero axis
-    public static readonly SolidColorBrush GridRow     = T("#141311", "#E6E1D2"); // piano-roll row divider
-    public static readonly SolidColorBrush GridBar     = T("#2A2721", "#CFC8B4"); // Brush.GridBar
-    public static readonly SolidColorBrush GraphBorder = T("#221F1A", "#D5CFBE"); // inner border of a visualiser well
-    public static readonly SolidColorBrush WellGrid    = T("#232019", "#DDD7C6"); // grid drawn inside a well
-    public static readonly SolidColorBrush PadGrid     = T("#1C1A16", "#DED8C7"); // XY-pad grid
+    public static readonly SolidColorBrush GridSubBeat = T("#242528", "#C3C5C9"); // finer than a beat
+    public static readonly SolidColorBrush GridBeat    = T("#2A2C30", "#BDC0C4"); // Brush.GridBeat — grid inside graphs, zero axis
+    public static readonly SolidColorBrush GridRow     = T("#1B1C1F", "#C5C7CB"); // piano-roll row divider
+    public static readonly SolidColorBrush GridBar     = T("#3A3C41", "#ADB0B5"); // Brush.GridBar
+    public static readonly SolidColorBrush GraphBorder = T("#45484E", "#B3B6BB"); // inner border of a visualiser well
+    public static readonly SolidColorBrush WellGrid    = T("#2E2F32", "#C0C3C6"); // grid drawn inside a well
+    public static readonly SolidColorBrush PadGrid     = T("#2A2C30", "#C8CACD"); // XY-pad grid
 
     // ---- Text: eight steps, strictly by descending importance ------------
-    // Warm off-white on graphite, warm near-black on paper. Muted text takes the
+    // Cool off-white on dark, near-black on light. Muted text takes the
     // next Ink step down — never opacity, which makes contrast unpredictable.
-    public static readonly SolidColorBrush TextHeading   = T("#F2EDE1", "#1A150E"); // Ink 0 — page titles, project name. Rare.
-    public static readonly SolidColorBrush TextPrimary   = T("#E9E4D8", "#241F17"); // Ink 1 — device/track/preset names, values
-    public static readonly SolidColorBrush TextStrong    = T("#C7C0B0", "#3E382C"); // Ink 2 — button text, transport readouts
-    public static readonly SolidColorBrush TextSecondary = T("#A39D8F", "#5E5849"); // Ink 3 — inactive but readable, metadata
-    public static readonly SolidColorBrush TextMuted     = T("#8D8779", "#746D5C"); // Ink 4 — explanations, units, hints
-    public static readonly SolidColorBrush TextTertiary  = T("#6E6A5E", "#8A8474"); // Ink 5 — caps labels above parameters
-    public static readonly SolidColorBrush TextDisabled  = T("#55514A", "#9E9786"); // Ink 6 — placeholder, disabled action
-    public static readonly SolidColorBrush TextAxis      = T("#4A463D", "#ADA694"); // Ink 7 — axis labels inside graphs only
-    public static readonly SolidColorBrush TextOnAccent  = T("#171613", "#FFFBF2"); // Brush.TextOnAccent
+    public static readonly SolidColorBrush TextHeading   = T("#F4F5F6", "#0E0F11"); // Ink 0 — page titles, project name. Rare.
+    public static readonly SolidColorBrush TextPrimary   = T("#E8E9EB", "#16171A"); // Ink 1 — device/track/preset names, values
+    public static readonly SolidColorBrush TextStrong    = T("#D4D6DA", "#282A2E"); // Ink 2 — button text, transport readouts
+    public static readonly SolidColorBrush TextSecondary = T("#C0C4C9", "#3A3D42"); // Ink 3 — inactive but readable, metadata
+    public static readonly SolidColorBrush TextMuted     = T("#A4A9B0", "#4F535A"); // Ink 4 — explanations, units, hints
+    public static readonly SolidColorBrush TextTertiary  = T("#92969D", "#65696F"); // Ink 5 — caps labels above parameters
+    public static readonly SolidColorBrush TextDisabled  = T("#82868C", "#797C81"); // Ink 6 — placeholder, disabled action
+    public static readonly SolidColorBrush TextAxis      = T("#82868C", "#797C81"); // Ink 7 — axis labels inside graphs only
+    public static readonly SolidColorBrush TextOnAccent  = T("#17181A", "#17181A"); // Brush.TextOnAccent
+    public static readonly SolidColorBrush TextFaint     = T("#82868C", "#797C81"); // Brush.TextFaint — disabled controls only
+    // The neutral ink a value is drawn in at rest: knob arcs, fader fills, graph curves.
+    // The accent replaces it only while the control is live (dragged, hovered) or chosen.
+    public static readonly SolidColorBrush VizInk        = T("#D7D8DA", "#252629"); // Brush.VizInk
+    public static readonly SolidColorBrush VizGrid       = T("#2E2F32", "#C0C3C6"); // Brush.VizGrid — grid inside a well
 
     // ---- Borders ----------------------------------------------------------
-    public static readonly SolidColorBrush BorderDefault = T("#2C2923", "#D5CEBB"); // Brush.BorderDefault
-    public static readonly SolidColorBrush BorderStrong  = T("#3A362D", "#BDB5A0"); // Brush.BorderStrong — knob cap, hovered border
-    public static readonly SolidColorBrush BorderBrass   = T("#6B5326", "#C9A254"); // Brush.BorderBrass — engaged button: brass at 40%
+    public static readonly SolidColorBrush BorderDefault = T("#141517", "#9DA0A6"); // Brush.BorderDefault
+    public static readonly SolidColorBrush BorderStrong  = T("#45484E", "#B3B6BB"); // Brush.BorderStrong — knob cap, hovered border
+    public static readonly SolidColorBrush BorderBrass   = T("#BF7D22", "#ECA54E"); // Brush.BorderBrass — accent line: 70% accent over panel
+    // Saine's two lines: the dark seam between panels and around controls, and the
+    // lighter rule that divides inside a panel (toolbar separators, field edges).
+    public static readonly SolidColorBrush Seam          = T("#141517", "#9DA0A6"); // Brush.Seam
+    public static readonly SolidColorBrush Rule          = T("#45484E", "#B3B6BB"); // Brush.Rule
 
-    // ---- Accent (brass on graphite, bronze on paper: darker carries the
-    //      same emphasis against a light ground) ----------------------------
-    public static readonly SolidColorBrush Accent       = T("#D8A03D", "#A87415"); // Brush.Accent — arc, fill, playhead, solid button
-    public static readonly SolidColorBrush AccentBright = T("#F0C060", "#744D07"); // Brush.AccentBright — Brass Light, the hottest mark
-    public static readonly SolidColorBrush AccentHover  = T("#E9BE6A", "#8F6110"); // Brush.AccentHover — hover on brass text
-    public static readonly SolidColorBrush AccentDeep   = T("#B08536", "#7A5008"); // Brush.AccentDeep — press, left half of the loop
-    public static readonly SolidColorBrush AccentDim    = T("#8A6B2E", "#9C8034"); // Brush.AccentDim — eyebrows, mono section marks
-    public static readonly SolidColorBrush AccentEdge   = T("#5E4A22", "#D3B173"); // Brush.AccentEdge — chip border, link underline
-    public static readonly SolidColorBrush AccentMute   = T("#7A6130", "#C39B4F"); // between Edge and Dim — a waveform at rest, the part ahead of the hover
-    public static readonly SolidColorBrush AccentPale   = T("#FCE5B8", "#5C3C04"); // hot edge highlight
-    // Opaque, not an alpha tint: the almanac wants one predictable colour, and
-    // alpha over two different grounds is not one.
-    public static readonly SolidColorBrush AccentSubtle = T("#241F17", "#F2E4C4"); // Brush.AccentSubtle — Brass Wash, selected row
+    // ---- Accent: Studio orange. Live or chosen only — playing, selected, looping,
+    //      toggled on, or a control while it is dragged. Never a resting value. ---
+    public static readonly SolidColorBrush Accent       = T("#FF9F1C", "#EF8A0C"); // Brush.Accent — playhead, selection, toggled-on fill
+    public static readonly SolidColorBrush AccentBright = T("#FFB547", "#C46A00"); // Brush.AccentBright — accent glow: the line/ink variant
+    public static readonly SolidColorBrush AccentHover  = T("#FFB547", "#C46A00"); // Brush.AccentHover — accent text on hover
+    public static readonly SolidColorBrush AccentDeep   = T("#C77612", "#D47800"); // Brush.AccentDeep — press, left half of the loop
+    public static readonly SolidColorBrush AccentDim    = T("#C77612", "#F7C27A"); // Brush.AccentDim — the soft/pressed accent
+    public static readonly SolidColorBrush AccentEdge   = T("#BF7D22", "#ECA54E"); // Brush.AccentEdge — chip border, link underline
+    public static readonly SolidColorBrush AccentMute   = T("#7A5F3D", "#C9A77A"); // a muted accent; nothing at rest uses it any more
+    public static readonly SolidColorBrush AccentPale   = T("#FFD08A", "#8A4A00"); // hot edge highlight
+    // Accent-soft: 16 % accent over the panel, opaque so it reads the same on any ground.
+    public static readonly SolidColorBrush AccentSubtle = T("#4D3F2E", "#E6D6C4"); // Brush.AccentSubtle — accent-soft wash
 
     // ---- Status -----------------------------------------------------------
     // Red belongs to recording. Everything else red is an alert about level.
-    public static readonly SolidColorBrush Record      = T("#C25B44", "#B54A32"); // Brush.Record — active recording, the only claim on red
-    public static readonly SolidColorBrush RecordInk   = T("#F4E3DC", "#FFF4EE"); // Brush.RecordInk — disc on an engaged record button
-    public static readonly SolidColorBrush Success     = T("#58B368", "#2C7A3E"); // Brush.Success — Signal, working meter zone
-    public static readonly SolidColorBrush SuccessDim  = T("#7FB069", "#609548"); // Brush.SuccessDim — transport input, metronome
-    public static readonly SolidColorBrush Warning     = T("#D9C34C", "#837010"); // Brush.Warning — Caution, −6..0 dB
-    public static readonly SolidColorBrush Danger      = T("#C2554A", "#B13E33"); // Brush.Danger — Alert, overload / clipping
-    public static readonly SolidColorBrush DangerHover = T("#D0685C", "#C64A36"); // Brush.DangerHover
-    public static readonly SolidColorBrush DangerBright= T("#E08A72", "#A3391B"); // Brush.DangerBright — Alert Light, readout text
-    public static readonly SolidColorBrush DangerDeep  = T("#A8453B", "#9C3221"); // over-threshold fill, below Alert
-    public static readonly SolidColorBrush DangerPale  = T("#F0928A", "#8E2416"); // live-take waveform / label
+    public static readonly SolidColorBrush Record      = T("#F06A6E", "#B3262C"); // Brush.Record — active recording, the only claim on red
+    public static readonly SolidColorBrush RecordInk   = T("#FFFFFF", "#FFFFFF"); // Brush.RecordInk — disc on an engaged record button
+    public static readonly SolidColorBrush Success     = T("#6CC673", "#22692B"); // Brush.Success — Signal, working meter zone
+    public static readonly SolidColorBrush SuccessDim  = T("#3F8A45", "#79B880"); // Brush.SuccessDim — transport input, metronome
+    public static readonly SolidColorBrush Warning     = T("#F2B53C", "#7A4F00"); // Brush.Warning — Caution, −6..0 dB
+    // Track toggles: mute is amber, solo is blue, arm is Record. Each fills solid when on.
+    public static readonly SolidColorBrush Mute        = T("#F2B53C", "#7A4F00"); // Brush.Mute
+    public static readonly SolidColorBrush Solo        = T("#6A9FD8", "#3F78B8"); // Brush.Solo
+    public static readonly SolidColorBrush Scrim       = T("#6B000000", "#4D1E2024"); // Brush.Scrim — behind a modal overlay
+    public static readonly SolidColorBrush Danger      = T("#F06A6E", "#B3262C"); // Brush.Danger — Alert, overload / clipping
+    public static readonly SolidColorBrush DangerHover = T("#F48386", "#C2343A"); // Brush.DangerHover
+    public static readonly SolidColorBrush DangerBright= T("#F58F92", "#9C1F24"); // Brush.DangerBright — Alert Light, readout text
+    public static readonly SolidColorBrush DangerDeep  = T("#C4474B", "#8E1C21"); // over-threshold fill, below Alert
+    public static readonly SolidColorBrush DangerPale  = T("#F7A5A7", "#7F161B"); // live-take waveform / label
 
     // ---- Data + modulation ------------------------------------------------
     // Role chromas live inside visualisers only. When two or three sources share
-    // one graph, brass takes the primary and these follow in order. They never
+    // one graph, VizInk takes the primary and these follow in order. They never
     // reach a button and they never mean state.
-    public static readonly SolidColorBrush Teal       = T("#5B9E9C", "#2F7472"); // Brush.ChromaTeal — 2nd layer; also the modulation accent
-    public static readonly SolidColorBrush TealBright = T("#7FC0BE", "#3E8A88"); // Brush.ChromaTealLight
-    public static readonly SolidColorBrush Rose       = T("#B57286", "#86465B"); // Brush.ChromaRose — 3rd layer: right channel, highs, tail
-    public static readonly SolidColorBrush RoseBright = T("#D79BAB", "#7F2D43"); // Brush.ChromaRoseLight
-    public static readonly SolidColorBrush Steel      = T("#6D8FB5", "#3E6288"); // Brush.ChromaSteel — 4th layer, used rarely
-    public static readonly SolidColorBrush Sage       = T("#6FA383", "#42765A"); // standalone hue (no longer a track slot)
-    public static readonly SolidColorBrush Threshold  = T("#C9884F", "#8A5218"); // threshold markers
-    public static readonly SolidColorBrush Marker     = T("#7FCCE1", "#1B6E8C"); // clip markers / brackets
+    public static readonly SolidColorBrush Teal       = T("#5FB3A8", "#3A8A7F"); // Brush.ChromaTeal — 2nd layer; also the modulation accent
+    public static readonly SolidColorBrush TealBright = T("#86C9C0", "#2E7067"); // Brush.ChromaTealLight
+    public static readonly SolidColorBrush Rose       = T("#D77A8F", "#B4566B"); // Brush.ChromaRose — 3rd layer: right channel, highs, tail
+    public static readonly SolidColorBrush RoseBright = T("#E49EAE", "#93404F"); // Brush.ChromaRoseLight
+    public static readonly SolidColorBrush Steel      = T("#6A9FD8", "#3F78B8"); // Brush.ChromaSteel — 4th layer, used rarely
+    public static readonly SolidColorBrush Sage       = T("#7FB08A", "#4A7F56"); // standalone hue (no longer a track slot)
+    public static readonly SolidColorBrush Threshold  = T("#E0A84A", "#8A5F14"); // threshold markers
+    public static readonly SolidColorBrush Marker     = T("#7FC4E0", "#1B6E8C"); // clip markers / brackets
     public static readonly SolidColorBrush MarkerHot  = T("#CDEEF8", "#0E5470"); // resize-edge affordance
     public static readonly SolidColorBrush Frozen     = T("#7FC7EC", "#1C6E96"); // frozen-track ice
-    public static readonly SolidColorBrush SignalIn   = T("#52604F", "#6E7C68"); // ghost "input" trace label
-    public static readonly SolidColorBrush SignalInFill = T("#3E4A3C", "#D3DCCF");
-    public static readonly SolidColorBrush HandleSel  = T("#FFFFFF", "#1E1A14"); // selected graph handle
+    public static readonly SolidColorBrush SignalIn   = T("#5A6170", "#7A818C"); // ghost "input" trace label
+    public static readonly SolidColorBrush SignalInFill = T("#3A3E46", "#C9CDD3");
+    public static readonly SolidColorBrush HandleSel  = T("#FFFFFF", "#16171A"); // selected graph handle
 
     // ---- Tinted chrome ----------------------------------------------------
-    public static readonly SolidColorBrush SelHeaderBg    = T("#241F17", "#F2E4C4"); // selected track header — Brass Wash
-    public static readonly SolidColorBrush FrozenHeaderBg = T("#1B2A33", "#D8E8F0"); // frozen track header
-    public static readonly SolidColorBrush MuteTint       = T("#3A2320", "#F0D9D3"); // muted band
-    public static readonly SolidColorBrush Veil           = T("#121418", "#F2EFE6"); // deactivated-clip scrim base
-    public static readonly SolidColorBrush TooltipBg      = T("#18181E", "#2A251C"); // tooltips stay a dark pill
-    public static readonly SolidColorBrush TooltipText    = T("#F0E4C8", "#F5EEDC");
+    public static readonly SolidColorBrush SelHeaderBg    = T("#393C41", "#F7F8F9"); // selected track header — raised hover (the accent tick marks it)
+    public static readonly SolidColorBrush FrozenHeaderBg = T("#24323B", "#D3E2EA"); // frozen track header
+    public static readonly SolidColorBrush MuteTint       = T("#3B3426", "#BDB49F"); // muted band
+    public static readonly SolidColorBrush Veil           = T("#1E1F22", "#E4E5E7"); // deactivated-clip scrim base
+    public static readonly SolidColorBrush TooltipBg      = T("#34363B", "#EEEFF1"); // tooltip: a raised popover
+    public static readonly SolidColorBrush TooltipText    = T("#E8E9EB", "#16171A");
 
     // ---- Piano keys (the clip editor keyboard is dark: keys recede, notes lead) ---
-    public static readonly SolidColorBrush KeyWhite     = T("#1C1A16", "#F3EFE4"); // piano-roll keys: dark, never the brightest thing
-    public static readonly SolidColorBrush KeyBlack     = T("#0E0D0B", "#DAD3C2"); // black keys and their lanes
-    public static readonly SolidColorBrush MiniKeyWhite = T("#2A2721", "#F5F1E4"); // device-card mini keyboards
-    public static readonly SolidColorBrush MiniKeyBlack = T("#151310", "#38332A");
+    public static readonly SolidColorBrush KeyWhite     = T("#2B2D31", "#EEEFF1"); // piano-roll keys: dark, never the brightest thing
+    public static readonly SolidColorBrush KeyBlack     = T("#17181A", "#C9CBCF"); // black keys and their lanes
+    public static readonly SolidColorBrush MiniKeyWhite = T("#3A3C41", "#F7F8F9"); // device-card mini keyboards
+    public static readonly SolidColorBrush MiniKeyBlack = T("#17181A", "#3A3D42");
 
     // ---- Track-shade mix targets (TrackColorForIndex) ---------------------
-    public static readonly SolidColorBrush ShadeUp   = T("#FFFFFF", "#FFFCF2"); // "lighter" shade
-    public static readonly SolidColorBrush ShadeDown = T("#141210", "#3A3227"); // "darker" shade
+    public static readonly SolidColorBrush ShadeUp   = T("#FFFFFF", "#FFFFFF"); // "lighter" shade
+    public static readonly SolidColorBrush ShadeDown = T("#17181A", "#16171A"); // "darker" shade
 
     // ---- Track palette (Brush.Track1..8) + return buses --------------------
-    // Nine roles at one lightness, so no track is louder than another. A group sets
-    // the hue and its tracks take neighbouring shades of it. Paper darkens each by
-    // the same ratio the previous eight pairs used (lightness ×0.67, saturation ×1.18).
+    // Nine roles in Saine's muted clip-colour style: its five clip hues (teal, blue,
+    // amber, violet, rose) plus four at matching chroma. A group sets the hue and its
+    // tracks take neighbouring shades of it. Light values are Saine's light rendition.
     //
     // Saved projects are NOT migrated: a stored colour index keeps working but now
     // points at the hue that sits at that place in this table.
     private static readonly SolidColorBrush[] TrackSlots =
     {
-        T("#58B368", "#328140"), // Drums
-        T("#4E9E7A", "#306F53"), // Perc
-        T("#3E8E8E", "#256464"), // Bass
-        T("#5AA0B8", "#317187"), // Keys
-        T("#C77F55", "#985127"), // Texture
-        T("#7A6FB0", "#4B4082"), // FX
-        T("#B05A7A", "#7F3450"), // Brass
-        T("#9AA64A", "#6C752C"), // Vox
-        T("#7FA88E", "#4D7A5D"), // Return
+        T("#7FB87A", "#4A7F46"), // Drums
+        T("#5FB3A8", "#3A8A7F"), // Perc
+        T("#5AA6C4", "#357C99"), // Bass
+        T("#6A9FD8", "#3F78B8"), // Keys
+        T("#E0A84A", "#B8862F"), // Texture
+        T("#9D90C9", "#7363A8"), // FX
+        T("#D77A8F", "#B4566B"), // Brass
+        T("#B3B45E", "#7E7F2F"), // Vox
+        T("#8E9DB0", "#5D6C80"), // Return
     };
     // Return buses draw from the ninth role rather than a palette of their own.
-    private static readonly SolidColorBrush[] ReturnSlots = { T("#7FA88E", "#4D7A5D"), T("#6B907B", "#3E6A4D") };
+    private static readonly SolidColorBrush[] ReturnSlots = { T("#8E9DB0", "#5D6C80"), T("#7A889A", "#4E5B6D") };
 
     /// <summary>Brush form of the 8-track cycle — index it for fills that follow the theme.</summary>
     public static readonly SolidColorBrush[] TrackBrushes = TrackSlots;
@@ -350,7 +413,7 @@ internal static class NotaPalette
         ["Brush.Panel"] = Panel,                 ["Brush.TrackOff"] = TrackOff,
         ["Brush.SurfaceCard"] = SurfaceCard,     ["Brush.SurfaceRaised"] = SurfaceRaised,
         ["Brush.SurfaceHover"] = SurfaceHover,   ["Brush.SurfaceActive"] = SurfaceActive,
-        ["Brush.SurfaceSelected"] = AccentSubtle,
+        ["Brush.SurfaceSelected"] = SelHeaderBg,
         ["Brush.GridBeat"] = GridBeat,           ["Brush.GridBar"] = GridBar,
         ["Brush.Hairline"] = GraphBorder,
         ["Brush.TextHeading"] = TextHeading,     ["Brush.TextPrimary"] = TextPrimary,
@@ -372,6 +435,10 @@ internal static class NotaPalette
         ["Brush.ChromaTeal"] = Teal,             ["Brush.ChromaTealLight"] = TealBright,
         ["Brush.ChromaRose"] = Rose,             ["Brush.ChromaRoseLight"] = RoseBright,
         ["Brush.ChromaSteel"] = Steel,
+        ["Brush.Seam"] = Seam,                   ["Brush.Rule"] = Rule,
+        ["Brush.TextFaint"] = TextFaint,         ["Brush.Mute"] = Mute,
+        ["Brush.Solo"] = Solo,                   ["Brush.VizInk"] = VizInk,
+        ["Brush.VizGrid"] = VizGrid,             ["Brush.Scrim"] = Scrim,
     };
 
     /// <summary>The slot behind a <c>Brush.*</c> XAML key, or null if the key is unknown.</summary>

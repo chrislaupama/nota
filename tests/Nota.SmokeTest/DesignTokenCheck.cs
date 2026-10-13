@@ -413,6 +413,11 @@ internal static class DesignTokenCheck
         foreach (Match m in Regex.Matches(block.Groups["body"].Value,
                      """<SolidColorBrush\s+x:Key="(?<key>Brush\.\w+)">(?<val>#[0-9A-Fa-f]{6,8})</SolidColorBrush>"""))
             dict[m.Groups["key"].Value] = m.Groups["val"].Value;
+        // Shadows are per-variant too (the seam ring and the bevel differ): a key in one
+        // branch and not the other would drop the elevation of every control that names it.
+        foreach (Match m in Regex.Matches(block.Groups["body"].Value,
+                     """<BoxShadows\s+x:Key="(?<key>Shadow\.\w+)">(?<val>[^<]+)</BoxShadows>"""))
+            dict[m.Groups["key"].Value] = m.Groups["val"].Value;
         return dict;
     }
 
