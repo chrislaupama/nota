@@ -1761,6 +1761,8 @@ public sealed partial class ArrangementView
             ctx.DrawGeometry(brush, null, geo);
         }
 
+        private static readonly IPen AutoCurvePen = new Pen(NotaPalette.VizInk, 1.6);
+
         private void DrawAutomation(DrawingContext ctx, double w)
         {
             var (rLo, rHi) = _o.VisibleRowRange();
@@ -1771,8 +1773,10 @@ public sealed partial class ArrangementView
                 ctx.FillRectangle(AutoScrim, new Rect(0, y, w, RowH(i)));
                 if (_o.IsSlimRowAt(i)) continue;   // a slim group bar has no room for an envelope
 
-                var (fill, _, strip, content) = ClipColors(t.ColorIndex);
-                var pen = new Pen(content, 1.6);
+                // Saine's automation: the curve and its points in neutral viz ink; only the
+                // point or segment under the pointer takes the accent.
+                var content = NotaPalette.VizInk;
+                var pen = AutoCurvePen;
 
                 var ordered = t.AutoPoints.OrderBy(p => p.Beat).ToList();
                 if (ordered.Count == 0)
@@ -1833,9 +1837,9 @@ public sealed partial class ArrangementView
                 // Target-selector pill (top-left) — width fits the label, text centred.
                 double pillW = PillWidth(t.AutoLabel);
                 var pill = PillRect(i, pillW);
-                ctx.DrawRectangle(strip, null, pill, 3, 3);
+                ctx.DrawRectangle(NotaPalette.SurfaceRaised, null, pill, NotaRadius.ControlValue, NotaRadius.ControlValue);
                 var ft = new FormattedText(t.AutoLabel, CultureInfo.InvariantCulture,
-                    FlowDirection.LeftToRight, Typeface.Default, 9, content);
+                    FlowDirection.LeftToRight, NotaFonts.SansMedium, 9, NotaPalette.TextPrimary);
                 using (ctx.PushClip(pill))
                     ctx.DrawText(ft, new Point(pill.X + 6, pill.Y + (PillH - ft.Height) / 2));
             }
