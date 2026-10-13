@@ -75,6 +75,8 @@ Console.WriteLine($"engine v{NotaEngine.Version}");
     foreach (var (ok, label) in Nota.SmokeTest.DesignTokenCheck.RunNumbers()) Check(ok, label);
     Console.WriteLine("-- design: bans --");
     foreach (var (ok, label) in Nota.SmokeTest.DesignTokenCheck.RunBans()) Check(ok, label);
+    Console.WriteLine("-- design: studio --");
+    foreach (var (ok, label) in Nota.SmokeTest.DesignTokenCheck.RunStudio()) Check(ok, label);
 }
 
 // Opt-in plugin-scan check (M3-1): `--scan <path-to-nota-scanworker>`. Kept out

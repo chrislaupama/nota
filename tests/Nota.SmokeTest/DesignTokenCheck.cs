@@ -322,7 +322,7 @@ internal static class DesignTokenCheck
 
         var arr = string.Concat(Directory.EnumerateFiles(app, "ArrangementView*.cs").Select(File.ReadAllText));
         yield return (!arr.Contains("PlayheadGlow") && Regex.IsMatch(arr, @"PlayheadPen = new Pen\(PlayheadBrush, 1\)"),
-            "the arrangement playhead is a 1px brass line with no glow");
+            "the arrangement playhead is a 1px accent line with no glow");
     }
 
     /// <summary>The almanac's closed list of bans (§ 9) that the other checks do not already
@@ -395,12 +395,89 @@ internal static class DesignTokenCheck
 
         var main = File.ReadAllText(Path.Combine(app, "MainWindow.axaml"));
         yield return (Regex.IsMatch(main, "x:Name=\"TransportBar\" DockPanel.Dock=\"Top\"[^>]*Height=\"\\{StaticResource Control.TransportBar\\}\""),
-            "transport is a 60px island at the top of the window");
+            "transport is a docked row at the top of the window");
         yield return (Regex.IsMatch(main, "<Border Grid.Column=\"1\" Classes=\"console\">"),
-            "transport console is the 42px recess inside it");
+            "transport console is the recessed group inside it");
 
         var browser = File.ReadAllText(Path.Combine(app, "BrowserView.cs"));
         yield return (Regex.IsMatch(browser, @"const double RowH = 2[6-8];"), "browser list rows are 26–28px");
+    }
+
+    /// <summary>The Studio rules (DESIGN.md, after Saine) that the older checks do not hold:
+    /// the 0/1/2/3/4 radius scale, blurred shadows only on floating layers, sentence-case
+    /// labels without tracking, values neutral at rest in the shared controls, the docked
+    /// shell's sizes, and no value left from the earlier Ember palette.</summary>
+    public static IEnumerable<(bool Ok, string Label)> RunStudio()
+    {
+        var root = RepoRoot();
+        if (root is null) { yield return (false, "repo root located"); yield break; }
+        var app = Path.Combine(root, "src/managed/Nota.App");
+        var theme = File.ReadAllText(Path.Combine(app, "Theme/NotaTheme.axaml"));
+        var palette = File.ReadAllText(Path.Combine(app, "Theme/NotaPalette.cs"));
+        var inv = System.Globalization.CultureInfo.InvariantCulture;
+
+        // Radius: 0 docked · 1 plot bars · 2 inner keys, rows, clips · 3 controls, cards · 4 modals.
+        var radii = Regex.Matches(theme, """<CornerRadius x:Key="(?<k>Radius\.\w+)">(?<v>[0-9.]+)</CornerRadius>""")
+            .Where(m => !new[] { 0d, 1, 2, 3, 4 }.Contains(double.Parse(m.Groups["v"].Value, inv)))
+            .Select(m => $"{m.Groups["k"].Value} {m.Groups["v"].Value}").ToArray();
+        yield return (radii.Length == 0,
+            radii.Length == 0 ? "every Radius.* is on the 0/1/2/3/4 scale" : $"radii off the scale: {string.Join(", ", radii)}");
+
+        // A blurred shadow means the element floats. Only Shadow.Popover / Shadow.Modal may
+        // carry a blur; every other shadow resource is a bevel or an edge (blur 0).
+        var blurred = new List<string>();
+        foreach (Match m in Regex.Matches(theme, """<BoxShadows x:Key="(?<k>Shadow\.\w+)">(?<v>[^<]+)</BoxShadows>"""))
+        {
+            if (m.Groups["k"].Value is "Shadow.Popover" or "Shadow.Modal") continue;
+            foreach (var part in m.Groups["v"].Value.Split(','))
+            {
+                var tokens = part.Replace("inset", "").Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries);
+                if (tokens.Length >= 3 && double.TryParse(tokens[2], System.Globalization.NumberStyles.Float, inv, out var blur) && blur > 0)
+                    blurred.Add(m.Groups["k"].Value);
+            }
+        }
+        yield return (blurred.Count == 0,
+            blurred.Count == 0 ? "only Shadow.Popover / Shadow.Modal carry a blur (floating layers)" : $"blurred shadows on docked surfaces: {string.Join(", ", blurred.Distinct())}");
+        var axamlShadows = Directory.EnumerateFiles(app, "*.axaml", SearchOption.AllDirectories)
+            .Where(f => !f.Contains("/obj/") && !f.Contains("/bin/") && !f.EndsWith("Theme/NotaTheme.axaml"))
+            .Where(f => Regex.IsMatch(File.ReadAllText(f), """BoxShadow="(?!\{)"""))
+            .Select(f => Path.GetRelativePath(app, f)).ToArray();
+        yield return (axamlShadows.Length == 0,
+            axamlShadows.Length == 0 ? "views take shadows from Shadow.* resources only" : $"literal BoxShadow in: {string.Join(", ", axamlShadows)}");
+
+        // No shouting: labels are sentence case with no tracking. The theme's text classes
+        // carry no positive LetterSpacing, NotaType's tracking constants are 0, and the shared
+        // label builders do not upper-case.
+        var tracked = Regex.Matches(theme, """<Setter Property="LetterSpacing" Value="(?<v>[0-9.]+)"/>""")
+            .Where(m => double.Parse(m.Groups["v"].Value, inv) > 0).Count();
+        yield return (tracked == 0, tracked == 0 ? "no tracked (letter-spaced) text class in the theme" : $"{tracked} text style(s) still set LetterSpacing");
+        var fonts = File.ReadAllText(Path.Combine(app, "Theme/NotaFonts.cs"));
+        var trackConsts = Regex.Matches(fonts, @"(?<n>\w+Tracking)\s*=\s*(?<v>[0-9.]+)").Where(m => double.Parse(m.Groups["v"].Value, inv) != 0).Select(m => m.Groups["n"].Value).ToArray();
+        yield return (trackConsts.Length == 0, trackConsts.Length == 0 ? "NotaType tracking constants are 0" : $"tracking left in NotaType: {string.Join(", ", trackConsts)}");
+        var shouters = new[] { "DeviceCardKit.cs", "Controls/NotaGraph.cs", "ClipEditorKit.cs", "DeviceChainView.Shell.cs" }
+            .Where(f => File.ReadAllText(Path.Combine(app, f)).Contains("ToUpperInvariant()")).ToArray();
+        yield return (shouters.Length == 0,
+            shouters.Length == 0 ? "the shared label builders do not upper-case (NotaText.Label)" : $"upper-casing label builders: {string.Join(", ", shouters)}");
+
+        // Live or chosen: the shared value controls draw a resting value in neutral ink.
+        var knob = File.ReadAllText(Path.Combine(app, "Controls/Knob.cs"));
+        var graph = File.ReadAllText(Path.Combine(app, "Controls/NotaGraph.cs"));
+        var slider = File.ReadAllText(Path.Combine(app, "Controls/SliderTrack.cs"));
+        yield return (knob.Contains("RestArc = NotaPalette.VizInk") && graph.Contains("PrimaryPen = new Pen(NotaPalette.VizInk")
+                      && slider.Contains("Fill = NotaPalette.VizInk"),
+            "knob arcs, slider fills and graph curves are neutral at rest (accent only while live)");
+
+        // The docked shell: a 44px transport row with a 30px console, panels on a 1px seam.
+        var geo = File.ReadAllText(Path.Combine(app, "Theme/NotaGeometry.cs"));
+        yield return (Regex.IsMatch(geo, @"TransportBar = 44;") && Regex.IsMatch(geo, @"Console = 30;") && Regex.IsMatch(geo, @"Gutter = 1;"),
+            "transport row 44 · console 30 · panels meet on a 1px seam");
+
+        // No value of the earlier Ember palette is left in a token.
+        string[] ember = { "#D8A03D", "#0B0A09", "#141310", "#E9E4D8", "#A87415", "#EAE5D7", "#241F17", "#F0C060" };
+        var tokenLines = string.Join("\n", palette.Split('\n').Where(l => l.Contains(" T(\"") || l.Contains("T(\"#")))
+                         + theme;
+        var left = ember.Where(h => tokenLines.Contains(h, StringComparison.OrdinalIgnoreCase)).ToArray();
+        yield return (left.Length == 0, left.Length == 0 ? "no Ember palette value left in the tokens" : $"Ember values still in tokens: {string.Join(", ", left)}");
     }
 
     /// <summary>The Brush.* keys and values of one ThemeDictionary.</summary>
