@@ -130,12 +130,16 @@ public sealed class ExportWindow : NotaWindow
 
         // Footer.
         _estimate = new TextBlock { FontSize = 10, Foreground = TextTertiary, VerticalAlignment = VerticalAlignment.Center };
+        // The dialog's primary action: set apart by weight and one tone step, not by colour
+        // (Saine § Buttons — orange is for what is live or chosen).
         var export = new Border
         {
-            Background = Brass, CornerRadius = NotaRadius.Tile, Padding = new Thickness(18, 0), Height = 30,
+            Background = NotaPalette.SurfaceHover, BorderBrush = NotaPalette.Seam, BorderThickness = new Thickness(1),
+            CornerRadius = NotaRadius.Control, Padding = new Thickness(18, 0), Height = 28,
             Cursor = new Cursor(StandardCursorType.Hand), VerticalAlignment = VerticalAlignment.Center,
-            Child = (_exportLabel = new TextBlock { Text = "Export WAV", FontSize = 12, FontWeight = FontWeight.SemiBold, Foreground = OnAccent, VerticalAlignment = VerticalAlignment.Center }),
+            Child = (_exportLabel = new TextBlock { Text = "Export WAV", FontSize = 12, FontWeight = FontWeight.SemiBold, Foreground = NotaPalette.TextHeading, VerticalAlignment = VerticalAlignment.Center }),
         };
+        export.BindResource(Border.BoxShadowProperty, "Shadow.Raised");
         export.PointerPressed += (_, _) =>
         {
             var fmt = SelectedFormat;

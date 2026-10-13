@@ -96,7 +96,7 @@ internal sealed class CommandPaletteView : UserControl
         var field = new Border
         {
             Height = 38, Padding = new Thickness(10, 0, 6, 0), Background = NotaPalette.BgSunken,
-            BorderBrush = NotaPalette.Accent, BorderThickness = new Thickness(1), CornerRadius = NotaRadius.Tile,
+            BorderBrush = NotaPalette.Accent, BorderThickness = new Thickness(1), CornerRadius = NotaRadius.Control,
             Child = fieldGrid, Margin = new Thickness(10, 10, 10, 8),
         };
 
@@ -141,12 +141,19 @@ internal sealed class CommandPaletteView : UserControl
         DockPanel.SetDock(footer, Dock.Bottom); body.Children.Add(footer);
         body.Children.Add(listWrap);
 
+        // A floating layer, so it alone in the window casts a blurred shadow (Shadow.Modal):
+        // the outer border carries it, the inner one clips the content to the 4px corners.
+        var face = new Border
+        {
+            Background = NotaPalette.Panel, BorderBrush = NotaPalette.Seam, BorderThickness = new Thickness(1),
+            CornerRadius = NotaRadius.Modal, ClipToBounds = true, Child = body,
+        };
         _card = new Border
         {
             Width = CardWidth, HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Top,
-            Background = NotaPalette.SurfaceRaised, BorderBrush = NotaPalette.BorderStrong, BorderThickness = new Thickness(1),
-            CornerRadius = NotaRadius.Body, ClipToBounds = true, Child = body,
+            CornerRadius = NotaRadius.Modal, Child = face,
         };
+        _card.BindResource(Border.BoxShadowProperty, "Shadow.Modal");
         // Clicks outside the card close the palette; nothing dims the window (CP-17).
         var catcher = new Border { Background = Brushes.Transparent };
         catcher.PointerPressed += (_, e) => { e.Handled = true; Close(); };
