@@ -12,6 +12,7 @@
 
 - Q: Should a theme hold both a dark and a light version (switch picks the side), or be one fixed look per entry? → A: One fixed look per entry (Studio Dark, Studio Light, Ember Graphite, Ember Paper…), each marked dark or light. "Follow system" needs its own pairing: a chosen theme for dark mode and one for light mode.
 - Q: Should each theme set its own colours for tracks, or should track colours stay the same in every theme? → A: Each theme sets its own colour for each of the nine track colour slots (and the return and master colours); a track keeps its slot and shows the active theme's colour for it.
+- Q: If an old Ember colour fails today's readability minimum, adjust it or keep it exact? → A: Keep Ember exact except values that fail; nudge each failing one just enough to pass, and list every change (old → new, why) in the design docs.
 
 **Input**: User description: "Selectable colour themes: turn Nota's two fixed palette variants (the dark/light token pairs) into a set of named colour themes the user picks in Preferences → Appearance — e.g. Studio Dark, Studio Light, and a warm 'Ember' colour set — keeping the Studio layout, type and behaviour unchanged; designed so user-editable/importable themes (like Saine's theme editor) can follow later."
 
@@ -170,6 +171,8 @@ not the Ember-era ones.
 1. **Given** Ember Graphite, **When** the main window shows, **Then** its ground, panel,
    raised and text tones and its accent are the Ember Graphite values of release 0.52.1.
 2. **Given** Ember Paper, **Then** they are the Ember Paper values of 0.52.1.
+   *Exception for 1 and 2*: a value nudged to meet the readability minimum (FR-013),
+   which is listed in the design docs.
 3. **Given** an Ember theme, **When** any view is compared with the Studio theme of the
    same kind (dark or light), **Then** sizes,
    radii, spacing, type and which elements carry the accent are identical. Only the
@@ -283,7 +286,9 @@ it.
   - **Ember Graphite** (dark) and **Ember Paper** (light): the pre-Studio Ember colours,
     mapped onto today's token set. For tokens that Studio added and Ember never had
     (seam, rule, faint text, mute, solo, viz ink, viz grid, the inset surface), the
-    values are derived in Ember's palette by the same roles Studio uses.
+    values are derived in Ember's palette by the same roles Studio uses. Any Ember value
+    that fails FR-014 is moved the smallest step that passes (same hue, lightness only
+    where possible). All other Ember values stay exactly as released.
 - **FR-014**: Every built-in theme MUST meet the contrast minimums the design language
   sets (≥ 4.5:1 for text on its surface, ≥ 3:1 for glyphs and state fills). Each MUST
   also keep the nine track colours and the mute / solo / arm colours distinguishable
@@ -305,7 +310,8 @@ it.
 
 - **FR-017**: The design documentation MUST describe colour themes: what a theme
   contains, the built-in themes with their token values, follow system, and how to add a
-  theme. The
+  theme. It MUST list every Ember value that was adjusted from 0.52.1, with the old value,
+  the new value and the contrast pairing it failed. The
   changelog and feature list MUST record the new Preferences option.
 
 ### Key Entities
