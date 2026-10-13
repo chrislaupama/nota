@@ -102,6 +102,17 @@ internal static class DesignTokenCheck
             unknown.Count == 0
                 ? "every KeyMap key exists in NotaTheme"
                 : $"KeyMap offers keys the theme lacks: {string.Join(", ", unknown)}");
+
+        // 4. Every Brush.* a style or view names must exist: a DynamicResource that resolves
+        //    to nothing fails silently — the control just keeps its previous colour.
+        var app = Path.Combine(root, "src/managed/Nota.App");
+        var referenced = Directory.EnumerateFiles(app, "*.*", SearchOption.AllDirectories)
+            .Where(f => (f.EndsWith(".cs") || f.EndsWith(".axaml")) && !f.Contains("/obj/") && !f.Contains("/bin/"))
+            .SelectMany(f => Regex.Matches(File.ReadAllText(f), @"(?:DynamicResource |"")(?<key>Brush\.\w+)[}""]").Select(m => m.Groups["key"].Value))
+            .Distinct().Where(k => !dark.ContainsKey(k)).OrderBy(k => k).ToArray();
+        yield return (referenced.Length == 0,
+            referenced.Length == 0 ? "every referenced Brush.* key exists in NotaTheme"
+                                   : $"references to undefined brush keys: {string.Join(", ", referenced)}");
     }
 
     /// <summary>Geometry: Radius.* / Control.* / Space.* in NotaTheme.axaml must equal the

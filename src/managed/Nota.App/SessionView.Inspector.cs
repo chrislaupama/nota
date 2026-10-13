@@ -222,7 +222,7 @@ public sealed partial class SessionView
         }
         var brush = ClipBrush(c, scene);
         double len = _engine.SessionSlotLength(id, scene);
-        string kind = c.IsInstrument ? "MIDI" : "AUDIO";
+        string kind = c.IsInstrument ? "MIDI" : "Audio";
         s.Children.Add(Title(brush, ClipName(c, scene), $"{c.Name} · {SceneName(scene)} · {NotaText.Label(kind)}"));
 
         _inspPreview = new InspectorPreview(this, c, scene, brush);

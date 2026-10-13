@@ -47,9 +47,12 @@ Each line is checkable by eye on a screenshot or by `DesignTokenCheck`. Token va
 | Disabled | faint text, no opacity change |
 
 - C3.1 Fields/readouts: well fill, 1 px rule inset edge, 3 px radius, 26 tall.
-- C3.2 Menus / context menus / flyouts / drop-downs / tooltips: raised, 3 px radius,
-  `Shadow.Popover`; menu items 24 tall, hover = full accent fill + derived ink, 2 px radius.
-- C3.3 Modal overlays (command palette): `Shadow.Modal`, 4 px radius, scrim behind.
+- C3.2 Menus / context menus / flyouts / drop-downs / tooltips: raised, 3 px radius, seam
+  ring; menu items 24 tall, hover = full accent fill + derived ink, 2 px radius. No blur:
+  Avalonia draws each popup in a window of its own, sized to its content, which would clip
+  it (research R6).
+- C3.3 Modal overlays (command palette): `Shadow.Modal`, 4 px radius. No scrim — the palette
+  keeps its existing behaviour of not dimming the window (CP-17), per FR-018.
   OS dialog windows: panel body, raised bevelled header.
 - C3.4 Radii only 0 (docked), 1 (plot bars), 2, 3, 4 (modals).
 

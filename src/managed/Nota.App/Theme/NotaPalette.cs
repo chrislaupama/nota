@@ -258,7 +258,7 @@ internal static class NotaPalette
     public static readonly SolidColorBrush LaneB         = T("#222326", "#C4C6CA"); // Brush.LaneB (alternating lane)
     public static readonly SolidColorBrush Panel         = T("#2B2D31", "#E4E5E7"); // Brush.Panel — browser, headers, inspector
     public static readonly SolidColorBrush SurfaceCard   = T("#2B2D31", "#E4E5E7"); // Brush.SurfaceCard — a section inside a device (panel tone; divided by rules)
-    public static readonly SolidColorBrush SurfaceInset  = T("#232427", "#DCDEE0"); // rail / sunken chip
+    public static readonly SolidColorBrush SurfaceInset  = T("#232427", "#DCDEE0"); // Brush.SurfaceInset — rail, sunken chip, hovered well
     public static readonly SolidColorBrush SurfaceRaised = T("#34363B", "#EEEFF1"); // Brush.SurfaceRaised — button at rest
     public static readonly SolidColorBrush SurfaceHover  = T("#393C41", "#F7F8F9"); // Brush.SurfaceHover
     public static readonly SolidColorBrush TrackOff      = T("#17181A", "#D6D8DB"); // Brush.TrackOff — track of an off toggle
@@ -414,6 +414,7 @@ internal static class NotaPalette
         ["Brush.BgApp"] = BgApp,                 ["Brush.LaneB"] = LaneB,
         ["Brush.Panel"] = Panel,                 ["Brush.TrackOff"] = TrackOff,
         ["Brush.SurfaceCard"] = SurfaceCard,     ["Brush.SurfaceRaised"] = SurfaceRaised,
+        ["Brush.SurfaceInset"] = SurfaceInset,
         ["Brush.SurfaceHover"] = SurfaceHover,   ["Brush.SurfaceActive"] = SurfaceActive,
         ["Brush.SurfaceSelected"] = SelHeaderBg,
         ["Brush.GridBeat"] = GridBeat,           ["Brush.GridBar"] = GridBar,

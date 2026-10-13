@@ -225,14 +225,14 @@ public sealed partial class SessionView : UserControl
             {
                 col.Kind = ColKind.Group;
                 col.Children = infos.Where(c => !c.IsGroup && !c.IsReturn && Under(c, ti.Id)).Select(c => c.Id).ToList();
-                col.KindLabel = $"GROUP · {col.Children.Count}{Parent(ti)}";
+                col.KindLabel = $"Group · {col.Children.Count}{Parent(ti)}";
             }
             else
             {
                 col.Kind = ColKind.Track;
                 col.IsInstrument = ti.IsInstrument;
                 col.IsAudio = ti.Type == 0;
-                col.KindLabel = (ti.IsInstrument ? "MIDI" : "AUDIO") + Parent(ti);
+                col.KindLabel = (ti.IsInstrument ? "MIDI" : "Audio") + Parent(ti);
             }
             _cols.Add(col);
         }
@@ -241,11 +241,11 @@ public sealed partial class SessionView : UserControl
         {
             _cols.Add(new Column
             {
-                Kind = ColKind.Return, TrackId = ti.Id, Name = TrackNames.Of(_engine, ti), KindLabel = "RETURN",
+                Kind = ColKind.Return, TrackId = ti.Id, Name = TrackNames.Of(_engine, ti), KindLabel = "Return",
                 ColorIndex = ArrangementView.ReturnColorIndex(r++), Width = ReturnColW,
             });
         }
-        _cols.Add(new Column { Kind = ColKind.Master, TrackId = 0, Name = "Master", KindLabel = "OUT 1/2", ColorIndex = -1, Width = MasterColW });
+        _cols.Add(new Column { Kind = ColKind.Master, TrackId = 0, Name = "Master", KindLabel = "Out 1/2", ColorIndex = -1, Width = MasterColW });
     }
 
     // ---- live state ---------------------------------------------------------------

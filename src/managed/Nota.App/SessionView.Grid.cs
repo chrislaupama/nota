@@ -49,7 +49,7 @@ public sealed partial class SessionView
                 Orientation = Orientation.Horizontal, Spacing = 8, VerticalAlignment = VerticalAlignment.Center,
                 Children =
                 {
-                    Text("SCENES", 9, NotaPalette.TextTertiary, FontWeight.Bold),
+                    Text("Scenes", 10, NotaPalette.TextMuted, FontWeight.SemiBold),
                     Mono(_sceneCount.ToString(CultureInfo.CurrentCulture), 9, NotaPalette.TextDisabled),
                 },
             },
@@ -266,7 +266,7 @@ public sealed partial class SessionView
             }
             top.Children.Add(name);
 
-            var kind = new TextBlock { Text = c.KindLabel, FontSize = 8, FontWeight = FontWeight.Medium, Foreground = NotaPalette.TextDisabled, TextTrimming = TextTrimming.CharacterEllipsis };
+            var kind = new TextBlock { Text = c.KindLabel, FontSize = 9, FontWeight = FontWeight.Medium, Foreground = NotaPalette.TextMuted, TextTrimming = TextTrimming.CharacterEllipsis };
             kind.BindResource(TextBlock.FontFamilyProperty, "Font.Mono");
             var stack = new StackPanel { Spacing = 4, VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(8, 3, 8, 0), Children = { top, kind } };
             Child = new Panel { Children = { stripe, stack } };

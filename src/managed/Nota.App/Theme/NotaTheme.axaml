@@ -78,6 +78,7 @@
           <SolidColorBrush x:Key="Brush.BgSunken">#17181A</SolidColorBrush>      <!-- Well: graph windows, inputs, slider tracks -->
           <SolidColorBrush x:Key="Brush.Panel">#2B2D31</SolidColorBrush>         <!-- Panel: browser, headers, inspector -->
           <SolidColorBrush x:Key="Brush.SurfaceCard">#2B2D31</SolidColorBrush>   <!-- Card: a section inside a device -->
+          <SolidColorBrush x:Key="Brush.SurfaceInset">#232427</SolidColorBrush>  <!-- between ground and panel: a hovered well, a sunken chip -->
           <SolidColorBrush x:Key="Brush.SurfaceRaised">#34363B</SolidColorBrush> <!-- Raised: button at rest -->
           <SolidColorBrush x:Key="Brush.SurfaceHover">#393C41</SolidColorBrush>  <!-- Hover: button or list row under the pointer -->
           <SolidColorBrush x:Key="Brush.SurfaceHoverClear">#00393C41</SolidColorBrush> <!-- Hover at zero alpha: resting row, so the fade doesn't pass through white -->
@@ -192,6 +193,7 @@
           <SolidColorBrush x:Key="Brush.BgSunken">#D6D8DB</SolidColorBrush>
           <SolidColorBrush x:Key="Brush.Panel">#E4E5E7</SolidColorBrush>
           <SolidColorBrush x:Key="Brush.SurfaceCard">#E4E5E7</SolidColorBrush>
+          <SolidColorBrush x:Key="Brush.SurfaceInset">#DCDEE0</SolidColorBrush>
           <SolidColorBrush x:Key="Brush.SurfaceRaised">#EEEFF1</SolidColorBrush>
           <SolidColorBrush x:Key="Brush.SurfaceHover">#F7F8F9</SolidColorBrush>
           <SolidColorBrush x:Key="Brush.SurfaceHoverClear">#00F7F8F9</SolidColorBrush>
