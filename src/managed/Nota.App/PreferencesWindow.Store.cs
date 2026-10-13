@@ -254,7 +254,7 @@ public sealed partial class PreferencesWindow
         if (unavailable.Count > 0)
         {
             // The heading sits at the very top when nothing else matched — no rule above it then.
-            if (available.Count > 0) items.Add(new StoreSection("NOT AVAILABLE FOR THIS COMPUTER", unavailable.Count));
+            if (available.Count > 0) items.Add(new StoreSection("Not available for this computer", unavailable.Count));
             items.AddRange(unavailable.Select(p => new StoreEntry(p, installed.GetValueOrDefault(p.Id), First: false)));
         }
         if (available.Count == 0 && items[0] is StoreEntry first) items[0] = first with { First = true };

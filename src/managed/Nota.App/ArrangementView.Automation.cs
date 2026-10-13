@@ -391,7 +391,7 @@ public sealed partial class ArrangementView
             }
             foreach (var (label, apply) in top)
             {
-                var it = new MenuItem { Header = label, Icon = AutoDot(), Foreground = DeviceCardKit.AccentBright };
+                var it = new MenuItem { Header = label, Icon = AutoDot() };
                 it.Click += (_, _) => apply();
                 flyout.Items.Add(it);
             }
@@ -609,10 +609,11 @@ public sealed partial class ArrangementView
         flyout.ShowAt(anchor, showAtPointer: true);
     }
 
-    // A small brass dot dropped into a MenuItem.Icon slot to flag an already-automated param.
+    // A small dot dropped into a MenuItem.Icon slot to flag an already-automated param. Not the
+    // accent: the hovered item fills with it, and the dot must stay visible there.
     private static Control AutoDot() => new Avalonia.Controls.Shapes.Ellipse
     {
-        Width = 7, Height = 7, Fill = DeviceCardKit.Brass,
+        Width = 7, Height = 7, Fill = NotaPalette.TextPrimary,
         VerticalAlignment = VerticalAlignment.Center, HorizontalAlignment = HorizontalAlignment.Center,
     };
 
@@ -620,7 +621,7 @@ public sealed partial class ArrangementView
     private MenuItem Leaf(string header, string key, Action apply, HashSet<string> automated)
     {
         var it = new MenuItem { Header = header };
-        if (automated.Contains(key)) { it.Icon = AutoDot(); it.Foreground = DeviceCardKit.AccentBright; }
+        if (automated.Contains(key)) { it.Icon = AutoDot(); }
         it.Click += (_, _) => apply();
         return it;
     }

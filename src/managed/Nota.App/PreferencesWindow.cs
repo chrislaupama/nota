@@ -787,7 +787,7 @@ public sealed partial class PreferencesWindow : NotaWindow
 
     // ---- Appearance -------------------------------------------------------
 
-    // Graphite / Paper / System as a segmented control, each with a swatch of its ground. The
+    // Dark / Light / System as a segmented control, each with a swatch of its ground. The
     // choice applies immediately — NotaThemeService re-tints the palette and repaints every
     // open window — and is persisted so the next launch starts in the same variant.
     private static Control ThemePicker()
@@ -798,8 +798,8 @@ public sealed partial class PreferencesWindow : NotaWindow
 
         foreach (var (mode, label) in new[]
                  {
-                     (AppTheme.Dark, "Ember Graphite"),
-                     (AppTheme.Light, "Ember Paper"),
+                     (AppTheme.Dark, "Dark"),
+                     (AppTheme.Light, "Light"),
                      (AppTheme.System, "System"),
                  })
         {
@@ -855,7 +855,7 @@ public sealed partial class PreferencesWindow : NotaWindow
     }
 
     // A 10px chip of a variant's ground — both variants at once, whichever one is live.
-    // System is split corner to corner, Paper over Graphite.
+    // System is split corner to corner, Light over Dark.
     private sealed class ThemeSwatch : Control
     {
         private readonly AppTheme _mode;
@@ -972,10 +972,10 @@ public sealed partial class PreferencesWindow : NotaWindow
         return Sections(
             Section("UI", 10,
                 Row("Theme", ThemePicker()),
-                Row("", Caption("Ember Graphite is the warm dark palette; Ember Paper is the same system on a light ground. System follows the OS appearance and switches with it.")),
+                Row("", Caption("Dark is the studio grey palette; Light is the same system in light greys. System follows the OS appearance and switches with it.")),
                 Row("Waveform", WaveformPicker()),
                 Row("", Caption("How audio clips draw on the arrangement: Bars spaces the peaks out so the rhythm reads; Solid draws every pixel."))),
-            Section("AI CONTROL (MCP)", 12, enable, details));
+            Section("AI control (MCP)", 12, enable, details));
     }
 
     // ---- Shortcuts --------------------------------------------------------

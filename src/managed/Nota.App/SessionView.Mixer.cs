@@ -56,14 +56,14 @@ public sealed partial class SessionView
         };
         Border Row(double h, string text) => new() { Height = h, Child = Label(text) };
         if (_showIO)
-            stack.Children.Add(Section(Row(IoRowH, "INPUT"), Row(IoRowH, "MONITOR"), Row(IoRowH, "OUTPUT")));
+            stack.Children.Add(Section(Row(IoRowH, "Input"), Row(IoRowH, "Monitor"), Row(IoRowH, "Output")));
         if (_showSends && ReturnRows > 0)
         {
             var rows = Returns().Take(ReturnRows).Select((r, i) => (Control)Row(FaderRowH, $"Send {(char)('A' + i)} · {r.Name}")).ToArray();
             stack.Children.Add(Section(rows));
         }
         if (_showMixer)
-            stack.Children.Add(Section(Row(FaderRowH, "PAN"), Row(FaderRowH, "VOLUME"), new Border { Height = MeterRowH }, new Border { Height = ButtonRowH }));
+            stack.Children.Add(Section(Row(FaderRowH, "Pan"), Row(FaderRowH, "Volume"), new Border { Height = MeterRowH }, new Border { Height = ButtonRowH }));
         return stack;
     }
 

@@ -50,7 +50,7 @@ JUCE module; the engine core is JUCE-free.
   and **Delay** (Nota Delay), both Wet Only — ready to send to; it opens unmodified, with
   nothing to undo.
 - **Version history**: every save records a version inside the project. The browser's
-  **History** tab draws them as a branching tree (the current one has a brass dot), each
+  **History** tab draws them as a branching tree (the current one has an orange dot), each
   described by what it changed ("Added Bass · Tempo 120.00 → 124.00"); switch
   to any version, open one as a copy, or name, note, star and delete versions. Saving on top
   of an older version branches. **Save Version with Note…** (⌥⌘S). The tab's menu deletes all
@@ -344,7 +344,7 @@ the mixer opens as a separate floating window (**View → Mixer**, ⌘M).
   and the whole drag is one undo step.
 - **The lane follows focus** — touch any knob or fader on any device (built-in, plugin, or
   mixer) and the automation lane switches to that parameter.
-- **Already-automated parameters are highlighted** in the target picker (a brass dot, and
+- **Already-automated parameters are highlighted** in the target picker (a dot, and
   they sort to the top of the list).
 - **Selection and paste**: shift-select a range, Cmd/Ctrl+D to duplicate, and paste that
   does not leave redundant points behind.
@@ -807,8 +807,8 @@ and user presets, automation, persistence and cloning.
   MIDI Effects**, then **Files** (with folder tree navigation), **Presets** (a tree of
   category → device → preset), **Projects**, **Map** (MIDI Learn mappings) and **History**
   (the open project's versions). A hairline
-  separates the device tabs from the library tabs, and the active one carries a brass edge.
-- **A compact index**: single-line rows, sectioned into **BUILT-IN** and **PLUG-INS** with
+  separates the device tabs from the library tabs, and the active one carries an orange edge.
+- **A compact index**: single-line rows, sectioned into **Built-in** and **Plug-ins** with
   counts, so it is clear where Nota's own devices end and the scanned plug-ins begin. The
   "Nota" prefix drops to tertiary ink — names scan on their distinctive word — and the
   device type sits at the right edge as a quiet tag (a plug-in's tag names its format and
@@ -920,11 +920,13 @@ and user presets, automation, persistence and cloning.
   semantic hit says why it was found ("warm · pad"). Prefixes `>` `@` `+` `#` `~` (or Tab)
   filter by type; an empty query shows Recent and suggestions for the context. Ranking
   learns from what you use in the palette and the browser.
-- **Two palette variants** — **Ember Graphite** (warm graphite neutrals with a brass
+- **Studio look, in two variants** — **Dark** (neutral studio greys with one orange
   accent; the default, and what a DAW wants for long sessions in a dark room) and
-  **Ember Paper** (the same hues and roles on a warm light ground, with brass darkened to
-  bronze so marks keep their weight). Switching applies immediately, across every open
-  window — including the custom-drawn arrangement, piano roll, mixer and device cards.
+  **Light** (the same system in light greys, the orange a shade deeper). Panels dock edge
+  to edge on thin seams; orange marks only what is playing, selected or switched on, and a
+  knob or fader turns orange while you hover or drag it; mute is amber, solo blue,
+  record-arm red; labels are in sentence case. Switching applies immediately, across every
+  open window — including the custom-drawn arrangement, piano roll, mixer and device cards.
 - **A single frameless window style**: centred title, drag by the header, the macOS
   traffic lights in a left inset (Windows gets its own title bar; Linux uses the system
   frame). **Full screen** — the macOS green button, or View → Toggle Full Screen (F11)
@@ -972,7 +974,7 @@ and user presets, automation, persistence and cloning.
 - **Plug-ins**: scan paths, Rescan.
 - **Downloads**: Plug-ins, Sample Packs and AI Models (see [Plugin hosting](#plugin-hosting)).
 - **Library**: library folders.
-- **Appearance**: **Theme** — Ember Graphite (dark), Ember Paper (light) or System, which
+- **Appearance**: **Theme** — Dark, Light or System, which
   follows the OS appearance and switches with it; the choice applies live and is
   remembered. Also **AI control (MCP)** on/off, a port field, and "Copy config" (copies a
   ready-made client JSON config to the clipboard).

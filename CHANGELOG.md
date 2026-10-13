@@ -22,6 +22,20 @@ Entry categories: `Added`, `Changed`, `Fixed`, `Removed`.
 
 ## [Unreleased]
 
+### Changed
+- **A new look, after Saine:** the whole app moves to a neutral grey studio with one orange
+  accent. The panels — browser, arrangement, detail panel — now sit edge to edge on thin
+  seams instead of floating as rounded islands, and the transport is a slimmer, flat row
+  with its readouts set in small wells ("120.00 BPM", "1/4 Grid"). Orange now means only
+  "playing, selected or switched on": knob arcs, faders and device graphs are neutral at
+  rest and light up while you hover or drag them; a toggled-on button fills solid orange.
+  Mute fills amber, solo blue and record-arm red. Labels are in sentence case instead of
+  spaced capitals, corners are nearly square, and clips in the arrangement are drawn in
+  their full track colour with a darker title band. The light theme follows the same
+  system in light greys, and Preferences → Appearance now offers **Dark**, **Light** and
+  **System**. Every feature, shortcut and menu stays where it was, and projects open
+  unchanged (track colours keep their place in the new palette).
+
 ## [0.52.1] — 2026-10-13
 
 ### Added
