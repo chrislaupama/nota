@@ -1223,6 +1223,22 @@
     <Setter Property="Foreground" Value="{DynamicResource Brush.TextOnAccent}"/>
   </Style>
 
+  <!-- The menubar's own triggers (File, Edit…): secondary ink that lifts to the raised tone
+       on hover or while open — only the items inside a menu fill with the accent. -->
+  <Style Selector="Menu > MenuItem">
+    <Setter Property="Foreground" Value="{DynamicResource Brush.TextSecondary}"/>
+    <Setter Property="Padding" Value="8,0"/>
+    <Setter Property="MinHeight" Value="22"/>
+  </Style>
+  <Style Selector="Menu > MenuItem:selected /template/ Border#PART_LayoutRoot,
+                   Menu > MenuItem:pointerover /template/ Border#PART_LayoutRoot,
+                   Menu > MenuItem:open /template/ Border#PART_LayoutRoot">
+    <Setter Property="Background" Value="{DynamicResource Brush.SurfaceRaised}"/>
+  </Style>
+  <Style Selector="Menu > MenuItem:selected, Menu > MenuItem:pointerover, Menu > MenuItem:open">
+    <Setter Property="Foreground" Value="{DynamicResource Brush.TextPrimary}"/>
+  </Style>
+
   <Style Selector="Separator">
     <Setter Property="Background" Value="{DynamicResource Brush.Rule}"/>
     <Setter Property="Height" Value="1"/>

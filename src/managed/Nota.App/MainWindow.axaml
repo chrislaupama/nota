@@ -132,8 +132,11 @@
       </Grid>
     </Border>
 
-    <!-- In-window menu bar for Windows/Linux (empty on macOS: menus go to the system bar) -->
-    <NativeMenuBar DockPanel.Dock="Top"/>
+    <!-- In-window menu bar for Windows/Linux (empty on macOS: menus go to the system bar):
+         Saine's menubar row — the ground, with a seam under it. -->
+    <Border DockPanel.Dock="Top" Background="{DynamicResource Brush.BgApp}">
+      <NativeMenuBar/>
+    </Border>
 
     <!-- Transport (44) under the header, above the work area — a flat docked row on the
          panel tone with a seam under it. Stop / play / record, position and loop share one

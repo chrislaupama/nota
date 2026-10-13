@@ -2569,9 +2569,9 @@ public sealed partial class ArrangementView : UserControl
     // Drag position tooltip (req 2.9): dark pill + bright text near the cursor.
     private static readonly IBrush TooltipBg = NotaPalette.Wash(NotaPalette.TooltipBg, 0xDC);
     private static readonly IBrush TooltipText = NotaPalette.TooltipText;
-    // Selected-track highlight: just a soft brass wash on the lane row — no edge
-    // lines, so it never fights the grid. Header uses a warm tinted background.
-    private static readonly IBrush SelWash = NotaPalette.Wash(NotaPalette.Accent, 0x20); // Accent @ ~12%
+    // Selected-track highlight: a faint neutral lift on the lane row — no edge lines, so it
+    // never fights the grid; the header's accent edge is what marks the selection.
+    private static readonly IBrush SelWash = NotaPalette.Wash(NotaPalette.TextPrimary, 0x0D); // a neutral lift; the header's accent edge marks the selection
     // A group's lane is chrome between its children, not another lane to scan.
     internal static readonly IBrush GroupLaneBg = NotaPalette.Wash(NotaPalette.BgSunken, 0xE0);
     // Plate behind a clip's name so it survives a dense waveform without a full-width strip.
