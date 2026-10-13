@@ -62,6 +62,12 @@ internal static partial class DesignTokenCheck
             naming.Length == 0 ? "no view or control names a theme id (adding a theme is its file + BuiltInOrder)"
                                : $"theme ids named in: {string.Join(", ", naming)}");
 
+        // A theme's preview shows that theme, whichever one is live (FR-015).
+        var prefs = File.ReadAllText(Path.Combine(app, "PreferencesWindow.cs"));
+        var chip = Regex.Match(prefs, @"class ThemeChip\b.*?\n    \}", RegexOptions.Singleline).Value;
+        yield return (chip.Contains("NotaPalette.ColorIn(") && chip.Contains("_theme)") && !Regex.IsMatch(chip, @"slots\[i\]\.Color\b"),
+            "the theme preview chip draws the theme's own colours (ColorIn), not the live slots");
+
         foreach (var file in files)
         {
             var id = Path.GetFileNameWithoutExtension(file)!;

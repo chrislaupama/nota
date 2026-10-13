@@ -228,3 +228,10 @@ Stream B (US4):        T029 → T030 → T031 → T032
 
 - The theme JSON files are generated once by a scratch script outside the repo, as in 006. After that the files are the source of truth. The Ember derivations (R8) and every nudge (DESIGN.md table) are documented, so any value can be traced without the script.
 - Keep each commit buildable. Commit per phase checkpoint.
+
+---
+
+## Phase 9: Convergence
+
+- [X] T042 Add a `RunThemes` guard that the Preferences theme chip draws each theme's own colours (`NotaPalette.ColorIn(slot, _theme)` in `App/PreferencesWindow.cs` `ThemeChip`), never the live slot colour, per FR-015 (partial)
+- [ ] T043 With follow system on, open a context menu and a tooltip, then flip the OS appearance. Confirm the open popups recolour with the windows, on a desktop with an appearance signal (the macOS build), together with T028, per spec Edge Cases / contracts T2.1 (partial)
