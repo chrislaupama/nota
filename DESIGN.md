@@ -221,7 +221,6 @@ index, which now points at the hue at that place in the table.
 | `Shadow.Sunken` | `inset 0 0 0 1 #45484E` | `inset 0 0 0 1 #B3B6BB` | The field edge on a recessed well |
 | `Shadow.Popover` | `0 0 0 1 #141517, 0 10 28 0 #6B000000` | `0 0 0 1 #9DA0A6, 0 10 28 0 #381E2024` | A popover drawn inside the main window |
 | `Shadow.Modal` | `0 0 0 1 #141517, 0 24 64 0 #80000000` | `0 0 0 1 #9DA0A6, 0 24 64 0 #401E2024` | The command palette |
-| `Brush.Scrim` | `#6B000000` | `#4D1E2024` | Behind a modal overlay |
 
 Only `Shadow.Popover` and `Shadow.Modal` carry a blur; everything docked is flat.
 
@@ -601,8 +600,6 @@ True today, not yet fixed:
   rule.
 - **Device sections** are still boxes framed by a 1 px seam (`BorderDefault`); the
   contract asks for sections divided by rules.
-- **`Brush.Scrim`** is defined but unused: the command palette does not dim the window
-  (CP-17).
 - **The user manual** (`../nota-docs`) screenshots still show Ember; they are not re-shot.
 - **Column order** choice → work → output is applied in Utility; the other cards have not
   been audited card by card.

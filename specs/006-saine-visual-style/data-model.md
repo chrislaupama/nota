@@ -147,7 +147,6 @@ tokens (`../saine/src/App.css` `:root`). "mix(a, b, t)" = t of a over b.
 | `Shadow.Sunken` | `inset 0 0 0 1 #45484E` | `inset 0 0 0 1 #B3B6BB` |
 | `Shadow.Popover` | `0 0 0 1 #141517, 0 10 28 0 #6B000000` | `0 0 0 1 #9DA0A6, 0 10 28 0 #381E2024` |
 | `Shadow.Modal` | `0 0 0 1 #141517, 0 24 64 0 #80000000` | `0 0 0 1 #9DA0A6, 0 24 64 0 #401E2024` |
-| `Brush.Scrim` *(new)* | `#6B000000` | `#4D1E2024` |
 
 ### Geometry
 

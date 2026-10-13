@@ -324,7 +324,6 @@ internal static class NotaPalette
     // Track toggles: mute is amber, solo is blue, arm is Record. Each fills solid when on.
     public static readonly SolidColorBrush Mute        = T("#F2B53C", "#7A4F00"); // Brush.Mute
     public static readonly SolidColorBrush Solo        = T("#6A9FD8", "#3F78B8"); // Brush.Solo
-    public static readonly SolidColorBrush Scrim       = T("#6B000000", "#4D1E2024"); // Brush.Scrim — behind a modal overlay
     public static readonly SolidColorBrush Danger      = T("#F06A6E", "#B3262C"); // Brush.Danger — Alert, overload / clipping
     public static readonly SolidColorBrush DangerHover = T("#F48386", "#C2343A"); // Brush.DangerHover
     public static readonly SolidColorBrush DangerBright= T("#F58F92", "#9C1F24"); // Brush.DangerBright — Alert Light, readout text
@@ -441,7 +440,7 @@ internal static class NotaPalette
         ["Brush.Seam"] = Seam,                   ["Brush.Rule"] = Rule,
         ["Brush.TextFaint"] = TextFaint,         ["Brush.Mute"] = Mute,
         ["Brush.Solo"] = Solo,                   ["Brush.VizInk"] = VizInk,
-        ["Brush.VizGrid"] = VizGrid,             ["Brush.Scrim"] = Scrim,
+        ["Brush.VizGrid"] = VizGrid,
     };
 
     /// <summary>The slot behind a <c>Brush.*</c> XAML key, or null if the key is unknown.</summary>

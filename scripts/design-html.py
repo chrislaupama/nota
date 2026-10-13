@@ -71,8 +71,7 @@ sem=[('Record','Record','Record and arm, solid when on'),('RecordInk','Record in
 chromas=[('VizInk','1 · Viz ink','Primary: left, mid, main'),('ChromaTeal','2 · Teal','Lows, early, input, modulation'),('ChromaRose','3 · Rose','Right, highs, tail'),('ChromaSteel','4 · Blue','Rare fourth layer'),('ChromaTealLight','Teal light','Text on teal'),('ChromaRoseLight','Rose light','Text on rose')]
 ROLES=['Drums','Perc','Bass','Keys','Texture','FX','Brass','Vox','Return']
 tracks=[(f'Track{i+1}',n,'') for i,n in enumerate(ROLES)]+[('ReturnA','Return A','Return bus'),('ReturnB','Return B','Return bus'),('Master','Master','Muted grey: the sum, not a track')]
-elev=[('Scrim','Scrim','Behind a modal overlay')]
-for group,name in [(surfaces,'surfaces'),(lines,'lines'),(inks,'ink'),(accent,'accent'),(sem,'semantics'),(chromas,'chromas'),(tracks,'track palette'),(elev,'elevation')]:
+for group,name in [(surfaces,'surfaces'),(lines,'lines'),(inks,'ink'),(accent,'accent'),(sem,'semantics'),(chromas,'chromas'),(tracks,'track palette')]:
     need([k for k,_,_ in group], f'Brush keys for {name}', D, L)
 need(['Raised','Sunken','Popover','Modal'], 'Shadow keys', SD, SL)
 need(['Radius.Docked','Radius.Bar','Radius.Clip','Radius.Badge','Radius.Control','Radius.Tile','Radius.Panel','Radius.Body','Radius.Pill','Radius.Modal',
@@ -395,7 +394,7 @@ BODY=f'''</style>
   <h3>Semantics</h3>{grid(sem)}
   <h3>Graph chromas · inside graphs only, in this order</h3>{grid(chromas)}
   <h3>Track palette · nine roles, returns, master</h3>{grid(tracks)}
-  <h3>Elevation</h3>{grid(elev)}
+  <h3>Elevation</h3>
   <div class="tbl" style="margin-top:10px"><table>
     <tr><th>Key</th><th>Dark</th><th>Light</th></tr>
     {shadow_rows()}

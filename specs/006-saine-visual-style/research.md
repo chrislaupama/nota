@@ -116,12 +116,12 @@ presets), `../saine/src/App.css` (`:root` derived tokens), and a survey of
   - `Shadow.Raised` → `inset 0 1 0 0 #12FFFFFF, 0 0 0 1 <seam>` (light: `#B3FFFFFF` bevel);
   - `Shadow.Sunken` → `inset 0 0 0 1 <rule>` (field edge);
   - `Shadow.Popover` → `0 0 0 1 <seam>, 0 10 28 0 #6B000000` (light `#381E2024`);
-  - `Shadow.Modal` → `0 0 0 1 <seam>, 0 24 64 0 #80000000`, with a `#6B000000` scrim.
+  - `Shadow.Modal` → `0 0 0 1 <seam>, 0 24 64 0 #80000000`.
   Menus, context menus, flyouts, ComboBox drop-downs and tooltips get the raised fill and a
   seam ring but **no blur**: implementation showed Avalonia popups are separate windows sized
   to their content, so a blur is clipped (and can render as dark corners on Linux). The
   blurred shadows serve in-window overlays (command palette). The command
-  palette overlay gets `Shadow.Modal` + scrim. OS dialog windows (`NotaWindow`) get no
+  palette overlay gets `Shadow.Modal` (no scrim: it keeps CP-17, never dimming the window). OS dialog windows (`NotaWindow`) get no
   app shadow (the OS draws one); their header becomes a raised bevelled strip.
 - **Guard**: `new BoxShadows` stays banned in `.cs`; a new XAML check allows blurred
   shadows only in `Shadow.Popover` / `Shadow.Modal` and their users (menus, flyouts,

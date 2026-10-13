@@ -152,7 +152,7 @@
           <!-- === Track palette: nine roles, one lightness, no track louder than
                another. A group sets the hue; its tracks take neighbouring shades. -->
           <!-- Roles the earlier palette lacked: seam / rule, faint ink, mute amber, solo blue,
-               the neutral ink graphs draw in at rest, and the modal scrim. -->
+               and the neutral ink graphs draw in at rest. -->
           <SolidColorBrush x:Key="Brush.Seam">#141517</SolidColorBrush>
           <SolidColorBrush x:Key="Brush.Rule">#45484E</SolidColorBrush>
           <SolidColorBrush x:Key="Brush.TextFaint">#82868C</SolidColorBrush>
@@ -160,7 +160,6 @@
           <SolidColorBrush x:Key="Brush.Solo">#6A9FD8</SolidColorBrush>
           <SolidColorBrush x:Key="Brush.VizInk">#D7D8DA</SolidColorBrush>
           <SolidColorBrush x:Key="Brush.VizGrid">#2E2F32</SolidColorBrush>
-          <SolidColorBrush x:Key="Brush.Scrim">#6B000000</SolidColorBrush>
 
           <SolidColorBrush x:Key="Brush.Track1">#7FB87A</SolidColorBrush> <!-- Drums -->
           <SolidColorBrush x:Key="Brush.Track2">#5FB3A8</SolidColorBrush> <!-- Perc -->
@@ -259,7 +258,7 @@
 
           <!-- Track palette — the same nine roles, darkened so a clip's content reads -->
           <!-- Roles the earlier palette lacked: seam / rule, faint ink, mute amber, solo blue,
-               the neutral ink graphs draw in at rest, and the modal scrim. -->
+               and the neutral ink graphs draw in at rest. -->
           <SolidColorBrush x:Key="Brush.Seam">#9DA0A6</SolidColorBrush>
           <SolidColorBrush x:Key="Brush.Rule">#B3B6BB</SolidColorBrush>
           <SolidColorBrush x:Key="Brush.TextFaint">#797C81</SolidColorBrush>
@@ -267,7 +266,6 @@
           <SolidColorBrush x:Key="Brush.Solo">#3F78B8</SolidColorBrush>
           <SolidColorBrush x:Key="Brush.VizInk">#252629</SolidColorBrush>
           <SolidColorBrush x:Key="Brush.VizGrid">#C0C3C6</SolidColorBrush>
-          <SolidColorBrush x:Key="Brush.Scrim">#4D1E2024</SolidColorBrush>
 
           <SolidColorBrush x:Key="Brush.Track1">#4A7F46</SolidColorBrush> <!-- Drums -->
           <SolidColorBrush x:Key="Brush.Track2">#3A8A7F</SolidColorBrush> <!-- Perc -->
