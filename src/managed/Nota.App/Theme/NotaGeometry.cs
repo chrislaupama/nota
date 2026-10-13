@@ -49,10 +49,10 @@ internal static class NotaSize
     public const double Seg = 24;         // tab segment
     public const double Shell = 26;       // shell button, field, dropdown
     public const double SegGroup = 30;    // segment container
-    public const double Transport = 28;   // transport button
-    public const double Play = 40;        // Play is the one wide transport button
-    public const double Console = 42;     // transport module: the recess inside the bar
-    public const double TransportBar = 60; // the transport island
+    public const double Transport = 26;   // transport key
+    public const double Play = 36;        // Play is the one wide transport key
+    public const double Console = 30;     // the recessed transport group inside the row
+    public const double TransportBar = 44; // the docked transport row
     public const double KnobSecondary = 34;
     public const double KnobRegular = 36;
     public const double KnobMain = 44;
@@ -69,6 +69,6 @@ internal static class NotaSpace
     public const double DeviceInsetWide = 8;
     // In the shell: 4px units.
     public const double Tile = 8;
-    public const double Gutter = 12;
+    public const double Gutter = 1;       // between docked panels: the seam
     public const double Inset = 20;
 }

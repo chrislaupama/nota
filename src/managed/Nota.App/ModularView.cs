@@ -170,16 +170,15 @@ public sealed class ModularView : UserControl
             Children = { Toolbar(), Row(body, 1), StatusBar() },
         };
 
-        // The island: like the browser and the arrangement, the modular canvas is a rounded
-        // card floating on the app ground. ClipToBounds keeps the toolbar, the track rail and
-        // the status line inside the rounded corners.
+        // A docked panel like the browser and the arrangement: square, no frame of its own.
+        // ClipToBounds keeps the toolbar, the track rail and the status line inside it.
         var island = new Border
         {
-            BorderThickness = new Thickness(1),
+            BorderThickness = new Thickness(0),
             ClipToBounds = true,
             Child = root,
         };
-        island.BindResource(Border.CornerRadiusProperty, "Radius.Panel");
+        island.BindResource(Border.CornerRadiusProperty, "Radius.Docked");
         island.BindResource(Border.BackgroundProperty, "Brush.SurfaceCard");
         island.BindResource(Border.BorderBrushProperty, "Brush.BorderDefault");
         Content = island;

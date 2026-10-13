@@ -433,15 +433,15 @@ public sealed class BrowserView : UserControl
         grid.Children.Add(railDivider);
         grid.Children.Add(right);
 
-        // The island: a rounded card floating on the app ground. ClipToBounds keeps the
-        // rail, the full-bleed rows and the status line inside the rounded corners.
+        // A docked panel: square, no frame of its own — it meets the canvas on the seam the
+        // shell grid draws. ClipToBounds keeps the full-bleed rows inside it.
         var outer = new Border
         {
-            BorderThickness = new Thickness(1),
+            BorderThickness = new Thickness(0),
             ClipToBounds = true,
             Child = grid,
         };
-        outer.BindResource(Border.CornerRadiusProperty, "Radius.Panel");
+        outer.BindResource(Border.CornerRadiusProperty, "Radius.Docked");
         outer.BindResource(Border.BackgroundProperty, "Brush.SurfaceCard");
         outer.BindResource(Border.BorderBrushProperty, "Brush.BorderDefault");
         Content = outer;

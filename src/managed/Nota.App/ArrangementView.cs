@@ -411,16 +411,16 @@ public sealed partial class ArrangementView : UserControl
         root.Children.Add(_footer);
         root.Children.Add(centerArea);
 
-        // The island: like the browser, the arrangement is a rounded card floating on the app
-        // ground rather than a full-bleed region. ClipToBounds keeps the ruler, the header
-        // column and the pinned footer inside the rounded corners.
+        // A docked panel like the browser: square, no frame of its own — it meets its
+        // neighbours on the seam the shell grid draws. ClipToBounds keeps the ruler, the
+        // header column and the pinned footer inside it.
         var island = new Border
         {
-            BorderThickness = new Thickness(1),
+            BorderThickness = new Thickness(0),
             ClipToBounds = true,
             Child = root,
         };
-        island.BindResource(Border.CornerRadiusProperty, "Radius.Panel");
+        island.BindResource(Border.CornerRadiusProperty, "Radius.Docked");
         island.BindResource(Border.BackgroundProperty, "Brush.SurfaceCard");
         island.BindResource(Border.BorderBrushProperty, "Brush.BorderDefault");
         Content = island;
