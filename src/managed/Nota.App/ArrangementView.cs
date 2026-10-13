@@ -2562,7 +2562,7 @@ public sealed partial class ArrangementView : UserControl
     private static readonly IBrush PlayheadBrush = NotaPalette.Accent;
     private static readonly IPen PlayheadPen = new Pen(PlayheadBrush, 1);
     // Selection edges a clip with 1px brass — a state never thickens a border to 2px.
-    private static readonly IPen ClipSelBorder = new Pen(NotaPalette.AccentBright, 1);
+    private static readonly IPen ClipSelBorder = new Pen(NotaPalette.Accent, 1);
     private static readonly IBrush EdgeHighlight = NotaPalette.MarkerHot; // resize-edge affordance
     private static readonly IBrush InactiveVeil = NotaPalette.Wash(NotaPalette.Veil, 0xB0); // deactivated-clip scrim
     private static readonly IBrush RulerText = NotaPalette.TextSecondary; // Brush.TextSecondary
@@ -2618,7 +2618,7 @@ public sealed partial class ArrangementView : UserControl
 
     // Track palette (mirror Brush.Track1..8 + ReturnA/B), each base offered in 3 shades
     // (normal / lighter / darker) so a colour index is base*Shades + shade. Return buses
-    // sit at ReturnColorBase..; clips derive fill @16%, border @50%, strip @20%, content full.
+    // sit at ReturnColorBase..; clips derive fill @30%, border @50%, strip @20%, content full.
     internal const int PaletteShades = 3;
     internal static readonly int PaletteBases = NotaPalette.TrackColors.Length;   // 8
     internal static readonly int ReturnColorBase = PaletteBases * PaletteShades;  // 24
@@ -2701,11 +2701,24 @@ public sealed partial class ArrangementView : UserControl
     private static (IBrush fill, IPen border, IBrush strip, IBrush content) ClipColors(int idx)
     {
         if (_clipColors.TryGetValue(idx, out var v)) return v;
-        v = (ClipTint(idx, 0.16), new Pen(ClipTint(idx, 0.50), 1), ClipTint(idx, 0.20),
+        v = (ClipTint(idx, 0.30), new Pen(ClipTint(idx, 0.50), 1), ClipTint(idx, 0.20),
              NotaPalette.Derived(() => TrackColorForIndex(idx)));
         _clipColors[idx] = v;
         return v;
     }
+    // A clip's title band: its track colour mixed 30% toward black; its notes and waveform a
+    // deeper shade, 58% toward black, so they read on the full-colour body (Saine § Arrangement).
+    private static readonly Dictionary<int, SolidColorBrush> _clipBands = new(), _clipInks = new();
+    internal static SolidColorBrush ClipBand(int idx) => Shade(_clipBands, idx, 0.30);
+    internal static SolidColorBrush ClipInk(int idx) => Shade(_clipInks, idx, 0.58);
+    private static SolidColorBrush Shade(Dictionary<int, SolidColorBrush> cache, int idx, double t)
+    {
+        if (cache.TryGetValue(idx, out var b)) return b;
+        b = NotaPalette.Derived(() => Mix(TrackColorForIndex(idx), NotaPalette.ShadeDown.Color, t));
+        cache[idx] = b;
+        return b;
+    }
+
     /// <summary>The theme-following brush for a palette index. A view that wants a track's
     /// colour takes this; wrapping <see cref="TrackColorForIndex"/> in a new brush freezes it
     /// in the variant that was active when the view was built.</summary>

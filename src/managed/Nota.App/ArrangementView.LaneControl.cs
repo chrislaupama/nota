@@ -1549,10 +1549,12 @@ public sealed partial class ArrangementView
             double x0 = _o.BeatToX(c.StartBeat);
             double x1 = _o.BeatToX(c.StartBeat + c.LengthBeats);
             if (x1 < 0 || x0 > w || c.LengthBeats <= 0) return;
-            var (fill, _, _, content) = ClipColors(colorIndex);
+            var (_, _, _, body) = ClipColors(colorIndex);
+            // Saine's clip: a flat body in the track colour, radius 2, no outline; its notes and
+            // waveform in a deeper shade of it; selection adds a 1px accent edge.
+            var content = ClipInk(colorIndex);
             var rect = new Rect(x0, y + 2, Math.Max(2, x1 - x0), rowH - 4);
-            // A flat body in the track tint, radius 2, no outline; selection adds a 1px brass edge.
-            ctx.DrawRectangle(fill, selected ? ClipSelBorder : null, rect, NotaRadius.ClipValue, NotaRadius.ClipValue);
+            ctx.DrawRectangle(body, selected ? ClipSelBorder : null, rect, NotaRadius.ClipValue, NotaRadius.ClipValue);
 
             // Resize-edge affordance: a bright bar on the edge a drag would trim.
             if (edgeHi != Drag.None)
@@ -1568,24 +1570,27 @@ public sealed partial class ArrangementView
             if (c.IsMidi) DrawNotes(ctx, c, contentRect, content, pitches);
             else DrawWaveform(ctx, c, contentRect, content);
 
-            // 2px band in the track colour along the top edge: the clip's family marker.
+            // Saine's title band: the track colour mixed 30% toward black across the top, the
+            // accent when the clip is selected; the name sits on it in derived ink. It is drawn
+            // over the content — the content area and the ADSR frame keep their geometry.
+            // A row too short for a band keeps the 2px family marker.
+            bool tall = rect.Height > TitleBandH * 2.5;
+            var band = selected ? NotaPalette.Accent : ClipBand(colorIndex);
             if (rect.Width > 3)
-                ctx.FillRectangle(content, new Rect(rect.X + 1, rect.Y + 1, rect.Width - 2, BandH));
+            {
+                using var bc = ctx.PushClip(new RoundedRect(rect, NotaRadius.ClipValue));
+                ctx.FillRectangle(band, new Rect(rect.X, rect.Y, rect.Width, tall ? TitleBandH : BandH + 1));
+            }
 
-            if (rect.Width > 24 && rect.Height > 14 && ShowsLabel(c))
+            if (tall && rect.Width > 24 && ShowsLabel(c))
             {
                 // The clip's own name (set via its menu) wins; otherwise the track name.
                 string text = string.IsNullOrEmpty(c.Name) ? label : c.Name;
                 var ft = new FormattedText(text, CultureInfo.InvariantCulture,
-                    FlowDirection.LeftToRight, Typeface.Default, 9, content)
+                    FlowDirection.LeftToRight, NotaFonts.SansSemiBold, 9.5, NotaPalette.InkOn(band))
                 { MaxTextWidth = Math.Max(8, rect.Width - 10), Trimming = TextTrimming.CharacterEllipsis };
-                var plate = new Rect(rect.X + 1, rect.Y + BandH + 1,
-                                     Math.Min(rect.Width - 2, ft.Width + 8), ft.Height + 2);
                 using var _ = ctx.PushClip(rect);
-                // A soft plate keeps the name readable over a dense waveform without
-                // reintroducing a full-width strip.
-                ctx.FillRectangle(LabelPlate, plate);
-                ctx.DrawText(ft, new Point(rect.X + 5, rect.Y + BandH + 2));
+                ctx.DrawText(ft, new Point(rect.X + 5, rect.Y + (TitleBandH - ft.Height) / 2));
             }
 
             if (!c.IsMidi && row >= 0) DrawAdsr(ctx, c, trackId, row, selected, content, NotaPalette.BgSunken);
@@ -1596,7 +1601,8 @@ public sealed partial class ArrangementView
                 ctx.DrawRectangle(InactiveVeil, null, rect.Deflate(1), NotaRadius.ClipValue, NotaRadius.ClipValue);
         }
 
-        private const double BandH = 2;   // clip colour band along the top edge
+        private const double BandH = 2;         // the content area starts under this (ADSR frame, notes)
+        private const double TitleBandH = 12;   // the drawn title band over the top of the content
 
         // The clip's ADSR: the curve whenever it shapes the clip, the handles while the clip is
         // hovered, selected or being edited. Drawn in the clip's own colour; the hot handle is brass.
