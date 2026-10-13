@@ -143,7 +143,7 @@ US4 lands, use Studio Dark ↔ Studio Light, which already shows the full path.
   - same selected treatment as the list rows; no list row is selected while it is on;
   - while on, it shows **In dark mode** and **In light mode** drop-downs listing `NotaThemes.OfKind(Dark/Light)` with the preview chip;
   - picking a list row turns follow off and keeps both per-mode ids.
-- [ ] T028 [US2] Verify US2 per quickstart.md §3:
+- [X] T028 [US2] Verify US2 per quickstart.md §3: *(Verified on macOS by the user, 2026-10-13: Follow system switches immediately when the OS appearance flips.)*
   - flip the variant by forcing `ActualThemeVariant` via the platform setting available under Xvfb, or a debug hook if none, and record which was used;
   - relaunch in follow mode;
   - the per-mode ids survive switching to a single theme and back.
