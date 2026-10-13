@@ -4,7 +4,7 @@
 // Detail · Devices — built-in Nota Flux editor (instrument kind 11): the vector synth that
 // listens to a track, in the 700 × 260 card the almanac draws for it.
 //
-//   Vector 186   the XY field — four timbre worlds at the corners, the brass dot is the
+//   Vector 186   the XY field — four timbre worlds at the corners, the neutral dot is the
 //                vector, a dashed teal ring is where Motion and React pull it.
 //   React        the sidechain source, a live scope of what the synth hears (envelope,
 //                transients, tilt) beside the reaction's own level, LISTEN and the TARGET
@@ -14,7 +14,7 @@
 //                tune and gain; resonance, attack/release and unison follow the vector.
 //   Status 18    the patch read back in words — the world blend, or what React is doing.
 //
-// The four role chromas live only inside the vector field. Brass is the parameter itself;
+// The four role chromas live only inside the vector field. Neutral ink is the parameter itself;
 // teal is the reaction and what receives it. Everything is a plugin param → automation /
 // persist / clone, and the card follows automation live.
 
@@ -34,7 +34,7 @@ namespace Nota.App;
 internal sealed class FluxInstrumentCard : IInstrumentCard
 {
     public bool BodyOnly => true;
-    public string Subtitle => "VECTOR";
+    public string Subtitle => "Vector";
     public double CardWidth => 700;
 
     private const double SideW = 186, HeadH = 20, StatusH = 18;
@@ -101,8 +101,8 @@ internal sealed class FluxInstrumentCard : IInstrumentCard
         // ---- shared builders --------------------------------------------------
         static TextBlock Cap(string t, IBrush? c = null) => new()
         {
-            Text = t, FontSize = NotaType.KnobLabel, FontWeight = FontWeight.Bold,
-            LetterSpacing = NotaType.KnobLabelTracking * 1.5, Foreground = c ?? TextTertiary,
+            Text = NotaText.Label(t), FontSize = NotaType.KnobLabel, FontWeight = FontWeight.Medium,
+            Foreground = c ?? TextTertiary,
             VerticalAlignment = VerticalAlignment.Center,
         };
         static TextBlock Note(string t, IBrush? c = null) => new()
@@ -191,7 +191,7 @@ internal sealed class FluxInstrumentCard : IInstrumentCard
             if (!pad.Dragging) pad.SetValue(G("vecx"), G("vecy"));
             pad.SetGhost(effX, effY, Ghost());
             vecReadout.Text = $"x {Coord(G("vecx"))} · y {Coord(G("vecy"))}";
-            vecReadout.Foreground = VectorPulled() ? AccentBright : TextSecondary;
+            vecReadout.Foreground = VectorPulled() ? NotaPalette.TealBright : TextSecondary;   // teal: the reaction pulls it
             bool pulled = VectorPulled();
             vecFoot.Text = pulled ? "dashed — where the reaction pulls"
                 : Ghost() ? "dashed — where motion drifts" : "four timbres · drag the point";
@@ -278,7 +278,7 @@ internal sealed class FluxInstrumentCard : IInstrumentCard
         var targetStack = new StackPanel
         {
             Spacing = 5, VerticalAlignment = VerticalAlignment.Center,
-            Children = { Cap("TARGET — what the reaction drives"), targetSeg, targetHint },
+            Children = { Cap("Target — what the reaction drives"), targetSeg, targetHint },
         };
         string TargetLine() => !live ? "→ assign a source to turn the reaction on" : TargetIdx() switch
         {

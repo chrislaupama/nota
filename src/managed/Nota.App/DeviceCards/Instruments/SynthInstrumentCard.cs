@@ -11,7 +11,7 @@
 //
 // A 186px rail stays put on every tab — voice mode, volume, pan, glide, unison spread,
 // velocity tracking and the track's meter — over a status strip that reads the patch back
-// in words. Brass is the parameter itself; teal is modulation (detune, env → cutoff).
+// in words. Neutral ink is the parameter itself; teal is modulation (detune, env → cutoff).
 //
 // Two sizes share every value; the S / L toggle in the shell header flips the card (the
 // choice is the synth's "view" param — see InstrumentView — so it persists with the
@@ -36,7 +36,7 @@ namespace Nota.App;
 internal sealed class SynthInstrumentCard : IInstrumentCard
 {
     public bool BodyOnly => true;
-    public string Subtitle => "SUBTRACTIVE";
+    public string Subtitle => "Subtractive";
 
     public double WidthFor(IAudioEngine engine, int trackId) => InstrumentView.IsMini(engine, trackId) ? 260 : 700;
 
@@ -128,7 +128,7 @@ internal sealed class SynthInstrumentCard : IInstrumentCard
             return seg;
         }
 
-        // A caps caption over a control, left-aligned — the almanac's label-above form.
+        // A caption over a control, left-aligned — the almanac's label-above form.
         Control Capped(string label, Control c) => new StackPanel
         {
             Spacing = 4, VerticalAlignment = VerticalAlignment.Center,
@@ -136,8 +136,8 @@ internal sealed class SynthInstrumentCard : IInstrumentCard
             {
                 new TextBlock
                 {
-                    Text = label, FontSize = NotaType.KnobLabel, FontWeight = FontWeight.Bold,
-                    LetterSpacing = NotaType.KnobLabelTracking, Foreground = TextTertiary,
+                    Text = NotaText.Label(label), FontSize = NotaType.KnobLabel, FontWeight = FontWeight.Medium,
+                    Foreground = TextTertiary,
                 },
                 c,
             },
@@ -254,7 +254,7 @@ internal sealed class SynthInstrumentCard : IInstrumentCard
                 bool on = i == tab;
                 tabCells[i].Background = on ? NotaPalette.SurfaceRaised : Brushes.Transparent;
                 tabCells[i].BorderBrush = on ? Brass : Brushes.Transparent;
-                tabTexts[i].Foreground = on ? AccentBright : TextTertiary;
+                tabTexts[i].Foreground = on ? TextPrimary : TextTertiary;
                 tabTexts[i].FontWeight = on ? FontWeight.SemiBold : FontWeight.Normal;
                 bodies[i].Graph.IsVisible = on;
                 bodies[i].Row.IsVisible = on;
@@ -290,8 +290,8 @@ internal sealed class SynthInstrumentCard : IInstrumentCard
         var railHeader = new Grid { Height = TabH, ColumnDefinitions = new ColumnDefinitions("Auto,*"), Margin = new Thickness(8, 0) };
         railHeader.Children.Add(new TextBlock
         {
-            Text = "VOICES", FontSize = NotaType.KnobLabel, FontWeight = FontWeight.Bold,
-            LetterSpacing = NotaType.KnobLabelTracking, Foreground = TextTertiary, VerticalAlignment = VerticalAlignment.Center,
+            Text = "Voices", FontSize = NotaType.KnobLabel, FontWeight = FontWeight.Medium,
+            Foreground = TextTertiary, VerticalAlignment = VerticalAlignment.Center,
         });
         voiceChips.HorizontalAlignment = HorizontalAlignment.Right;
         Grid.SetColumn(voiceChips, 1); railHeader.Children.Add(voiceChips);
@@ -369,9 +369,9 @@ internal sealed class SynthInstrumentCard : IInstrumentCard
         {
             if (mini) return $"out {Db(G("gain"))}";
             int uni = UnisonCounts[Sel("unison", 4)];
-            string mode = VoiceNames[Sel("voicemode", 3)].ToUpperInvariant();
+            string mode = VoiceNames[Sel("voicemode", 3)];
             string oct = Octaves(G("octave"));
-            return $"{mode} · UNISON {uni} · OCT {oct} · {Db(G("gain"))}";
+            return $"{mode} · unison {uni} · oct {oct} · {Db(G("gain"))}";
         }
         var statusHost = StatusStrip(status, meta);
 

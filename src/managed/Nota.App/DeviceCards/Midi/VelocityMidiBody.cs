@@ -117,7 +117,6 @@ internal sealed class VelocityMidiBody : IMidiDeviceBody
     private static readonly IBrush Bd = NotaPalette.BorderDefault;
     private static readonly IBrush Rule = NotaPalette.GraphBorder;
     private static readonly IBrush Well = NotaPalette.BgSunken;
-    private static readonly IBrush BrassLit = NotaPalette.AccentBright;
     private static readonly IBrush Txt = NotaPalette.TextPrimary;
     private static readonly IBrush Sub = NotaPalette.TextSecondary;
     private static readonly IBrush Cap = NotaPalette.TextTertiary;
@@ -138,8 +137,8 @@ internal sealed class VelocityMidiBody : IMidiDeviceBody
         var row = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 8, VerticalAlignment = VerticalAlignment.Center };
         if (!IsMini(e, t, index))
         {
-            var tag = Mono("", Cap, 8); tag.LetterSpacing = 0.6;
-            void Sync() => tag.Text = Modes[VelocityModel.Mode(p => e.MidiEffectGetParam(t, index, p))].ToUpperInvariant();
+            var tag = Mono("", Cap, 8);
+            void Sync() => tag.Text = Modes[VelocityModel.Mode(p => e.MidiEffectGetParam(t, index, p))];
             Sync();
             ctx.AddDeviceRefresher(Sync);
             ToolTip.SetTip(tag, "Velocity mode");
@@ -150,8 +149,8 @@ internal sealed class VelocityMidiBody : IMidiDeviceBody
     }
 
     // ---- small builders -------------------------------------------------------------------------
-    private static TextBlock Caps(string t, IBrush? c = null, double fs = 7) => new()
-    { Text = t, FontSize = fs, FontWeight = FontWeight.Bold, LetterSpacing = 0.8, Foreground = c ?? Cap, VerticalAlignment = VerticalAlignment.Center };
+    private static TextBlock Caps(string t, IBrush? c = null, double fs = NotaType.KnobLabel) => new()
+    { Text = NotaText.Label(t), FontSize = fs, FontWeight = FontWeight.Medium, Foreground = c ?? Cap, VerticalAlignment = VerticalAlignment.Center };
     private static TextBlock Mono(string t, IBrush c, double fs = 8) => new()
     { Text = t, FontSize = fs, FontFamily = NotaFonts.MonoFamily, Foreground = c, VerticalAlignment = VerticalAlignment.Center };
     private static T WithDock<T>(T c, Dock d) where T : Control { DockPanel.SetDock(c, d); return c; }
@@ -198,7 +197,7 @@ internal sealed class VelocityMidiBody : IMidiDeviceBody
             if (IsFixed()) S(PFixed, Math.Round(1 + Math.Clamp(n, 0, 1) * 126) / 127.0);
             else S(PDrive, VelocityModel.DriveFromNorm(n));
         }
-        string DriveLabel() => IsFixed() ? "VALUE" : "DRIVE";
+        string DriveLabel() => IsFixed() ? "Value" : "Drive";
 
         // The Out range in whole velocities, keeping low below high.
         void SetLo(double v) { var (_, hi) = VelocityModel.Range(G); S(POutLo, Math.Clamp(Math.Round(v), 1, hi - 1) / 127.0); }
@@ -250,7 +249,7 @@ internal sealed class VelocityMidiBody : IMidiDeviceBody
             }
 
             var dLabel = Caps("DRIVE");
-            var dValue = Mono("", BrassLit, 13); dValue.FontWeight = FontWeight.Medium; dValue.HorizontalAlignment = HorizontalAlignment.Right;
+            var dValue = Mono("", Txt, 13); dValue.FontWeight = FontWeight.Medium; dValue.HorizontalAlignment = HorizontalAlignment.Right;
             int dGesture = -1;
             var dTrack = new SliderTrack { Height = 11, Reset = () => { int p = DriveParam(); Set1(p, Def(p)); Refresh(); } };
             dTrack.Changed += n => { DriveSet(n); Refresh(); };
@@ -276,7 +275,7 @@ internal sealed class VelocityMidiBody : IMidiDeviceBody
             // ---- TRANSFER ----
             var viz = new VelocityTransferViz { Full = true };
             ToolTip.SetTip(viz, "Input velocity across, output up. Dashed — the Out range; the band — where Random can put a note; dots — the last notes played");
-            var plotInfo = Mono("", BrassLit, 7);
+            var plotInfo = Mono("", Sub, 7);
             readouts.Add(() =>
             {
                 viz.Set(n => VelocityModel.Base(G, n), VelocityModel.RangeN(G).Lo, VelocityModel.RangeN(G).Hi, VelocityModel.Spread(G), notes, count, Bypassed());
@@ -395,7 +394,7 @@ internal sealed class VelocityMidiBody : IMidiDeviceBody
 
             var viz = new VelocityTransferViz { Full = false };
             ToolTip.SetTip(viz, "Input across, output up · dashed — the Out range · band — Random · dots — the last notes");
-            var lastIO = Mono("", BrassLit, 7);
+            var lastIO = Mono("", Sub, 7);
             lastIO.HorizontalAlignment = HorizontalAlignment.Right; lastIO.VerticalAlignment = VerticalAlignment.Top; lastIO.Margin = new Thickness(0, 3, 5, 0);
             lastIO.IsHitTestVisible = false;
             var plot = new Panel { Margin = new Thickness(0, 4), Children = { viz, lastIO } };
@@ -485,7 +484,7 @@ internal sealed class VelocityMidiBody : IMidiDeviceBody
             knob.GestureBegin += () => { gesture = param(); Begin(gesture); if (gesture == PRandom) Begin(PRandomOn); };
             knob.GestureEnd += () => { if (gesture >= 0) End(gesture); if (gesture == PRandom) End(PRandomOn); gesture = -1; };
             Learn(knob, param(), label());
-            var lbl = new TextBlock { FontSize = 7, FontWeight = FontWeight.Bold, LetterSpacing = 0.6, Foreground = Cap, HorizontalAlignment = HorizontalAlignment.Center, LineHeight = 9 };
+            var lbl = new TextBlock { FontSize = NotaType.KnobLabel, FontWeight = FontWeight.Medium, Foreground = Cap, HorizontalAlignment = HorizontalAlignment.Center, LineHeight = 9 };
             var v = Mono("", Sub, 7); v.HorizontalAlignment = HorizontalAlignment.Center;
             readouts.Add(() =>
             {
@@ -493,7 +492,7 @@ internal sealed class VelocityMidiBody : IMidiDeviceBody
                 if (!knob.Dragging && Math.Abs(knob.Value - n) > 1e-6) knob.Value = n;
                 knob.Default = resetNorm();
                 knob.IsDim = dim?.Invoke() ?? false;
-                lbl.Text = label(); v.Text = text();
+                lbl.Text = NotaText.Label(label()); v.Text = text();
             });
             return new StackPanel { HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center, Cursor = new Cursor(StandardCursorType.SizeNorthSouth),
                 Children = { knob, lbl, v } };

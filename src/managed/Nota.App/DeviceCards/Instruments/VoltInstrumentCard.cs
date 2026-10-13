@@ -20,7 +20,8 @@
 //               the track's meter) or Voice (both output amps, unison and the two
 //               velocity amounts).
 //
-// Brass is the parameter itself; teal is modulation and what receives it. Everything is a
+// Neutral ink is the parameter itself; teal is modulation and what receives it; the accent
+// marks only live or chosen state. Everything is a
 // plugin param → automation / persist / clone, and the card follows automation live.
 
 using System;
@@ -38,7 +39,7 @@ namespace Nota.App;
 internal sealed class VoltInstrumentCard : IInstrumentCard
 {
     public bool BodyOnly => true;
-    public string Subtitle => "SUBTRACTIVE";
+    public string Subtitle => "Subtractive";
     public double CardWidth => 700;
 
     private const double WheelsW = 56, RailW = 186, TabH = 20, StatusH = 18, BodyH = 186;
@@ -68,8 +69,8 @@ internal sealed class VoltInstrumentCard : IInstrumentCard
     // the parameter's name.
     private static readonly string[] MacroWords =
     {
-        "PITCH", "BODY", "INTERVAL", "DRIVE", "BRIGHT", "AIR",
-        "TONE 2", "EDGE", "MOTION", "SWELL", "DRIFT", "WIDTH",
+        "pitch", "body", "interval", "drive", "bright", "air",
+        "tone 2", "edge", "motion", "swell", "drift", "width",
     };
 
     // The engine's own perceptual maps (VoltSynth.h), so a readout says what it does.
@@ -146,8 +147,8 @@ internal sealed class VoltInstrumentCard : IInstrumentCard
         // ---- shared builders --------------------------------------------------
         static TextBlock Cap(string t, IBrush? c = null) => new()
         {
-            Text = t, FontSize = NotaType.KnobLabel, FontWeight = FontWeight.Bold,
-            LetterSpacing = NotaType.KnobLabelTracking, Foreground = c ?? TextTertiary,
+            Text = NotaText.Label(t), FontSize = NotaType.KnobLabel, FontWeight = FontWeight.Medium,
+            Foreground = c ?? TextTertiary,
             VerticalAlignment = VerticalAlignment.Center,
         };
         static TextBlock Mono(string t, IBrush? c = null, double fs = 8) => new()
@@ -157,7 +158,7 @@ internal sealed class VoltInstrumentCard : IInstrumentCard
         };
         static TextBlock Section(string t, IBrush? c = null) => new()
         {
-            Text = t, FontSize = NotaType.DeviceSection, FontWeight = FontWeight.SemiBold,
+            Text = NotaText.Label(t), FontSize = NotaType.DeviceSection, FontWeight = FontWeight.SemiBold,
             Foreground = c ?? TextPrimary, VerticalAlignment = VerticalAlignment.Center,
         };
 
@@ -295,9 +296,9 @@ internal sealed class VoltInstrumentCard : IInstrumentCard
             double semis = (G("bend") - 0.5) * 2 * range;
             bool centred = Math.Abs(semis) < 0.05;
             bendVal.Text = centred ? $"±{range}\u2009st" : NotaNum.Unit(semis, "+0.0;−0.0;0", "st");
-            bendVal.Foreground = centred ? TextSecondary : AccentBright;
+            bendVal.Foreground = centred ? TextSecondary : TextPrimary;
             modVal.Text = NotaNum.Pct(G("modwheel"));
-            modVal.Foreground = G("modwheel") > 1e-3f ? AccentBright : TextSecondary;
+            modVal.Foreground = G("modwheel") > 1e-3f ? TextPrimary : TextSecondary;
         });
 
         Grid Pair(Control a, Control b)
@@ -409,7 +410,7 @@ internal sealed class VoltInstrumentCard : IInstrumentCard
                 // Filter 2 has no "To F2" — it is the end of that path.
                 Control cell = k == 5 && f == 1
                     ? new Panel()
-                    : PKnob(id, filtLbl[k].ToUpperInvariant(), $"Filter {f + 1} {filtLbl[k]}", fmt, 26, 44, k >= 2 ? Teal : null);
+                    : PKnob(id, filtLbl[k], $"Filter {f + 1} {filtLbl[k]}", fmt, 26, 44, k >= 2 ? Teal : null);
                 cell.IsVisible = false;
                 filtStack[f, k] = cell;
                 filtCells[k].Children.Add(cell);
@@ -618,7 +619,7 @@ internal sealed class VoltInstrumentCard : IInstrumentCard
             string destId = $"mac{mv}dest";
             var name = new TextBlock
             {
-                FontSize = NotaType.KnobLabel, FontWeight = FontWeight.Bold, LetterSpacing = NotaType.KnobLabelTracking,
+                FontSize = NotaType.KnobLabel, FontWeight = FontWeight.Medium,
                 Foreground = NotaPalette.TextStrong, HorizontalAlignment = HorizontalAlignment.Center,
             };
             var dest = new TextBlock
@@ -669,7 +670,7 @@ internal sealed class VoltInstrumentCard : IInstrumentCard
             {
                 bool on = MacroOn(mv);
                 int d = MacroDest(mv);
-                name.Text = on ? $"MACRO {mv + 1} · {MacroWords[d]}" : $"MACRO {mv + 1}";
+                name.Text = on ? $"Macro {mv + 1} · {MacroWords[d]}" : $"Macro {mv + 1}";
                 name.Foreground = on ? NotaPalette.TextStrong : TextDisabled;
                 dest.Text = on ? "→ " + MacroDests[d] : "unassigned";
                 dest.Foreground = on ? Teal : TextDisabled;
@@ -723,7 +724,7 @@ internal sealed class VoltInstrumentCard : IInstrumentCard
                 bool on = i == tab;
                 tabCells[i].Background = on ? NotaPalette.SurfaceRaised : Brushes.Transparent;
                 tabCells[i].BorderBrush = on ? Brass : Brushes.Transparent;
-                tabTexts[i].Foreground = on ? AccentBright : TextTertiary;
+                tabTexts[i].Foreground = on ? TextPrimary : TextTertiary;
                 tabTexts[i].FontWeight = on ? FontWeight.SemiBold : FontWeight.Normal;
                 bodies[i].IsVisible = on;
             }
@@ -853,7 +854,7 @@ internal sealed class VoltInstrumentCard : IInstrumentCard
                 bool on = i == railTab;
                 railCells[i].Background = on ? NotaPalette.SurfaceRaised : Brushes.Transparent;
                 railCells[i].BorderBrush = on ? Brass : Brushes.Transparent;
-                railTexts[i].Foreground = on ? AccentBright : TextTertiary;
+                railTexts[i].Foreground = on ? TextPrimary : TextTertiary;
                 railTexts[i].FontWeight = on ? FontWeight.SemiBold : FontWeight.Normal;
                 railBodies[i].IsVisible = on;
             }

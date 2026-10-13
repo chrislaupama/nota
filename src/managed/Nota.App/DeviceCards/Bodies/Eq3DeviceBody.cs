@@ -64,8 +64,8 @@ internal sealed class Eq3DeviceBody : IDeviceBody
         double Sc(int i) => scN > i ? scope[i] : 0;
 
         // ---- small builders ---------------------------------------------------------
-        static TextBlock Caps(string t, IBrush? c = null, double fs = 7) => new()
-        { Text = t, FontSize = fs, FontWeight = FontWeight.Bold, Foreground = c ?? TextTertiary, LetterSpacing = 0.8, VerticalAlignment = VerticalAlignment.Center };
+        static TextBlock Caps(string t, IBrush? c = null, double fs = NotaType.KnobLabel) => new()
+        { Text = NotaText.Label(t), FontSize = fs, FontWeight = FontWeight.Medium, Foreground = c ?? TextTertiary, VerticalAlignment = VerticalAlignment.Center };
         static TextBlock Mono(string t, double fs, IBrush c)
         { var tb = new TextBlock { Text = t, FontSize = fs, Foreground = c, VerticalAlignment = VerticalAlignment.Center }; tb.BindResource(TextBlock.FontFamilyProperty, "Font.Mono"); return tb; }
         static StackPanel Row(double sp, params Control[] cs)
@@ -94,7 +94,7 @@ internal sealed class Eq3DeviceBody : IDeviceBody
         Control KillButton(int b)
         {
             var hue = Eq3Math.Hue(b);
-            var tb = new TextBlock { Text = "KILL", FontSize = 8, FontWeight = FontWeight.SemiBold, LetterSpacing = 0.5, HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center };
+            var tb = new TextBlock { Text = "Kill", FontSize = 8, FontWeight = FontWeight.SemiBold, HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center };
             var btn = new Border
             {
                 Width = 48, Height = 15, CornerRadius = NotaRadius.Badge, BorderThickness = new Thickness(1), HorizontalAlignment = HorizontalAlignment.Center,
@@ -105,7 +105,7 @@ internal sealed class Eq3DeviceBody : IDeviceBody
                 bool on = Killed(b);
                 btn.Background = on ? hue : Brushes.Transparent;
                 btn.BorderBrush = on ? hue : NotaPalette.BorderStrong;
-                tb.Foreground = on ? NotaPalette.TextOnAccent : TextSecondary;
+                tb.Foreground = on ? NotaPalette.InkOn(hue) : TextSecondary;
             }
             btn.PointerPressed += (_, e) =>
             {
@@ -121,7 +121,7 @@ internal sealed class Eq3DeviceBody : IDeviceBody
         Control Strip(int b)
         {
             var hue = Eq3Math.Hue(b);
-            var name = Caps(Eq3Math.Names[b], hue, 8); name.HorizontalAlignment = HorizontalAlignment.Center; name.LetterSpacing = 1;
+            var name = Caps(Eq3Math.Names[b], hue, 8); name.HorizontalAlignment = HorizontalAlignment.Center;
             var span = Mono("", 7, TextTertiary); span.HorizontalAlignment = HorizontalAlignment.Center;
             var val = Mono("", 9, TextPrimary); val.HorizontalAlignment = HorizontalAlignment.Center;
             var fader = new Eq3Fader { Margin = new Thickness(0, 3, 0, 0) };
@@ -138,7 +138,7 @@ internal sealed class Eq3DeviceBody : IDeviceBody
                 if (!fader.Dragging) fader.Set(db, k, Eq3Math.TopDb(iso), Eq3Math.BottomDb(iso), hue);
                 span.Text = Span(b);
                 val.Text = k ? "−∞" : Eq3Math.Db(db);
-                val.Foreground = k ? TextTertiary : Math.Abs(db) > 0.05 ? AccentBright : TextPrimary;
+                val.Foreground = k ? TextTertiary : Math.Abs(db) > 0.05 ? TextPrimary : TextSecondary;
             });
             var col = new DockPanel
             {
@@ -216,7 +216,7 @@ internal sealed class Eq3DeviceBody : IDeviceBody
             {
                 double db = OutDb(P(Gain));
                 v.Text = Eq3Math.Db(db) + "\u2009dB";
-                v.Foreground = Math.Abs(db) > 0.05 ? AccentBright : TextPrimary;
+                v.Foreground = Math.Abs(db) > 0.05 ? TextPrimary : TextSecondary;
             });
             ToolTip.SetTip(box, "Output gain, ±24\u2009dB — drag up / down (Shift for fine), double-click resets");
             Learn(box, Gain);

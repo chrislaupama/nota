@@ -43,7 +43,7 @@ internal sealed class ReverbDeviceBody : IDeviceBody
 
     public double Width => 700;
     public bool FullBleed => true;
-    public string? Subtitle => "REVERB";
+    public string? Subtitle => "Reverb";
 
     public Control Build(DeviceCardContext ctx, int index)
     {
@@ -82,8 +82,8 @@ internal sealed class ReverbDeviceBody : IDeviceBody
         string Algo() => Algos[Sel(Algorithm, 4)];
 
         // ---- small builders ---------------------------------------------------------
-        static TextBlock Caps(string t, IBrush? c = null, double fs = 7) => new()
-        { Text = t, FontSize = fs, FontWeight = FontWeight.Bold, Foreground = c ?? TextTertiary, LetterSpacing = 0.8, VerticalAlignment = VerticalAlignment.Center };
+        static TextBlock Caps(string t, IBrush? c = null, double fs = NotaType.KnobLabel) => new()
+        { Text = NotaText.Label(t), FontSize = fs, FontWeight = FontWeight.Medium, Foreground = c ?? TextTertiary, VerticalAlignment = VerticalAlignment.Center };
         static TextBlock Mono(string t, double fs, IBrush c)
         { var tb = new TextBlock { Text = t, FontSize = fs, Foreground = c, VerticalAlignment = VerticalAlignment.Center }; tb.BindResource(TextBlock.FontFamilyProperty, "Font.Mono"); return tb; }
         static StackPanel Row(double sp, params Control[] cs)
@@ -192,7 +192,7 @@ internal sealed class ReverbDeviceBody : IDeviceBody
         });
 
         // ======================================================================
-        // LEFT — TAIL column (Decay · HF Damp)
+        // LEFT — Tail column (Decay · HF Damp)
         // ======================================================================
         Control TailFader(int p, string label, IBrush ink, IBrush handle, string tip)
         {
@@ -213,11 +213,11 @@ internal sealed class ReverbDeviceBody : IDeviceBody
         }
         var tailTitle = Caps("TAIL"); tailTitle.HorizontalAlignment = HorizontalAlignment.Center;
         var faders = new Grid { ColumnDefinitions = new ColumnDefinitions("Auto,Auto"), ColumnSpacing = 1, HorizontalAlignment = HorizontalAlignment.Center, Margin = new Thickness(0, 4, 0, 3) };
-        faders.Children.Add(TailFader(Decay, "DECAY", NotaPalette.Accent, NotaPalette.AccentBright,
+        faders.Children.Add(TailFader(Decay, "DECAY", NotaPalette.VizInk, NotaPalette.VizInk,
             "Decay — RT60, the time the tail takes to fall 60 dB (0.2 … 12 s); Freeze holds it forever. Double-click resets."));
         faders.Children.Add(Col(TailFader(HFDamp, "DAMP", NotaPalette.Teal, NotaPalette.TealBright,
             "HF Damp — how much faster the highs die than the lows. Double-click resets."), 1));
-        var decVal = Mono("", 7, AccentBright); decVal.HorizontalAlignment = HorizontalAlignment.Center;
+        var decVal = Mono("", 7, TextPrimary); decVal.HorizontalAlignment = HorizontalAlignment.Center;
         var dmpVal = Mono("", 7, TextPrimary); dmpVal.HorizontalAlignment = HorizontalAlignment.Center;
         readouts.Add(() =>
         {
@@ -331,7 +331,7 @@ internal sealed class ReverbDeviceBody : IDeviceBody
                 SliderRow("OUT", Output, v => ShortDb(OutDb(v))),
                 new Border { Height = 1, Background = NotaPalette.GraphBorder, Margin = new Thickness(0, 2) },
                 SliderRow("DECAY", Decay, DecayF, null, () => On(Freeze)),
-                SliderRow("HF DAMP", HFDamp, Pct),
+                SliderRow("HF damp", HFDamp, Pct),
                 new Border { Height = 1, Background = NotaPalette.GraphBorder, Margin = new Thickness(0, 2) },
                 btns, wet,
             };
@@ -462,7 +462,7 @@ internal sealed class ReverbDeviceBody : IDeviceBody
                     btns[i].Background = on ? Card2 : Brushes.Transparent;
                     btns[i].BorderBrush = on ? Brass : Brushes.Transparent;
                     var tb = (TextBlock)btns[i].Child!;
-                    tb.Foreground = on ? AccentBright : TextTertiary;
+                    tb.Foreground = on ? NotaPalette.TextPrimary : TextTertiary;
                     tb.FontWeight = on ? FontWeight.SemiBold : FontWeight.Normal;
                 }
             }

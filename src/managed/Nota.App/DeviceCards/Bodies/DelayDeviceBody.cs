@@ -42,7 +42,7 @@ internal sealed class DelayDeviceBody : IDeviceBody
 
     public double Width => 700;
     public bool FullBleed => true;
-    public string? Subtitle => "DELAY";
+    public string? Subtitle => "Delay";
 
     public Control Build(DeviceCardContext ctx, int index)
     {
@@ -94,8 +94,8 @@ internal sealed class DelayDeviceBody : IDeviceBody
         double SpreadMs() => P(Spread) * 50;
 
         // ---- small builders ---------------------------------------------------------
-        static TextBlock Caps(string t, IBrush? c = null, double fs = 7) => new()
-        { Text = t, FontSize = fs, FontWeight = FontWeight.Bold, Foreground = c ?? TextTertiary, LetterSpacing = 0.8, VerticalAlignment = VerticalAlignment.Center };
+        static TextBlock Caps(string t, IBrush? c = null, double fs = NotaType.KnobLabel) => new()
+        { Text = NotaText.Label(t), FontSize = fs, FontWeight = FontWeight.Medium, Foreground = c ?? TextTertiary, VerticalAlignment = VerticalAlignment.Center };
         static TextBlock Mono(string t, double fs, IBrush c)
         { var tb = new TextBlock { Text = t, FontSize = fs, Foreground = c, VerticalAlignment = VerticalAlignment.Center }; tb.BindResource(TextBlock.FontFamilyProperty, "Font.Mono"); return tb; }
         static StackPanel Row(double sp, params Control[] cs)
@@ -244,7 +244,7 @@ internal sealed class DelayDeviceBody : IDeviceBody
         readouts.Add(SyncTaps);
 
         // ======================================================================
-        // LEFT — LOOP column (Feedback · Spread)
+        // LEFT — Loop column (Feedback · Spread)
         // ======================================================================
         Control LoopFader(int p, string label, IBrush ink, IBrush handle, Func<string> value, string tip)
         {
@@ -261,15 +261,15 @@ internal sealed class DelayDeviceBody : IDeviceBody
                 f.Set(P(p));
                 val.Text = value();
                 bool hot = On(Freeze) && p == Feedback;
-                val.Foreground = hot || P(p) > 0.9f ? AccentBright : TextPrimary;
+                val.Foreground = hot ? AccentBright : P(p) > 0.9f ? NotaPalette.Warning : TextPrimary;   // Freeze is live; > 90 % runs away
                 lb.Foreground = hot ? AccentBright : TextTertiary;
             });
             return new DockPanel { Width = 44, Children = { Docked(val, Dock.Bottom), Docked(lb, Dock.Bottom), f } };
         }
         var loopTitle = Caps("LOOP"); loopTitle.HorizontalAlignment = HorizontalAlignment.Center;
         var faders = new Grid { ColumnDefinitions = new ColumnDefinitions("Auto,Auto"), ColumnSpacing = 4, HorizontalAlignment = HorizontalAlignment.Center, Margin = new Thickness(0, 4, 0, 2) };
-        faders.Children.Add(LoopFader(Feedback, "FEEDBACK", NotaPalette.Accent, NotaPalette.AccentBright,
-            () => On(Freeze) ? "HOLD" : Pct(P(Feedback)),
+        faders.Children.Add(LoopFader(Feedback, "FEEDBACK", NotaPalette.VizInk, NotaPalette.VizInk,
+            () => On(Freeze) ? "Hold" : Pct(P(Feedback)),
             "Feedback — how much of each repeat goes round again; Freeze pins it at 100 %. Double-click resets."));
         faders.Children.Add(Col(LoopFader(Spread, "SPREAD", NotaPalette.Rose, NotaPalette.RoseBright,
             () => NotaNum.F($"{P(Spread) * 50:0} ms"),
@@ -565,7 +565,7 @@ internal sealed class DelayDeviceBody : IDeviceBody
                     btns[i].Background = on ? Card2 : Brushes.Transparent;
                     btns[i].BorderBrush = on ? Brass : Brushes.Transparent;
                     var tb = (TextBlock)btns[i].Child!;
-                    tb.Foreground = on ? AccentBright : TextTertiary;
+                    tb.Foreground = on ? NotaPalette.TextPrimary : TextTertiary;
                     tb.FontWeight = on ? FontWeight.SemiBold : FontWeight.Normal;
                 }
             }

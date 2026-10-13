@@ -7,7 +7,7 @@
 //   • L 700 × 260 — TYPE list (Maj7 / Min7 / Sus4 / 5th / Custom, Keep root, Fold in scale +
 //     its key) | SHIFTS: six rows — switch dot, semitones, a bipolar ±12 ruler, the interval
 //     name and a draggable velocity offset | RESULT: the chord's note names, a three-octave
-//     keyboard (played Brass Light, added Brass Deep, an unplayed root outlined), Strum and
+//     keyboard (played bright accent, added deeper accent, an unplayed root outlined), Strum and
 //     Spread — over a status line.
 //   • S 260 × 260 — note names + the keyboard over six vertical bipolar shift bars (the
 //     number under each toggles it), Strum / Spread knobs and the two flags. The header keeps
@@ -51,7 +51,6 @@ internal sealed class ChordMidiBody : IMidiDeviceBody
     private static readonly IBrush Bd = NotaPalette.BorderDefault;
     private static readonly IBrush Rule = NotaPalette.GraphBorder;
     private static readonly IBrush Well = NotaPalette.BgSunken;
-    private static readonly IBrush BrassLit = NotaPalette.AccentBright;
     private static readonly IBrush Txt = NotaPalette.TextPrimary;
     private static readonly IBrush Sub = NotaPalette.TextSecondary;
     private static readonly IBrush Cap = NotaPalette.TextTertiary;
@@ -129,8 +128,8 @@ internal sealed class ChordMidiBody : IMidiDeviceBody
     }
 
     // ---- small builders -------------------------------------------------------------------------
-    private static TextBlock Caps(string t, IBrush? c = null, double fs = 7) => new()
-    { Text = t, FontSize = fs, FontWeight = FontWeight.Bold, LetterSpacing = 0.8, Foreground = c ?? Cap, VerticalAlignment = VerticalAlignment.Center };
+    private static TextBlock Caps(string t, IBrush? c = null, double fs = NotaType.KnobLabel) => new()
+    { Text = NotaText.Label(t), FontSize = fs, FontWeight = FontWeight.Medium, Foreground = c ?? Cap, VerticalAlignment = VerticalAlignment.Center };
     private static TextBlock Mono(string t, IBrush c, double fs = 8) => new()
     { Text = t, FontSize = fs, FontFamily = NotaFonts.MonoFamily, Foreground = c, VerticalAlignment = VerticalAlignment.Center };
     private static T WithDock<T>(T c, Dock d) where T : Control { DockPanel.SetDock(c, d); return c; }
@@ -256,7 +255,7 @@ internal sealed class ChordMidiBody : IMidiDeviceBody
             var shiftsIsland = IslandBox(IslandHead(Caps("SHIFTS"), Mono("semitones · interval · velocity", Cap, 7)), rows, 292);
 
             // ---- RESULT ----
-            var noteText = Mono("", BrassLit); noteText.FontWeight = FontWeight.Medium;
+            var noteText = Mono("", Txt); noteText.FontWeight = FontWeight.Medium;
             var range = Mono("", Axis, 7); range.HorizontalAlignment = HorizontalAlignment.Right;
             var legend = new DockPanel { Children = { WithDock(range, Dock.Right), new StackPanel { Orientation = Orientation.Horizontal, Spacing = 10, Children =
             {
@@ -298,7 +297,7 @@ internal sealed class ChordMidiBody : IMidiDeviceBody
         // =========================================================================================
         Control BuildMini()
         {
-            var noteText = Mono("", BrassLit); noteText.FontWeight = FontWeight.Medium;
+            var noteText = Mono("", Txt); noteText.FontWeight = FontWeight.Medium;
             var voicesText = Mono("", Cap, 7);
             var head = new DockPanel { Height = 12, Children = { WithDock(voicesText, Dock.Right), noteText } };
             var keys = new ChordKeysViz { Labels = false, KeyRadius = 0, Height = 40 };
@@ -377,7 +376,7 @@ internal sealed class ChordMidiBody : IMidiDeviceBody
             return new StackPanel { Orientation = Orientation.Horizontal, Spacing = 4, Children = { sw, new TextBlock { Text = label, FontSize = 8, Foreground = Sub, VerticalAlignment = VerticalAlignment.Center } } };
         }
 
-        // A switch flag (Keep root / Fold in scale), brass-washed when on.
+        // A switch flag (Keep root / Fold in scale), accent-washed when on.
         Control Flag(int p, string label, string tip)
         {
             var tb = new TextBlock { Text = label, FontSize = 8, HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center };
@@ -492,7 +491,7 @@ internal sealed class ChordMidiBody : IMidiDeviceBody
             hit.PointerCaptureLost += (_, _) => Stop();
             ToolTip.SetTip(hit, $"Shift {s + 1} velocity offset — drag sideways, double-click resets");
             Learn(hit, p, $"Shift {s + 1} velocity");
-            readouts.Add(() => { int v = GI(p); tb.Text = Sgn(v); tb.Foreground = v != 0 ? BrassLit : Cap; });
+            readouts.Add(() => { int v = GI(p); tb.Text = Sgn(v); tb.Foreground = v != 0 ? Txt : Cap; });
             return hit;
         }
 
@@ -527,7 +526,7 @@ internal sealed class ChordMidiBody : IMidiDeviceBody
             return new DockPanel { Children = { WithDock(lblHit, Dock.Bottom), bar } };
         }
 
-        // A RESULT slider: the label brightens to brass once moved off its default.
+        // A RESULT slider: the label brightens to primary text once moved off its default.
         Control SliderLine(string label, int p, Func<double, double> toNorm, Func<double, double> fromNorm, Func<double, string> fmt)
         {
             var l = Caps(label); l.Width = 40;
@@ -543,8 +542,8 @@ internal sealed class ChordMidiBody : IMidiDeviceBody
                 double v = G(p);
                 if (!track.Dragging) track.Norm = toNorm(v);
                 bool mod = Math.Abs(v - Def(p)) > 0.5;
-                l.Foreground = mod ? BrassLit : Cap;
-                val.Foreground = mod ? BrassLit : Txt;
+                l.Foreground = mod ? Txt : Cap;
+                val.Foreground = Txt;
                 val.Text = fmt(v);
             });
             track.Margin = new Thickness(6, 0, 6, 0);
@@ -562,7 +561,7 @@ internal sealed class ChordMidiBody : IMidiDeviceBody
             var val = Mono("", Sub, 7); val.HorizontalAlignment = HorizontalAlignment.Center;
             readouts.Add(() => { double n = norm(); if (!knob.Dragging && Math.Abs(knob.Value - n) > 1e-6) knob.Value = n; val.Text = text(); });
             return new StackPanel { HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center, Cursor = new Cursor(StandardCursorType.SizeNorthSouth),
-                Children = { knob, new TextBlock { Text = label, FontSize = 7, FontWeight = FontWeight.Bold, LetterSpacing = 0.6, Foreground = Cap, HorizontalAlignment = HorizontalAlignment.Center, LineHeight = 9 }, val } };
+                Children = { knob, new TextBlock { Text = NotaText.Label(label), FontSize = NotaType.KnobLabel, FontWeight = FontWeight.Medium, Foreground = Cap, HorizontalAlignment = HorizontalAlignment.Center, LineHeight = 9 }, val } };
         }
     }
 }

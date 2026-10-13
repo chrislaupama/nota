@@ -6,7 +6,7 @@
 // choice is the device's "View" param, so it persists with the project):
 //   • L 700 × 260 — ROOT stepper over the scale TYPE list (Major / Minor / Dorian / Phryg /
 //     Penta / Custom, each with its note count) | NOTE MAP: the twelve pitch classes as key
-//     cells — scale notes Brass Deep, the root edged Brass Light, the rest naming where they
+//     cells — scale notes accent-washed (chosen), the root edged bright, the rest naming where they
 //     fold; click one to add / remove it (the scale turns Custom) | FOLD: Nearest / Down / Up,
 //     the last IN → OUT, Range (± an octave, drag for semitones), Follow key, Learn and Clear —
 //     over a status line.
@@ -45,7 +45,6 @@ internal sealed class ScaleMidiBody : IMidiDeviceBody
     private static readonly IBrush Bd = NotaPalette.BorderDefault;
     private static readonly IBrush Rule = NotaPalette.GraphBorder;
     private static readonly IBrush Well = NotaPalette.BgSunken;
-    private static readonly IBrush BrassLit = NotaPalette.AccentBright;
     private static readonly IBrush Txt = NotaPalette.TextPrimary;
     private static readonly IBrush Sub = NotaPalette.TextSecondary;
     private static readonly IBrush Muted = NotaPalette.TextMuted;
@@ -79,8 +78,8 @@ internal sealed class ScaleMidiBody : IMidiDeviceBody
         var row = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 8, VerticalAlignment = VerticalAlignment.Center };
         if (!IsMini(e, t, index))
         {
-            var tag = Mono("", Cap, 8); tag.LetterSpacing = 0.6;
-            void Sync() => tag.Text = KeyTag(p => e.MidiEffectGetParam(t, index, p)).ToUpperInvariant();
+            var tag = Mono("", Cap, 8);
+            void Sync() => tag.Text = KeyTag(p => e.MidiEffectGetParam(t, index, p));
             Sync();
             ctx.AddDeviceRefresher(Sync);
             ToolTip.SetTip(tag, "The key in effect: root and scale");
@@ -91,8 +90,8 @@ internal sealed class ScaleMidiBody : IMidiDeviceBody
     }
 
     // ---- small builders -------------------------------------------------------------------------
-    private static TextBlock Caps(string t, IBrush? c = null, double fs = 7) => new()
-    { Text = t, FontSize = fs, FontWeight = FontWeight.Bold, LetterSpacing = 0.8, Foreground = c ?? Cap, VerticalAlignment = VerticalAlignment.Center };
+    private static TextBlock Caps(string t, IBrush? c = null, double fs = NotaType.KnobLabel) => new()
+    { Text = NotaText.Label(t), FontSize = fs, FontWeight = FontWeight.Medium, Foreground = c ?? Cap, VerticalAlignment = VerticalAlignment.Center };
     private static TextBlock Mono(string t, IBrush c, double fs = 8) => new()
     { Text = t, FontSize = fs, FontFamily = NotaFonts.MonoFamily, Foreground = c, VerticalAlignment = VerticalAlignment.Center };
     private static T WithDock<T>(T c, Dock d) where T : Control { DockPanel.SetDock(c, d); return c; }
@@ -226,7 +225,7 @@ internal sealed class ScaleMidiBody : IMidiDeviceBody
 
             // ---- FOLD ----
             var foldSeg = FoldSeg(13);
-            var ioIn = Mono("—", Sub, 13); var ioOut = Mono("—", BrassLit, 13);
+            var ioIn = Mono("—", Sub, 13); var ioOut = Mono("—", Txt, 13);
             var ioBox = new Border
             {
                 Height = 30, Background = Well, BorderBrush = Rule, BorderThickness = new Thickness(1), CornerRadius = NotaRadius.Badge,
@@ -280,7 +279,7 @@ internal sealed class ScaleMidiBody : IMidiDeviceBody
             var top = new DockPanel { Children = { WithDock(RootStepper(), Dock.Left), WithDock(TypeDrop(), Dock.Left), FoldSeg(12) } };
             ((Control)top.Children[1]).Margin = new Thickness(5, 0);
 
-            var ioIn = Mono("—", Sub, 11); var ioOut = Mono("—", BrassLit, 11);
+            var ioIn = Mono("—", Sub, 11); var ioOut = Mono("—", Txt, 11);
             var ioBar = new Border
             {
                 Height = 24, Background = Well, BorderBrush = Rule, BorderThickness = new Thickness(1), CornerRadius = NotaRadius.Badge, Padding = new Thickness(8, 0),
@@ -351,7 +350,7 @@ internal sealed class ScaleMidiBody : IMidiDeviceBody
                 b.PointerExited += (_, _) => b.Background = NotaPalette.TrackOff;
                 return b;
             }
-            var name = Mono("", BrassLit, 9); name.FontWeight = FontWeight.SemiBold; name.Width = 20; name.TextAlignment = TextAlignment.Center;
+            var name = Mono("", Txt, 9); name.FontWeight = FontWeight.SemiBold; name.Width = 20; name.TextAlignment = TextAlignment.Center;
             readouts.Add(() => name.Text = Notes[Root()]);
             var row = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 2, VerticalAlignment = VerticalAlignment.Center, Background = Brushes.Transparent,
                 Children = { Arrow(GlyphKind.ChevronLeft, -1), name, Arrow(GlyphKind.ChevronRight, 1) } };

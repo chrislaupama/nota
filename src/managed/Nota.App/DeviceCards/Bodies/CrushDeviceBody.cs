@@ -41,7 +41,7 @@ internal sealed class CrushDeviceBody : IDeviceBody
 
     public double Width => 700;
     public bool FullBleed => true;
-    public string? Subtitle => "BITCRUSHER";
+    public string? Subtitle => "Bitcrusher";
 
     public Control Build(DeviceCardContext ctx, int index)
     {
@@ -90,8 +90,8 @@ internal sealed class CrushDeviceBody : IDeviceBody
         static string FiltF(double v) => Hz(FiltHz(v));
 
         // ---- small builders ---------------------------------------------------------
-        static TextBlock Caps(string t, IBrush? c = null, double fs = 7) => new()
-        { Text = t, FontSize = fs, FontWeight = FontWeight.Bold, Foreground = c ?? TextTertiary, LetterSpacing = 0.8, VerticalAlignment = VerticalAlignment.Center };
+        static TextBlock Caps(string t, IBrush? c = null, double fs = NotaType.KnobLabel) => new()
+        { Text = NotaText.Label(t), FontSize = fs, FontWeight = FontWeight.Medium, Foreground = c ?? TextTertiary, VerticalAlignment = VerticalAlignment.Center };
         static TextBlock Mono(string t, double fs, IBrush c)
         { var tb = new TextBlock { Text = t, FontSize = fs, Foreground = c, VerticalAlignment = VerticalAlignment.Center }; tb.BindResource(TextBlock.FontFamilyProperty, "Font.Mono"); return tb; }
         static StackPanel Row(double sp, params Control[] cs)
@@ -102,7 +102,7 @@ internal sealed class CrushDeviceBody : IDeviceBody
         void Learn(Control c, int p) => MidiLearn.Bind(c, MidiTarget.DeviceParam(track, di, p), engine.DeviceParamName(track, di, p));
 
         // Gauge knob bound to a device param (automation gesture + MIDI learn + live follow).
-        // `lit` lights the label and value (the knob the current tab is about).
+        // `lit` brightens the label and value (the knob the current tab is about).
         Control K(int p, string name, Func<double, string> fmt, string tip, Func<bool>? lit = null, bool teal = false)
         {
             var val = Mono(fmt(P(p)), 7, TextPrimary);
@@ -121,8 +121,8 @@ internal sealed class CrushDeviceBody : IDeviceBody
                 if (!knob.Dragging) { double c = P(p); if (Math.Abs(c - knob.Value) > 1e-4) knob.Value = c; }
                 val.Text = fmt(P(p));
                 bool on = lit?.Invoke() ?? false;
-                val.Foreground = on ? AccentBright : TextPrimary;
-                if (label is not null) label.Foreground = on ? AccentBright : TextTertiary;
+                val.Foreground = on ? TextPrimary : TextSecondary;
+                if (label is not null) label.Foreground = on ? TextSecondary : TextTertiary;
             });
             return cell;
         }
@@ -218,11 +218,11 @@ internal sealed class CrushDeviceBody : IDeviceBody
         // ======================================================================
         var colTitle = Caps("CRUSH"); colTitle.HorizontalAlignment = HorizontalAlignment.Center;
         var inPill = new ShPill { Ink = Teal, VerticalAlignment = VerticalAlignment.Stretch, Width = 14 };
-        var outPill = new ShPill { Ink = Brass, VerticalAlignment = VerticalAlignment.Stretch, Width = 14 };
+        var outPill = new ShPill { Ink = NotaPalette.VizInk, VerticalAlignment = VerticalAlignment.Stretch, Width = 14 };
         ToolTip.SetTip(inPill, "The input peak, −60 … 0\u2009dBFS");
         ToolTip.SetTip(outPill, "The output peak, −60 … 0\u2009dBFS");
         var colIn = Mono("", 7, TextPrimary); colIn.HorizontalAlignment = HorizontalAlignment.Center;
-        var colOut = Mono("", 7, AccentBright); colOut.HorizontalAlignment = HorizontalAlignment.Center;
+        var colOut = Mono("", 7, TextPrimary); colOut.HorizontalAlignment = HorizontalAlignment.Center;
         static double NormLvl(double db) => Math.Clamp((db + 60) / 60, 0, 1);
         bool Crushing() => Sc(S_Signal) > 0.5 && P(DryWet) > 0.01f;
         readouts.Add(() =>
@@ -260,7 +260,7 @@ internal sealed class CrushDeviceBody : IDeviceBody
             quant.Changed += (b, r) => { Raw(Bits, b); Raw(Rate, r); RefreshAll(); };
             quant.ResetRequested += () => { Reset(Bits); Reset(Rate); RefreshAll(); };
             Learn(quant, Bits);
-            ToolTip.SetTip(quant, "10\u2009ms of a sine through the crusher: the source dashed, the held and quantised steps in brass. Drag up / down for Bits, left / right for Rate; double-click resets both.");
+            ToolTip.SetTip(quant, "10\u2009ms of a sine through the crusher: the source dashed, the held and quantised steps in neutral ink. Drag up / down for Bits, left / right for Rate; double-click resets both.");
             var knobs = KnobRow(
                 () => NotaNum.F($"{KHz(Sr())} → {KHz(RateHz(P(Rate)))} · 1 of {Hold():0.#}"),
                 () => NotaNum.F($"quant. noise {-(6.02 * BitsOf(P(Bits)) + 1.76):0}\u2009dB"));
@@ -278,7 +278,7 @@ internal sealed class CrushDeviceBody : IDeviceBody
             spectrum.GestureEnd += h => End(map[h]);
             spectrum.ResetRequested += h => { Reset(map[h]); RefreshAll(); };
             Learn(spectrum, Rate);
-            ToolTip.SetTip(spectrum, "The output spectrum: brass is the signal, teal what the crush added — bright above the reduced Nyquist (the images). Drag the Nyquist line for Rate, the filter line for the post filter; double-click resets.");
+            ToolTip.SetTip(spectrum, "The output spectrum: neutral ink is the signal, teal what the crush added — bright above the reduced Nyquist (the images). Drag the Nyquist line for Rate, the filter line for the post filter; double-click resets.");
             var knobs = KnobRow(
                 () => Sc(S_Analysed) < 0.5 ? "no signal" : ScDb(S_Images) <= -119 ? NotaNum.F($"no images above {KHz(Sc(S_Nyquist))}")
                     : NotaNum.F($"images above {KHz(Sc(S_Nyquist))} {ScDb(S_Images):0}\u2009dB"),
@@ -380,7 +380,7 @@ internal sealed class CrushDeviceBody : IDeviceBody
                     {
                         Caps("MEASUREMENTS"),
                         MRow("in", () => Lvl(ScDb(S_InPeak)) + " dB", () => TextPrimary),
-                        MRow("out", () => Lvl(ScDb(S_OutPeak)) + " dB", () => ScDb(S_OutPeak) > 0 ? NotaPalette.DangerBright : AccentBright),
+                        MRow("out", () => Lvl(ScDb(S_OutPeak)) + " dB", () => ScDb(S_OutPeak) > 0 ? NotaPalette.DangerBright : TextPrimary),
                         MRow("crest", () => ScDb(S_OutRms) <= -119 ? "—" : NotaNum.F($"{Sc(S_Crest):0.0} dB"), () => TextPrimary),
                     },
                 },
@@ -497,7 +497,7 @@ internal sealed class CrushDeviceBody : IDeviceBody
                     btns[i].Background = on ? Card2 : Brushes.Transparent;
                     btns[i].BorderBrush = on ? Brass : Brushes.Transparent;
                     var tb = (TextBlock)btns[i].Child!;
-                    tb.Foreground = on ? AccentBright : TextTertiary;
+                    tb.Foreground = on ? NotaPalette.TextPrimary : TextTertiary;
                     tb.FontWeight = on ? FontWeight.SemiBold : FontWeight.Normal;
                 }
             }
