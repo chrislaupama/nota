@@ -26,8 +26,8 @@ namespace Nota.App;
 
 public sealed partial class DeviceChainView
 {
-    private static readonly IBrush ShellBg = NotaPalette.BgApp;
-    private static readonly IBrush ShellHdr = NotaPalette.SurfaceCard;
+    private static readonly IBrush ShellBg = NotaPalette.SurfaceCard;   // card body: the panel tone
+    private static readonly IBrush ShellHdr = NotaPalette.SurfaceRaised; // header: raised, with a bevel
     private static readonly IBrush ShellInset = NotaPalette.BgSunken;
 
     // The three device chains the one shell serves — each has its own param / bypass /
@@ -106,7 +106,7 @@ public sealed partial class DeviceChainView
         IReadOnlyList<(string Id, string Name)> Items, Func<string> Current, Func<string, string> Apply);
 
     // Small tertiary caption / mono readout helpers.
-    private static TextBlock Caps(string t, double fs = 9) => new() { Text = t, FontSize = fs, FontWeight = FontWeight.Bold, Foreground = TextTertiary, VerticalAlignment = VerticalAlignment.Center };
+    private static TextBlock Caps(string t, double fs = 9) => new() { Text = NotaText.Label(t), FontSize = fs, FontWeight = FontWeight.Medium, Foreground = TextSecondary, VerticalAlignment = VerticalAlignment.Center };
     private static TextBlock Mono(string t, double w) { var tb = new TextBlock { Text = t, FontSize = 9, Foreground = TextSecondary, Width = w, TextAlignment = TextAlignment.Right, VerticalAlignment = VerticalAlignment.Center }; tb.BindResource(TextBlock.FontFamilyProperty, "Font.Mono"); return tb; }
 
     private Border BuildCardShell(ShellSpec s, Control body)
@@ -127,13 +127,13 @@ public sealed partial class DeviceChainView
 
         var right = new StackPanel { Orientation = Orientation.Horizontal, Spacing = s.Compact ? 6 : 8, HorizontalAlignment = HorizontalAlignment.Right, VerticalAlignment = VerticalAlignment.Center };
 
-        // Type badge (mono caps). An instrument that reports its voices shows them here, live,
-        // as the badge's value — e.g. "SYNTH · 3/16".
-        string type = (s.Subtitle ?? "").ToUpperInvariant();
+        // Type badge (mono, muted, sentence case). An instrument that reports its voices shows
+        // them here, live, as the badge's value — e.g. "Synth · 3/16".
+        string type = NotaText.Label(s.Subtitle ?? "");
         var badge = new TextBlock
         {
-            Text = type, FontFamily = NotaFonts.MonoFamily, FontSize = NotaType.Eyebrow, FontWeight = FontWeight.Medium,
-            LetterSpacing = 1.2, Foreground = TextTertiary, VerticalAlignment = VerticalAlignment.Center,
+            Text = type, FontFamily = NotaFonts.MonoFamily, FontSize = NotaType.Eyebrow,
+            Foreground = NotaPalette.TextMuted, VerticalAlignment = VerticalAlignment.Center,
         };
         if (s.IsInstrument && _engine.InstrumentVoiceCount(_trackId) >= 0)
         {
@@ -141,7 +141,7 @@ public sealed partial class DeviceChainView
             {
                 int v = _engine.InstrumentVoiceCount(_trackId);
                 string voices = s.VoiceLabel?.Invoke(_engine, _trackId, v)
-                    ?? (_engine.PluginParamGet(_trackId, -1, IndexOfId("mono")) > 0.5f ? "MONO" : $"{Math.Max(0, v)}/16");
+                    ?? (_engine.PluginParamGet(_trackId, -1, IndexOfId("mono")) > 0.5f ? "Mono" : $"{Math.Max(0, v)}/16");
                 badge.Text = type.Length > 0 ? $"{type} · {voices}" : voices;
             });
         }
@@ -172,6 +172,7 @@ public sealed partial class DeviceChainView
             Padding = new Thickness(NotaSpace.DeviceInsetWide, 0), Child = headerGrid,
             Cursor = s.CanMove && SelectableKind(s.Kind) ? new Cursor(StandardCursorType.SizeAll) : null,
         };
+        headerBar.BindResource(Border.BoxShadowProperty, "Shadow.Raised");   // the raised strip's top bevel
         ToolTip.SetTip(headerBar, s.CanMove ? "Drag to reorder · right-click for A/B, move and delete" : "Right-click for more");
 
         // Factory presets for this device (or the card's own list), and applying one in place.
@@ -293,7 +294,7 @@ public sealed partial class DeviceChainView
         const double RingGap = 3;
         var selRing = new Border
         {
-            BorderBrush = AccentBright, BorderThickness = new Thickness(1.5),
+            BorderBrush = Brass, BorderThickness = new Thickness(1.5),
             CornerRadius = new CornerRadius(NotaRadius.BodyValue + RingGap), Margin = new Thickness(-RingGap),
             IsHitTestVisible = false, IsVisible = sel,
         };
@@ -308,7 +309,7 @@ public sealed partial class DeviceChainView
             Width = s.Width, Height = CardH,
             Child = new Panel { Children = { shell, selRing } },
         };
-        // Bypassed: the body loses its brass but stays playable (almanac: no opacity for state).
+        // Bypassed: the body takes the inactive look but stays playable (no opacity for state).
         if (s.Bypassed) card.AttachedToVisualTree += (_, _) => Inactive.Set(bodyHost, true, interactive: true);
         // The whole header drags the card to a new slot within its domain (audio FX / MIDI FX).
         if (s.CanMove && SelectableKind(s.Kind)) HookDeviceDrag(headerBar, card, s.Kind, di);

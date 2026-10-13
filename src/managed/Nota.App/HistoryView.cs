@@ -65,7 +65,7 @@ internal sealed class HistoryView : UserControl
         _history = history;
         _host = host;
 
-        var caption = new TextBlock { Text = "VERSIONS", Classes = { "GroupLabel" }, VerticalAlignment = VerticalAlignment.Center };
+        var caption = new TextBlock { Text = "Versions", Classes = { "GroupLabel" }, VerticalAlignment = VerticalAlignment.Center };
         _summary.BindResource(TextBlock.ForegroundProperty, "Brush.TextTertiary");
         var header = new Grid { ColumnDefinitions = new ColumnDefinitions("*,Auto,Auto"), Height = RowH, Margin = new Thickness(10, 8, 6, 4) };
         header.Children.Add(caption);

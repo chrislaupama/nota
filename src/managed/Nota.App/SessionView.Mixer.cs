@@ -51,7 +51,7 @@ public sealed partial class SessionView
         var stack = new StackPanel { Spacing = Gap };
         TextBlock Label(string text) => new()
         {
-            Text = text, FontSize = 9, FontWeight = FontWeight.Bold, Foreground = NotaPalette.TextDisabled,
+            Text = text, FontSize = 9, FontWeight = FontWeight.SemiBold, Foreground = NotaPalette.TextDisabled,
             Margin = new Thickness(10, 0), VerticalAlignment = VerticalAlignment.Center, TextTrimming = TextTrimming.CharacterEllipsis,
         };
         Border Row(double h, string text) => new() { Height = h, Child = Label(text) };
@@ -59,7 +59,7 @@ public sealed partial class SessionView
             stack.Children.Add(Section(Row(IoRowH, "INPUT"), Row(IoRowH, "MONITOR"), Row(IoRowH, "OUTPUT")));
         if (_showSends && ReturnRows > 0)
         {
-            var rows = Returns().Take(ReturnRows).Select((r, i) => (Control)Row(FaderRowH, $"SEND {(char)('A' + i)} · {r.Name.ToUpperInvariant()}")).ToArray();
+            var rows = Returns().Take(ReturnRows).Select((r, i) => (Control)Row(FaderRowH, $"Send {(char)('A' + i)} · {r.Name}")).ToArray();
             stack.Children.Add(Section(rows));
         }
         if (_showMixer)
@@ -177,8 +177,8 @@ public sealed partial class SessionView
         return g;
     }
 
-    // M / S / record-arm: a 20px chip. Engaged mute is a raised neutral, solo the brass fill,
-    // arm the record red with its pale disc (DESIGN.md § Controls).
+    // M / S / record-arm: a 20px key. Engaged mute fills amber, solo blue, arm the record red
+    // with its white disc (DESIGN.md § Controls), each with derived ink.
     private static Control MixToggle(string? label, bool initial, bool arm, Action<bool> set)
     {
         bool on = initial;
@@ -187,21 +187,22 @@ public sealed partial class SessionView
         var b = new Border
         {
             Height = 20, Margin = new Thickness(1.5, 0), CornerRadius = NotaRadius.Badge, BorderThickness = new Thickness(1),
-            BorderBrush = NotaPalette.BorderDefault, Cursor = new Avalonia.Input.Cursor(Avalonia.Input.StandardCursorType.Hand),
+            BorderBrush = NotaPalette.Seam, Cursor = new Avalonia.Input.Cursor(Avalonia.Input.StandardCursorType.Hand),
             Child = arm ? disc : text,
         };
         void Paint()
         {
             if (arm)
             {
-                b.Background = on ? NotaPalette.Record : NotaPalette.SurfaceCard;
-                b.BorderBrush = on ? NotaPalette.Record : NotaPalette.BorderDefault;
-                disc.Foreground = on ? NotaPalette.RecordInk : NotaPalette.TextDisabled;
+                b.Background = on ? NotaPalette.Record : NotaPalette.SurfaceRaised;
+                b.BorderBrush = on ? NotaPalette.Record : NotaPalette.Seam;
+                disc.Foreground = on ? NotaPalette.RecordInk : NotaPalette.Record;
                 return;
             }
-            bool solo = label == "S";
-            b.Background = on ? (solo ? NotaPalette.Accent : NotaPalette.BorderStrong) : NotaPalette.SurfaceCard;
-            text.Foreground = on ? (solo ? NotaPalette.TextOnAccent : NotaPalette.TextPrimary) : NotaPalette.TextMuted;
+            var fill = label == "S" ? NotaPalette.Solo : NotaPalette.Mute;
+            b.Background = on ? fill : NotaPalette.SurfaceRaised;
+            b.BorderBrush = on ? fill : NotaPalette.Seam;
+            text.Foreground = on ? NotaPalette.InkOn(fill) : NotaPalette.TextSecondary;
         }
         ToolTip.SetTip(b, arm ? "Arm for recording" : label == "M" ? "Mute" : "Solo");
         b.PointerPressed += (_, e) =>

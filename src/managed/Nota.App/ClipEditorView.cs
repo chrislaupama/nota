@@ -166,7 +166,7 @@ public sealed class ClipEditorView : UserControl
                     {
                         new TextBlock
                         {
-                            Text = "ENV", FontSize = 9, FontWeight = FontWeight.Bold, LetterSpacing = 1.08,
+                            Text = "Env", FontSize = 9, FontWeight = FontWeight.Medium,
                             Foreground = NotaPalette.TextTertiary, VerticalAlignment = VerticalAlignment.Center,
                         },
                         _targetText,

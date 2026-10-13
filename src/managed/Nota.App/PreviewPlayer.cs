@@ -539,7 +539,7 @@ public sealed class PreviewPlayer : UserControl
             if (t.Group != group)
             {
                 flyout.Items.Add(new Separator());
-                flyout.Items.Add(new MenuItem { Header = t.Group.ToUpperInvariant(), IsEnabled = false, FontSize = 9 });
+                flyout.Items.Add(new MenuItem { Header = NotaText.Label(t.Group), IsEnabled = false, FontSize = 11 });
                 group = t.Group;
             }
             Add(t.Name, t.Id, t.Blurb);
@@ -581,8 +581,8 @@ public sealed class PreviewPlayer : UserControl
         _playGlyph.IsVisible = !_playing;
         _stopGlyph.IsVisible = _playing;
         _playBtn.Background = _playing ? NotaPalette.Accent : NotaPalette.SurfaceRaised;
-        _playBtn.BorderBrush = _playing ? NotaPalette.Accent : NotaPalette.BorderStrong;
-        var glyph = has ? NotaPalette.Accent : NotaPalette.TextDisabled;
+        _playBtn.BorderBrush = _playing ? NotaPalette.Accent : NotaPalette.BorderDefault;
+        var glyph = _playing ? NotaPalette.TextOnAccent : has ? NotaPalette.TextPrimary : NotaPalette.TextDisabled;
         _playGlyph.Fill = glyph;
         _playGlyph.Stroke = glyph;
         _playBtn.Cursor = has ? new Cursor(StandardCursorType.Hand) : Cursor.Default;
@@ -1080,10 +1080,12 @@ public sealed class PreviewWaveform : Control
                     for (int i = s0; i < s1 && i < peaks.Length; i++) m = Math.Max(m, peaks[i]);
                     double amp = Math.Max(0.04, Math.Pow(Math.Min(1, m), 0.55));
                     double x = (b + 0.5) / n;
+                    // Played: the accent (live). Ahead of the pointer: secondary ink. At rest:
+                    // neutral — a sample that is not playing carries no orange.
                     IBrush c = started && x <= p ? NotaPalette.Accent
-                             : _hover is { } hv && x <= hv && x > p ? NotaPalette.AccentMute
-                             : _playing ? NotaPalette.AccentEdge
-                             : NotaPalette.AccentMute;
+                             : _hover is { } hv && x <= hv && x > p ? NotaPalette.TextSecondary
+                             : _playing ? NotaPalette.TextMuted
+                             : NotaPalette.TextFaint;
                     double bh = innerH * amp;
                     ctx.FillRectangle(c, new Rect(InsetX + b * (bw + 1), mid - bh / 2, bw, bh), 1);
                 }

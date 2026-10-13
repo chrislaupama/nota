@@ -55,7 +55,7 @@ public sealed partial class ArrangementView
     {
         var label = new TextBlock
         {
-            Text = "SECTIONS", Classes = { "SectionLabel" },
+            Text = "Sections", Classes = { "SectionLabel" },
             HorizontalAlignment = HorizontalAlignment.Left,
             VerticalAlignment = VerticalAlignment.Center,
             Margin = new Thickness(8, 0, 0, 0),

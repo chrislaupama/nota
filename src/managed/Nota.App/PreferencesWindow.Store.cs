@@ -181,7 +181,7 @@ public sealed partial class PreferencesWindow
                     Orientation = Orientation.Horizontal, Spacing = 8,
                     Children =
                     {
-                        new TextBlock { Text = h.Title, FontSize = 9, FontWeight = FontWeight.Bold, LetterSpacing = 1.1, Foreground = TextTertiary, VerticalAlignment = VerticalAlignment.Center },
+                        new TextBlock { Text = h.Title, FontSize = 9, FontWeight = FontWeight.Medium, Foreground = TextTertiary, VerticalAlignment = VerticalAlignment.Center },
                         new TextBlock { Text = h.Count.ToString(), FontSize = 9, FontFamily = NotaFonts.MonoFamily, Foreground = TextDisabled, VerticalAlignment = VerticalAlignment.Center },
                     },
                 },
@@ -379,7 +379,7 @@ public sealed partial class PreferencesWindow
                     Children =
                     {
                         new TextBlock { Text = p.Name, FontSize = 13, FontWeight = FontWeight.SemiBold, Foreground = here ? TextPrimary : TextSecondary, Margin = new Thickness(0, 0, 8, 0), VerticalAlignment = VerticalAlignment.Center },
-                        new TextBlock { Text = KindLabel(p.Kind), FontSize = 9, LetterSpacing = 0.7, FontFamily = NotaFonts.MonoFamily, Foreground = TextMuted, VerticalAlignment = VerticalAlignment.Center },
+                        new TextBlock { Text = KindLabel(p.Kind), FontSize = 9, FontFamily = NotaFonts.MonoFamily, Foreground = TextMuted, VerticalAlignment = VerticalAlignment.Center },
                         PlatformIcons(p.Platforms),
                     },
                 },
@@ -511,11 +511,11 @@ public sealed partial class PreferencesWindow
 
     private static string KindLabel(string kind) => kind switch
     {
-        "instrument" => "INSTRUMENT",
-        "effect" => "EFFECT",
+        "instrument" => "Instrument",
+        "effect" => "Effect",
         "midi" => "MIDI",
-        "bundle" => "COLLECTION",
-        _ => kind.ToUpperInvariant(),
+        "bundle" => "Collection",
+        _ => NotaText.Label(kind.ToUpperInvariant()),
     };
 
     private void InstallFromStore(StorePlugin p)

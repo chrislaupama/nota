@@ -223,7 +223,7 @@ public sealed partial class SessionView
             BorderThickness = new Thickness(1);
             ClipToBounds = true;
 
-            var stripe = new Border { Height = 3, VerticalAlignment = VerticalAlignment.Top, Background = c.Kind == ColKind.Master ? NotaPalette.Accent : c.Brush };
+            var stripe = new Border { Height = 3, VerticalAlignment = VerticalAlignment.Top, Background = c.Kind == ColKind.Master ? NotaPalette.Master : c.Brush };
             var name = new TextBlock
             {
                 Text = c.Name, FontSize = 12, FontWeight = FontWeight.SemiBold, TextTrimming = TextTrimming.CharacterEllipsis,
@@ -251,7 +251,7 @@ public sealed partial class SessionView
             }
             if (c.Kind == ColKind.Track)
             {
-                var arrText = new TextBlock { Text = "ARR", FontSize = 8, FontWeight = FontWeight.Medium, Foreground = NotaPalette.Accent };
+                var arrText = new TextBlock { Text = "Arr", FontSize = 8, FontWeight = FontWeight.Medium, Foreground = NotaPalette.Accent };
                 arrText.BindResource(TextBlock.FontFamilyProperty, "Font.Mono");
                 _arr = new Border
                 {

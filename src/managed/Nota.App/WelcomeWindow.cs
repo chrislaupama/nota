@@ -105,7 +105,7 @@ public sealed class WelcomeWindow : NotaWindow
 
         // --- Recent projects ----------------------------------------------
         var recentHead = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 8, Margin = new Thickness(0, 0, 0, 8) };
-        recentHead.Children.Add(new TextBlock { Classes = { "SectionLabel" }, Text = "RECENT PROJECTS", VerticalAlignment = VerticalAlignment.Bottom });
+        recentHead.Children.Add(new TextBlock { Classes = { "SectionLabel" }, Text = "Recent projects", VerticalAlignment = VerticalAlignment.Bottom });
         recentHead.Children.Add(new TextBlock
         {
             Text = recent.Count.ToString(NotaNum.Culture),

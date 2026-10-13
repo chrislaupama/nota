@@ -1342,7 +1342,7 @@ public sealed partial class ArrangementView
                         DrawRecPeaks(ctx, re, rr);
                         if (rr.Width > 34)
                         {
-                            var ft = new FormattedText("REC", CultureInfo.InvariantCulture,
+                            var ft = new FormattedText("Rec", CultureInfo.InvariantCulture,
                                 FlowDirection.LeftToRight, NotaFonts.SansBold, 9, RecText);
                             Glyph.Draw(ctx, GlyphKind.Record, new Rect(rr.X + 5, rr.Y + 3 + (ft.Height - 7) / 2, 7, 7), RecText);
                             ctx.DrawText(ft, new Point(rr.X + 16, rr.Y + 3));

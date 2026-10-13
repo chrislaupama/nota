@@ -230,11 +230,11 @@ public sealed partial class PreferencesWindow
 
     private static string PackKindLabel(string kind) => kind switch
     {
-        "one-shots" => "ONE-SHOTS",
-        "loops" => "LOOPS",
-        "multisample" => "INSTRUMENT",
-        "mixed" => "MIXED",
-        _ => kind.ToUpperInvariant(),
+        "one-shots" => "One-shots",
+        "loops" => "Loops",
+        "multisample" => "Instrument",
+        "mixed" => "Mixed",
+        _ => NotaText.Label(kind.ToUpperInvariant()),
     };
 
     private static string Megabytes(long bytes)
@@ -252,7 +252,7 @@ public sealed partial class PreferencesWindow
                     Children =
                     {
                         new TextBlock { Text = p.Name, FontSize = 13, FontWeight = FontWeight.SemiBold, Foreground = TextPrimary, Margin = new Thickness(0, 0, 8, 0), VerticalAlignment = VerticalAlignment.Center },
-                        new TextBlock { Text = PackKindLabel(p.Kind), FontSize = 9, LetterSpacing = 0.7, FontFamily = NotaFonts.MonoFamily, Foreground = TextMuted, VerticalAlignment = VerticalAlignment.Center },
+                        new TextBlock { Text = PackKindLabel(p.Kind), FontSize = 9, FontFamily = NotaFonts.MonoFamily, Foreground = TextMuted, VerticalAlignment = VerticalAlignment.Center },
                     },
                 },
                 new TextBlock { Text = $"{p.Author} · {p.Version} · {p.License}", FontSize = 10, FontFamily = NotaFonts.MonoFamily, Foreground = TextTertiary },

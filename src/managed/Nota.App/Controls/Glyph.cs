@@ -81,7 +81,7 @@ internal sealed class Glyph : Control
     {
         double w = r.Width, h = r.Height, x = r.X, y = r.Y, s = Math.Min(w, h);
         double cx = x + w / 2, cy = y + h / 2;
-        var pen = new Pen(ink, Math.Max(1.2, s * 0.15), lineCap: PenLineCap.Round, lineJoin: PenLineJoin.Round);
+        var pen = new Pen(ink, Math.Max(1.2, s * 1.5 / 16), lineCap: PenLineCap.Round, lineJoin: PenLineJoin.Round);
         switch (kind)
         {
             case GlyphKind.Play:

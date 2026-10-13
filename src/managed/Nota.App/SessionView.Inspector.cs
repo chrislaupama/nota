@@ -87,7 +87,7 @@ public sealed partial class SessionView
 
     private static TextBlock SectionHead(string text) => new()
     {
-        Text = text, FontSize = 9, FontWeight = FontWeight.Bold, Foreground = NotaPalette.TextMuted,
+        Text = text, FontSize = 9, FontWeight = FontWeight.SemiBold, Foreground = NotaPalette.TextMuted,
     };
 
     // A labelled value well (LENGTH, LOOP, START…): a click opens its choices when it has any.
@@ -116,7 +116,7 @@ public sealed partial class SessionView
         return new StackPanel
         {
             Spacing = 4,
-            Children = { new TextBlock { Text = label, FontSize = 9, FontWeight = FontWeight.Bold, Foreground = NotaPalette.TextTertiary }, well },
+            Children = { new TextBlock { Text = label, FontSize = 9, FontWeight = FontWeight.SemiBold, Foreground = NotaPalette.TextTertiary }, well },
         };
     }
 
@@ -223,7 +223,7 @@ public sealed partial class SessionView
         var brush = ClipBrush(c, scene);
         double len = _engine.SessionSlotLength(id, scene);
         string kind = c.IsInstrument ? "MIDI" : "AUDIO";
-        s.Children.Add(Title(brush, ClipName(c, scene), $"{c.Name.ToUpperInvariant()} · {SceneName(scene).ToUpperInvariant()} · {kind}"));
+        s.Children.Add(Title(brush, ClipName(c, scene), $"{c.Name} · {SceneName(scene)} · {NotaText.Label(kind)}"));
 
         _inspPreview = new InspectorPreview(this, c, scene, brush);
         s.Children.Add(new Border
@@ -369,7 +369,7 @@ public sealed partial class SessionView
                 Spacing = 4,
                 Children =
                 {
-                    new TextBlock { Text = "TEMPO", FontSize = 9, FontWeight = FontWeight.Bold, Foreground = NotaPalette.TextTertiary },
+                    new TextBlock { Text = "Tempo", FontSize = 9, FontWeight = FontWeight.SemiBold, Foreground = NotaPalette.TextTertiary },
                     new Border { Height = NotaSize.Shell, CornerRadius = NotaRadius.Badge, Background = NotaPalette.BgSunken, BorderBrush = NotaPalette.BorderDefault, BorderThickness = new Thickness(1), Child = row },
                 },
             };
@@ -409,7 +409,7 @@ public sealed partial class SessionView
     private void BuildEmptyInspector(StackPanel s, Column c, int scene)
     {
         bool rec = _recTrack == c.TrackId && _recScene == scene;
-        s.Children.Add(Title(NotaPalette.BorderStrong, rec ? "Recording" : "Empty slot", $"{c.Name.ToUpperInvariant()} · {SceneName(scene).ToUpperInvariant()}"));
+        s.Children.Add(Title(NotaPalette.BorderStrong, rec ? "Recording" : "Empty slot", $"{c.Name} · {SceneName(scene)}"));
         bool stop = _engine.GetSessionSlotStopButton(c.TrackId, scene);
         var rows = new StackPanel { Spacing = 8 };
         rows.Children.Add(Row("Stop button", Chip(stop ? "On" : "Removed", false, _ => { _engine.SetSessionSlotStopButton(c.TrackId, scene, !stop); RefreshSlot(c.TrackId, scene); })));

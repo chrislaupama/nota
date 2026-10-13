@@ -99,7 +99,7 @@ internal sealed class SnapChip
         _shown = key;
 
         _value.Text = text;
-        if (_caption is not null) _caption.Text = s.Adaptive ? "AUTO GRID" : "GRID";
+        if (_caption is not null) _caption.Text = s.Adaptive ? "Auto grid" : "Grid";
         _value.TextDecorations = r.SnapOn ? null : TextDecorations.Strikethrough;
         _value.Foreground = !r.SnapOn ? NotaPalette.TextDisabled
             : r.FinerThanVisible ? NotaPalette.TextSecondary

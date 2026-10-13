@@ -135,7 +135,7 @@ public sealed partial class PianoRollView
     private sealed class LaneTabs : Control
     {
         private static readonly (LaneMode Mode, string Label)[] Tabs =
-            { (LaneMode.Velocity, "VEL"), (LaneMode.Bend, "BEND"), (LaneMode.Pressure, "PRES"), (LaneMode.Slide, "SLIDE") };
+            { (LaneMode.Velocity, "Vel"), (LaneMode.Bend, "Bend"), (LaneMode.Pressure, "Pres"), (LaneMode.Slide, "Slide") };
         private const double Top = 6, RowStep = 15;
         private readonly PianoRollView _o;
         private int _hover = -1;

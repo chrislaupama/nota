@@ -750,13 +750,13 @@ public sealed class BrowserView : UserControl
     {
         var label = new TextBlock
         {
-            Text = item.Name,
+            Text = NotaText.Label(item.Name),
             Classes = { "GroupLabel" },
             VerticalAlignment = VerticalAlignment.Center,
             Margin = new Thickness(10, 0, 0, 0),
         };
         var rule = new Border { Height = 1, VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(7, 0, 7, 0) };
-        rule.BindResource(Border.BackgroundProperty, "Brush.BorderDefault");
+        rule.BindResource(Border.BackgroundProperty, "Brush.Rule");
         var count = new TextBlock
         {
             Text = item.GroupCount.ToString(),

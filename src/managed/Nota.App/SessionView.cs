@@ -208,7 +208,7 @@ public sealed partial class SessionView : UserControl
             return false;
         }
         string Parent(NotaTrackInfo t)
-            => t.GroupId > 0 && byId.TryGetValue(t.GroupId, out var g) ? " · " + TrackNames.Of(_engine, g).ToUpperInvariant() : "";
+            => t.GroupId > 0 && byId.TryGetValue(t.GroupId, out var g) ? " · " + TrackNames.Of(_engine, g) : "";
 
         foreach (var ti in infos)
         {

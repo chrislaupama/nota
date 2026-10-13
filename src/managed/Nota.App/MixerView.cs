@@ -23,10 +23,10 @@ namespace Nota.App;
 public sealed class MixerView : UserControl
 {
     private static readonly IBrush Card = NotaPalette.SurfaceCard;
-    private static readonly IBrush MasterBg = NotaPalette.SurfaceRaised;
+    private static readonly IBrush MasterBg = NotaPalette.SurfaceCard;   // Saine: every strip is the panel tone
     private static readonly IBrush Sunken = NotaPalette.BgSunken;
     private static readonly IBrush BorderDef = NotaPalette.BorderDefault;
-    private static readonly IBrush BorderInner = NotaPalette.SurfaceRaised;
+    private static readonly IBrush BorderInner = NotaPalette.Rule;       // the rule that divides inside a strip
     private static readonly IBrush BorderStrong = NotaPalette.BorderStrong;
     private static readonly IBrush Brass = NotaPalette.Accent;
     private static readonly IBrush Danger = NotaPalette.Danger;
@@ -145,14 +145,14 @@ public sealed class MixerView : UserControl
     private Control MasterStrip()
     {
         var col = new StackPanel();
-        col.Children.Add(Header("Master", NotaPalette.Accent, MasterBg));
+        col.Children.Add(Header("Master", NotaPalette.Master, MasterBg));
         var ioRow = IoRow("Sum bus", "→ Output");
         ioRow.IsVisible = _ioVisible;
         _ioSections.Add(ioRow);
         col.Children.Add(ioRow);
 
         Control db;
-        var faderRow = FaderRow(-1, GetMasterVolume?.Invoke() ?? 1f, NotaPalette.Accent, out db, out var meter);
+        var faderRow = FaderRow(-1, GetMasterVolume?.Invoke() ?? 1f, NotaPalette.Master, out db, out var meter);
         _meters.Add((-1, meter));
         col.Children.Add(faderRow);
         col.Children.Add(db);
@@ -184,16 +184,16 @@ public sealed class MixerView : UserControl
         var xf = Crossfader();
         Grid.SetColumn(xf, 2);
         grid.Children.Add(xf);
-        return new Border { Height = 34, Background = MasterBg, BorderBrush = BorderDef, BorderThickness = new Thickness(0, 1, 0, 0), Padding = new Thickness(12, 0), Child = grid };
+        return new Border { Height = 32, Background = MasterBg, BorderBrush = NotaPalette.Seam, BorderThickness = new Thickness(0, 1, 0, 0), Padding = new Thickness(12, 0), Child = grid };
     }
 
     private Border SectionToggle(string label, bool initial, Action<bool> set)
     {
         bool on = initial;
         var t = new TextBlock { Text = label, FontSize = 10, FontWeight = FontWeight.SemiBold, HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center };
-        var b = new Border { Height = 20, Padding = new Thickness(8, 0), CornerRadius = NotaRadius.Tile, BorderThickness = new Thickness(1), VerticalAlignment = VerticalAlignment.Center, Cursor = new Cursor(StandardCursorType.Hand), Child = t };
-        // Engaged, not the primary action: Brass Wash + brass border + Brass Hover text (solid brass is for one action only).
-        void Paint() { b.Background = on ? NotaPalette.AccentSubtle : MasterBg; b.BorderBrush = on ? NotaPalette.BorderBrass : BorderStrong; t.Foreground = on ? NotaPalette.AccentHover : TextSecondary; }
+        var b = new Border { Height = 22, Padding = new Thickness(8, 0), CornerRadius = NotaRadius.Control, BorderThickness = new Thickness(1), VerticalAlignment = VerticalAlignment.Center, Cursor = new Cursor(StandardCursorType.Hand), Child = t };
+        // Toggled on: a solid accent key with derived ink; off: a raised key.
+        void Paint() { b.Background = on ? Brass : NotaPalette.SurfaceRaised; b.BorderBrush = on ? Brass : NotaPalette.Seam; t.Foreground = on ? OnAccent : TextSecondary; }
         b.PointerPressed += (_, e) => { e.Handled = true; on = !on; set(on); Paint(); };
         Paint();
         return b;
@@ -224,8 +224,9 @@ public sealed class MixerView : UserControl
 
     private Control Header(string name, IBrush topColor, IBrush bg)
     {
-        var grid = new Grid { RowDefinitions = new RowDefinitions("2,*") };
-        grid.Children.Add(new Border { Background = topColor, Height = 2, VerticalAlignment = VerticalAlignment.Top });
+        // Saine's strip header: a 3px bar in the track colour on top (muted grey for master).
+        var grid = new Grid { RowDefinitions = new RowDefinitions("3,*") };
+        grid.Children.Add(new Border { Background = topColor, Height = 3, VerticalAlignment = VerticalAlignment.Top });
         var label = new TextBlock { Text = name, FontSize = 10, FontWeight = FontWeight.SemiBold, Foreground = TextPrimary, VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(7, 0, 7, 0), TextTrimming = TextTrimming.CharacterEllipsis };
         Grid.SetRow(label, 1);
         grid.Children.Add(label);
@@ -406,7 +407,7 @@ public sealed class MixerView : UserControl
         void Paint()
         {
             b.Background = on ? NotaPalette.Record : MasterBg;
-            b.BorderBrush = on ? NotaPalette.Record : BorderStrong;
+            b.BorderBrush = on ? NotaPalette.Record : NotaPalette.Seam;
             disc.Foreground = on ? NotaPalette.RecordInk : NotaPalette.Record;
         }
         b.PointerPressed += (_, e) => { if (!e.GetCurrentPoint(b).Properties.IsLeftButtonPressed) return; e.Handled = true; on = !on; set(on); Paint(); };
@@ -417,14 +418,15 @@ public sealed class MixerView : UserControl
     private Border Toggle(string label, bool danger, bool initial, Action<bool> set)
     {
         bool on = initial;
-        var t = new TextBlock { Text = label, FontSize = 9, FontWeight = FontWeight.Bold, HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center };
+        var t = new TextBlock { Text = label, FontSize = 9, FontWeight = FontWeight.SemiBold, HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center };
         var b = new Border { Width = 20, Height = 17, CornerRadius = NotaRadius.Control, BorderThickness = new Thickness(1), Child = t };
         void Paint()
         {
-            var accent = danger ? Danger : Brass;
-            b.Background = on ? accent : MasterBg;
-            b.BorderBrush = on ? accent : BorderStrong;
-            t.Foreground = on ? OnAccent : TextSecondary;
+            // On: mute amber, solo blue (Saine § Arrangement), with derived ink.
+            var fill = danger ? NotaPalette.Danger : label == "S" ? NotaPalette.Solo : NotaPalette.Mute;
+            b.Background = on ? fill : NotaPalette.SurfaceRaised;
+            b.BorderBrush = on ? fill : NotaPalette.Seam;
+            t.Foreground = on ? NotaPalette.InkOn(fill) : TextSecondary;
         }
         b.PointerPressed += (_, e) => { e.Handled = true; on = !on; set(on); Paint(); };
         Paint();

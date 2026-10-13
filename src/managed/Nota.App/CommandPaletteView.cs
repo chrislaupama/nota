@@ -285,7 +285,7 @@ internal sealed class CommandPaletteView : UserControl
     private static Control Header(string label)
     {
         var g = new Grid { ColumnDefinitions = new ColumnDefinitions("Auto,*"), ColumnSpacing = 6, Height = 24, Margin = new Thickness(12, 0) };
-        var t = new TextBlock { Text = label, FontSize = 9, FontWeight = FontWeight.Bold, LetterSpacing = 0.9, Foreground = NotaPalette.TextTertiary, VerticalAlignment = VerticalAlignment.Bottom, Margin = new Thickness(0, 0, 0, 4) };
+        var t = new TextBlock { Text = label, FontSize = 9, FontWeight = FontWeight.Medium, Foreground = NotaPalette.TextTertiary, VerticalAlignment = VerticalAlignment.Bottom, Margin = new Thickness(0, 0, 0, 4) };
         var line = new Border { Height = 1, Background = NotaPalette.GraphBorder, VerticalAlignment = VerticalAlignment.Bottom, Margin = new Thickness(0, 0, 0, 7) };
         g.Children.Add(t);
         Grid.SetColumn(line, 1); g.Children.Add(line);

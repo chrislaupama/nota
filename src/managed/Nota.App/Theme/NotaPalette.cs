@@ -386,6 +386,8 @@ internal static class NotaPalette
         T("#B3B45E", "#7E7F2F"), // Vox
         T("#8E9DB0", "#5D6C80"), // Return
     };
+    // The master bus: Saine's muted grey, not a hue — it is the sum, not a track.
+    public static readonly SolidColorBrush Master = T("#A4A9B0", "#4F535A"); // Brush.Master
     // Return buses draw from the ninth role rather than a palette of their own.
     private static readonly SolidColorBrush[] ReturnSlots = { T("#8E9DB0", "#5D6C80"), T("#7A889A", "#4E5B6D") };
 

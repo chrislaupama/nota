@@ -132,7 +132,7 @@ public sealed partial class PreferencesWindow : NotaWindow
         {
             nav.Children.Add(new TextBlock
             {
-                Text = group, FontSize = 9, FontWeight = FontWeight.Bold, LetterSpacing = 1.1,
+                Text = group, FontSize = 9, FontWeight = FontWeight.Medium,
                 Foreground = TextDisabled, Margin = new Thickness(10, 12, 10, 5),
             });
             foreach (var page in pages) nav.Children.Add(BuildNavItem(page, index++));
@@ -328,8 +328,8 @@ public sealed partial class PreferencesWindow : NotaWindow
         device.Add(Row("Latency", latency));
 
         var body = Sections(
-            Section("AUDIO DEVICE", 6, device.ToArray()),
-            Section("TEST", 8, TestToneRow(), CpuCheckRow(engine)));
+            Section("Audio device", 6, device.ToArray()),
+            Section("Test", 8, TestToneRow(), CpuCheckRow(engine)));
         _loading = false;
         return body;
     }
@@ -482,7 +482,7 @@ public sealed partial class PreferencesWindow : NotaWindow
             items.Add(Table(rows));
         }
         items.Add(Caption("Switch a controller off to stop Nota listening to it. New devices are on by default."));
-        return Sections(Section("MIDI INPUTS", 8, items.ToArray()), MpeSection(engine));
+        return Sections(Section("MIDI inputs", 8, items.ToArray()), MpeSection(engine));
     }
 
     private static readonly int[] MpeBendRanges = [12, 24, 48, 96];
@@ -621,8 +621,8 @@ public sealed partial class PreferencesWindow : NotaWindow
         }
 
         return Sections(
-            Section("GAMEPAD INPUT", 10, enable, padHost),
-            Section("LAYOUT", 10,
+            Section("Gamepad input", 10, enable, padHost),
+            Section("Layout", 10,
                 Table(map),
                 Caption("Notes go to the armed (record-enabled) instrument track — enable Record to capture them, or use the audition track to just play.", muted: true),
                 Caption("Any button can be mapped to a control instead: click MIDI in the top-right, click the control, then press the button. A mapped button drives that control and stops playing its note; the rest of the pad keeps the layout above. The sticks and the trigger travel map the same way and are continuous, so they suit a knob or a fader — they play no notes, and do nothing until mapped. Mappings are listed in the browser's MIDI Map tab and travel with the project.")));
@@ -713,11 +713,11 @@ public sealed partial class PreferencesWindow : NotaWindow
         };
 
         return Sections(
-            Section("PLUGIN SCAN FOLDERS", 10,
+            Section("Plugin scan folders", 10,
                 well,
                 new StackPanel { Orientation = Orientation.Horizontal, Spacing = 8, Children = { addBtn, removeBtn } },
                 Caption("Extra folders are searched for VST3 plugins on the next rescan (AU uses the system registry).")),
-            Section("SCAN", 10,
+            Section("Scan", 10,
                 new StackPanel { Orientation = Orientation.Horizontal, Spacing = 14, Children = { rescan, rescanStatus } }));
     }
 
@@ -727,7 +727,7 @@ public sealed partial class PreferencesWindow : NotaWindow
     {
         if (_main is null) return Caption("Content folders are unavailable in this window.");
         var settings = _main.Settings;
-        return Sections(Section("CONTENT FOLDERS", 10, Table(new List<Control>
+        return Sections(Section("Content folders", 10, Table(new List<Control>
         {
             FolderRow("Samples",
                 () => settings.Current.SamplesFolder, () => settings.ResolvedSamplesFolder(),
@@ -752,7 +752,7 @@ public sealed partial class PreferencesWindow : NotaWindow
             if (ok) main.SetKeepVersionHistory(false);
             else sw.IsOn = true;
         };
-        return Section("VERSION HISTORY", 10, row,
+        return Section("Version history", 10, row,
             Caption("Every save records a version, listed in the browser's History tab. Versions share their audio, so each one costs only what it adds."));
     }
 
@@ -1348,7 +1348,7 @@ public sealed partial class PreferencesWindow : NotaWindow
 
     private static TextBlock SectionLabel(string text) => new()
     {
-        Text = text, Classes = { "SectionLabel" }, LetterSpacing = 1.2, Margin = new Thickness(0, 0, 0, 4),
+        Text = text, Classes = { "SectionLabel" }, Margin = new Thickness(0, 0, 0, 4),
     };
 
     private static TextBlock RowLabel(string text) => new()

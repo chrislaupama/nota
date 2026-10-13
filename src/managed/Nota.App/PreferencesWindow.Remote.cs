@@ -166,8 +166,8 @@ public sealed partial class PreferencesWindow
         };
 
         return Sections(
-            Section("NOTA REMOTE", 10, enable, details),
-            Section("TRUSTED DEVICES", 8, trustedHost,
+            Section("Nota Remote", 10, enable, details),
+            Section("Trusted devices", 8, trustedHost,
                 Caption("A trusted phone reconnects from its Home Screen icon without a code. Forget it and it has to scan again. Turning Remote off disconnects everyone.", muted: true)),
             warn);
     }

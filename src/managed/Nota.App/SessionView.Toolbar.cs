@@ -51,7 +51,7 @@ public sealed partial class SessionView
         ToolTip.SetTip(_recBtn, "Record into the armed track at the selected scene · click again to keep the take");
         _recBtn.Click += (_, _) => SessionRec();
 
-        var fixedLabel = Caps("FIXED");
+        var fixedLabel = Caps("Fixed");
         _fixedSeg = new Border();
         var fixedRow = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 6, VerticalAlignment = VerticalAlignment.Center, Children = { fixedLabel, _fixedSeg } };
         ToolTip.SetTip(fixedRow, "Fixed record length in bars — the take stops by itself");
@@ -64,7 +64,7 @@ public sealed partial class SessionView
             Content = new StackPanel
             {
                 Orientation = Orientation.Horizontal, Spacing = 8,
-                Children = { Caps("QUANT"), _quantLabel, new Glyph(GlyphKind.ChevronDown, 7) { Foreground = NotaPalette.TextDisabled } },
+                Children = { Caps("Quant"), _quantLabel, new Glyph(GlyphKind.ChevronDown, 7) { Foreground = NotaPalette.TextDisabled } },
             },
         };
         ToolTip.SetTip(quant, "Launch quantize: when clips and scenes start");
@@ -145,7 +145,7 @@ public sealed partial class SessionView
 
     private static TextBlock Caps(string text) => new()
     {
-        Text = text, FontSize = 9, FontWeight = FontWeight.Bold, Foreground = NotaPalette.TextTertiary, VerticalAlignment = VerticalAlignment.Center,
+        Text = text, FontSize = 9, FontWeight = FontWeight.SemiBold, Foreground = NotaPalette.TextTertiary, VerticalAlignment = VerticalAlignment.Center,
     };
 
     private void SessionRec()

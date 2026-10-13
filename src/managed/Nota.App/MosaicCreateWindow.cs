@@ -92,7 +92,7 @@ public sealed class MosaicCreateWindow : NotaWindow
         Grid.SetColumn(_instSub, 1); instHead.Children.Add(_instSub);
         Grid.SetColumn(legend, 3); instHead.Children.Add(legend);
         _map.Height = 150;
-        var tableHead = TableRow("FILE", "NOTE", "LAYER", "RR", "RELEASE", "CONF", "", TextTertiary, caps: true);
+        var tableHead = TableRow("File", "NOTE", "LAYER", "RR", "RELEASE", "CONF", "", TextTertiary, caps: true);
         var table = new Grid { RowDefinitions = new RowDefinitions("Auto,*") };
         table.Children.Add(tableHead);
         var scroll = new ScrollViewer { Content = _rows };
@@ -309,7 +309,7 @@ public sealed class MosaicCreateWindow : NotaWindow
     private static Border Panel(string title, Control body, string? note = null)
     {
         var head = new Grid { ColumnDefinitions = new ColumnDefinitions("*,Auto"), Margin = new Thickness(0, 0, 0, 5) };
-        head.Children.Add(new TextBlock { Text = title.ToUpperInvariant(), FontSize = NotaType.KnobLabel, FontWeight = FontWeight.Bold, LetterSpacing = NotaType.SectionLabelTracking, Foreground = TextTertiary });
+        head.Children.Add(new TextBlock { Text = NotaText.Label(title), FontSize = NotaType.DeviceSection, FontWeight = FontWeight.SemiBold, Foreground = TextTertiary });
         if (note is not null) { var n = Mono(note, TextTertiary, 7.5); Grid.SetColumn(n, 1); head.Children.Add(n); }
         return Box(new StackPanel { Children = { head, body } });
     }
@@ -353,7 +353,7 @@ public sealed class MosaicCreateWindow : NotaWindow
         for (int i = 0; i < cells.Length; i++)
         {
             var tb = caps
-                ? new TextBlock { Text = cells[i], FontSize = NotaType.KnobLabel, FontWeight = FontWeight.Bold, LetterSpacing = NotaType.KnobLabelTracking, Foreground = TextTertiary, VerticalAlignment = VerticalAlignment.Center }
+                ? new TextBlock { Text = NotaText.Label(cells[i]), FontSize = NotaType.KnobLabel, FontWeight = FontWeight.Medium, Foreground = TextTertiary, VerticalAlignment = VerticalAlignment.Center }
                 : Mono(cells[i], i == 5 && confInk is not null ? confInk : i == 6 ? actionInk ?? TextTertiary : ink, 8.5);
             tb.TextTrimming = TextTrimming.CharacterEllipsis;
             if (strike && i == 0) tb.TextDecorations = TextDecorations.Strikethrough;
