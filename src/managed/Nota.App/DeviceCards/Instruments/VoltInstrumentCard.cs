@@ -921,8 +921,8 @@ internal sealed class VoltInstrumentCard : IInstrumentCard
         };
         string Meta()
         {
-            string mode = G("mono") >= 0.5f ? "MONO" : "POLY 16";
-            return $"{mode} · ±{BendRange(G("bendrange"))} ST · GAIN {Pct(G("volume"))}";
+            string mode = G("mono") >= 0.5f ? "Mono" : "Poly 16";
+            return $"{mode} · ±{BendRange(G("bendrange"))} st · gain {Pct(G("volume"))}";
         }
         var statusBar = new Grid { Height = StatusH, ColumnDefinitions = new ColumnDefinitions("*,Auto"), ColumnSpacing = 10 };
         statusBar.Children.Add(status);

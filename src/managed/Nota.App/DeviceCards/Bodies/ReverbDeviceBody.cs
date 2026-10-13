@@ -357,7 +357,7 @@ internal sealed class ReverbDeviceBody : IDeviceBody
             var mid = new StackPanel { Spacing = 6, Children = {
                 SliderRow("MIX", DryWet, Pct, () => On(WetOnly)),
                 SliderRow("WIDTH", WidthP, Pct),
-                SliderRow("MONO f", BassMono, v => v <= 0.001 ? "off" : NotaNum.F($"{Exp(v, 30, 500):0}")) } };
+                SliderRow("Mono f", BassMono, v => v <= 0.001 ? "off" : NotaNum.F($"{Exp(v, 30, 500):0}")) } };
             ToolTip.SetTip(mid.Children[2], "Bass mono — below this frequency the tail is mono, so a wide reverb does not smear the low end (off at the far left)");
 
             var wetOnly = Toggle(WetOnly, "Wet only (send)");

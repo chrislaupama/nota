@@ -455,7 +455,7 @@ internal sealed class DelayDeviceBody : IDeviceBody
             var mid = new StackPanel { Spacing = 6, Children = {
                 SliderRow("MIX", DryWet, Pct, 52, () => On(WetOnly)),
                 SliderRow("WIDTH", WidthP, v => NotaNum.F($"{v * 200:0}"), 52),
-                SliderRow("MONO f", BassMono, v => v <= 0.001 ? "off" : NotaNum.F($"{Exp(v, 30, 500):0}"), 52) } };
+                SliderRow("Mono f", BassMono, v => v <= 0.001 ? "off" : NotaNum.F($"{Exp(v, 30, 500):0}"), 52) } };
 
             var wetOnly = Toggle(WetOnly, "Wet only (send)");
             ToolTip.SetTip(wetOnly, "Wet only — repeats with no dry, for a return / send track");

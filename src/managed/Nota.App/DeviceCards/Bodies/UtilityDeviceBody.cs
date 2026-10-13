@@ -469,7 +469,7 @@ internal sealed class UtilityDeviceBody : IDeviceBody
                 ToggleLatch(InvertR, () => "Ø R", "Invert the right channel's phase", h: 15, padX: 6),
                 ToggleLatch(Mute, () => "Mute", "Mute the output", h: 15, padX: 6));
             // Mono on: WIDTH · MONO f | BALANCE; off: WIDTH · BALANCE | GAIN — the mockup's two states.
-            var monoRow = SliderRow("MONO f", MonoFreq, HzF);
+            var monoRow = SliderRow("Mono f", MonoFreq, HzF);
             var balA = SliderRow("BALANCE", Balance, v => NotaNum.F($"{v:+0.00;−0.00;0.00}"), bipolar: true);
             var balB = SliderRow("BALANCE", Balance, v => NotaNum.F($"{v:+0.00;−0.00;0.00}"), bipolar: true, modulation: true);
             var gainRow = SliderRow("GAIN", Gain, Db1, bipolar: true);

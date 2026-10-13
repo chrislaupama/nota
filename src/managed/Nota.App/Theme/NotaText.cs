@@ -29,6 +29,9 @@ internal static class NotaText
         ["WAV"] = "WAV", ["MP3"] = "MP3", ["FLAC"] = "FLAC", ["AIFF"] = "AIFF", ["OGG"] = "OGG",
         ["ADT"] = "ADT", ["ST"] = "st", ["CT"] = "ct", ["LR"] = "LR", ["MS/LR"] = "MS/LR",
         ["SC"] = "SC", ["PWM"] = "PWM", ["SR"] = "SR", ["BIT"] = "bit",
+        ["GR"] = "GR", ["OS"] = "OS", ["TP"] = "TP", ["AT"] = "AT", ["HF"] = "HF", ["LF"] = "LF",
+        ["PW"] = "PW", ["VCA"] = "VCA", ["VCF"] = "VCF", ["VCO"] = "VCO", ["THD"] = "THD",
+        ["BBD"] = "BBD", ["FET"] = "FET", ["RR"] = "RR", ["CC"] = "CC",
     };
 
     /// <summary>A label in sentence case: "PRE-DELAY" → "Pre-delay", "LFO RATE" → "LFO rate",

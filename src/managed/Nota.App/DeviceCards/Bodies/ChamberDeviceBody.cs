@@ -562,7 +562,7 @@ internal sealed class ChamberDeviceBody : IDeviceBody
             qual.Children.Add(Col(qseg, 1));
             var mid = new StackPanel { Spacing = 6, Children = {
                 SliderRow("WIDTH", WidthP, v => NotaNum.F($"{v * 200:0}"), 48),
-                SliderRow("MONO f", BassMono, v => v <= 0.001 ? "off" : NotaNum.F($"{Exp(v, 30, 500):0}"), 48),
+                SliderRow("Mono f", BassMono, v => v <= 0.001 ? "off" : NotaNum.F($"{Exp(v, 30, 500):0}"), 48),
                 qual } };
             var wetOnly = Toggle(WetOnly, "Wet only (send)");
             ToolTip.SetTip(wetOnly, "Wet only — 100\u2009% wet, no dry: for a return / send track");
