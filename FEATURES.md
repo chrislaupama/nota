@@ -920,9 +920,11 @@ and user presets, automation, persistence and cloning.
   semantic hit says why it was found ("warm · pad"). Prefixes `>` `@` `+` `#` `~` (or Tab)
   filter by type; an empty query shows Recent and suggestions for the context. Ranking
   learns from what you use in the palette and the browser.
-- **Studio look, in two variants** — **Dark** (neutral studio greys with one orange
-  accent; the default, and what a DAW wants for long sessions in a dark room) and
-  **Light** (the same system in light greys, the orange a shade deeper). Panels dock edge
+- **Studio look, in colour themes** — **Studio Dark** (neutral studio greys with one
+  orange accent; the default, and what a DAW wants for long sessions in a dark room),
+  **Studio Light** (the same system in light greys, the orange a shade deeper), and
+  **Ember Graphite** / **Ember Paper** (warm browns with a brass accent, dark and light).
+  A theme changes colours only — track colours included — never the layout. Panels dock edge
   to edge on thin seams; orange marks only what is playing, selected or switched on, and a
   knob or fader turns orange while you hover or drag it; mute is amber, solo blue,
   record-arm red; labels are in sentence case. Switching applies immediately, across every
@@ -943,7 +945,7 @@ and user presets, automation, persistence and cloning.
   third-party attribution notices (`LICENSES/THIRD-PARTY-NOTICES.md`).
 - **Settings** — a larger window with a sidebar grouped into Devices, Plug-ins and General
   (each page with an icon and a short description), large switches, latency in
-  milliseconds, theme buttons that preview each theme, and key-cap shortcuts with a filter.
+  milliseconds, a colour-theme list that previews each theme, and key-cap shortcuts with a filter.
 - **Device window** (a device opened from a Drum Rack, Instrument Rack, Audio Effect Rack or
   a Nota Rhythm voice): the title bar carries the device, track, preset picker, bypass and
   S / L size switch; a footer shows where the device sits, its live voice count and type.
@@ -974,9 +976,10 @@ and user presets, automation, persistence and cloning.
 - **Plug-ins**: scan paths, Rescan.
 - **Downloads**: Plug-ins, Sample Packs and AI Models (see [Plugin hosting](#plugin-hosting)).
 - **Library**: library folders.
-- **Appearance**: **Theme** — Dark, Light or System, which
-  follows the OS appearance and switches with it; the choice applies live and is
-  remembered. Also **AI control (MCP)** on/off, a port field, and "Copy config" (copies a
+- **Appearance**: **Colour theme** — Studio Dark, Studio Light, Ember Graphite or Ember
+  Paper, each with a preview of its colours, or **Follow system** with a chosen theme for
+  dark mode and one for light mode, switched with the OS appearance; the choice applies
+  live and is remembered. Also **AI control (MCP)** on/off, a port field, and "Copy config" (copies a
   ready-made client JSON config to the clipboard).
 - **Shortcuts**: the shortcut list.
 - Settings, logs and autosaves live in `~/Library/Application Support/Nota/` (macOS) and

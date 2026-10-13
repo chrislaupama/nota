@@ -50,7 +50,7 @@ design doc lists them:
 
 The authoritative list is the set of `T(nameof(X))` declarations in
 `Theme/NotaPalette.cs` (plus the named track/return slots), together with the elevation
-and `SystemAccent*` tokens: 86 + 11 + 3 + 7 = **107 tokens** at the time of planning.
+and `SystemAccent*` tokens: 85 + 11 + 3 + 7 = **106 tokens** at the time of planning.
 `DesignTokenCheck` derives the list from the code and compares every theme file against
 it, so the list above can never drift from what the check enforces.
 

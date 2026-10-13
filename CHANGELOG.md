@@ -22,6 +22,15 @@ Entry categories: `Added`, `Changed`, `Fixed`, `Removed`.
 
 ## [Unreleased]
 
+### Added
+- **Colour themes:** Preferences → Appearance now lists colour themes — Studio Dark,
+  Studio Light, and **Ember Graphite** / **Ember Paper**, the warm browns and brass of
+  Nota's earlier look, on the new layout. Each shows a preview of its colours; picking one
+  recolours every window at once. Themes change colours only, and each gives the track
+  colours its own shades — your projects are untouched.
+- **Follow system, with a theme for each mode:** choose a theme for when your computer is
+  in dark mode and one for light mode, and Nota switches between them with the OS.
+
 ### Changed
 - **A new look, after Saine:** the whole app moves to a neutral grey studio with one orange
   accent. The panels — browser, arrangement, detail panel — now sit edge to edge on thin
@@ -31,9 +40,9 @@ Entry categories: `Added`, `Changed`, `Fixed`, `Removed`.
   rest and light up while you hover or drag them; a toggled-on button fills solid orange.
   Mute fills amber, solo blue and record-arm red. Labels are in sentence case instead of
   spaced capitals, corners are nearly square, and clips in the arrangement are drawn in
-  their full track colour with a darker title band. The light theme follows the same
-  system in light greys, and Preferences → Appearance now offers **Dark**, **Light** and
-  **System**. Every feature, shortcut and menu stays where it was, and projects open
+  their full track colour with a darker title band. Studio Light follows the same
+  system in light greys (see *Colour themes* above; your Dark / Light / System choice
+  carries over). Every feature, shortcut and menu stays where it was, and projects open
   unchanged (track colours keep their place in the new palette).
 
 ## [0.52.1] — 2026-10-13

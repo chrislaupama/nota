@@ -6,14 +6,21 @@
 Nota's UI runs on **Studio**: the design system of the sibling app Saine
 (`../saine/DESIGN.md`) applied to Nota. Neutral greys stepped in a few exact tones, flat
 panels butted against dark 1px seams, small crisp type, and one orange accent that appears
-only where something is **live or chosen**. It comes in two variants of one system:
+only where something is **live or chosen**.
 
-- **Dark** (the default) — Saine's dark preset; a DAW is used in dark rooms for long
+Colour is a **theme** (§ Colour themes): the structure — layout, type, geometry, which
+element carries the accent — is Studio's in every theme; only the values change. Four
+themes are built in:
+
+- **Studio Dark** (the default) — Saine's dark preset; a DAW is used in dark rooms for long
   sessions.
-- **Light** — Saine's light preset: the same roles in light greys. The accent goes a shade
-  deeper (and its line variant darker still) so marks hold contrast on pale grey.
+- **Studio Light** — Saine's light preset: the same roles in light greys. The accent goes a
+  shade deeper (and its line variant darker still) so marks hold contrast on pale grey.
+- **Ember Graphite** / **Ember Paper** — the warm browns and brass of Nota's earlier
+  language, dark and light, on Studio's structure.
 
-Preferences → Appearance offers Dark / Light / System; the switch is live.
+Preferences → Appearance lists the themes and offers **Follow system** (a dark-mode and a
+light-mode theme, switched with the OS); every change is live.
 
 Saine is the reference; this file is the guideline the app is held to: Saine's rules as
 Nota implements them, and the places where Nota deliberately departs from Saine
@@ -28,22 +35,25 @@ control specimens and the card anatomy at true size, with a Dark / Light toggle.
 
 | Rank | File | Authority |
 |---|---|---|
-| 1 | `src/managed/Nota.App/Theme/NotaTheme.axaml` | **Definitive.** Colour and elevation (both variants), geometry, type classes, control styles. |
-| 2 | `Theme/NotaPalette.cs` · `NotaGeometry.cs` · `NotaFonts.cs` · `NotaText.cs` · `NotaNum.cs` | The C# side for custom-drawn views: colour slots, radii/sizes/spacing, typefaces and type scale, sentence-case labels, number setting. |
+| 1 | `src/managed/Nota.App/Theme/Themes/*.json` | **Definitive for colour.** One file per colour theme, one value per token. |
+| 1 | `src/managed/Nota.App/Theme/NotaTheme.axaml` | **Definitive for the rest:** geometry, type classes, control styles. It holds no colour. |
+| 2 | `Theme/NotaPalette.cs` · `NotaColourTheme.cs` · `NotaThemeService.cs` · `NotaGeometry.cs` · `NotaFonts.cs` · `NotaText.cs` · `NotaNum.cs` | The C# side: the token slots (the catalogue), theme loading and switching, elevation geometry, radii/sizes/spacing, typefaces and type scale, sentence-case labels, number setting. |
 | 3 | `DeviceCardKit.cs`, `Controls/` | The shared controls and card builders. |
-| 4 | `tests/Nota.SmokeTest/DesignTokenCheck.cs` | Enforces (1) ↔ (2) sync and the bans below. |
+| 4 | `tests/Nota.SmokeTest/DesignTokenCheck*.cs` | Enforces the theme files against the catalogue and the readability bar, the wiring, and the bans below. |
 | 5 | `DESIGN.html` / this file | Documentation. If these disagree with 1–4, **these are wrong** — fix them. |
 
 ## How theming works
 
-Colour and elevation tokens live in `NotaTheme.axaml` under `ThemeDictionaries` → `Dark` /
-`Light`, so XAML **must** use `{DynamicResource Brush.*}` / `{DynamicResource Shadow.*}`; a
-`StaticResource` cannot follow the variant. Geometry, fonts and sizes are
-variant-independent (`StaticResource`).
+Colour has one home: the active theme's file. `NotaPalette` declares one **slot** per token
+by name — one long-lived `SolidColorBrush` whose `Color` is re-pointed from the theme on
+every switch, so views keep the same brush object and nothing is rebuilt.
+`NotaThemeService` publishes those same brushes into `Application.Resources` under their
+`Brush.*` keys (`NotaPalette.KeyMap`), and builds the `Shadow.*` elevations and Fluent's
+`SystemAccentColor*` ramp from the theme's colours. So XAML **must** use
+`{DynamicResource Brush.*}` / `{DynamicResource Shadow.*}`; a `StaticResource` cannot follow
+a theme change. Geometry, fonts and sizes are theme-independent (`StaticResource`).
 
-`NotaPalette` serves the custom-drawn layer. Every token is a **slot**: one long-lived
-`SolidColorBrush` whose `Color` is re-pointed when the variant changes, so views keep the
-same brush object and nothing is rebuilt. Ways to get a colour:
+Ways to get a colour in code:
 
 | Call | For |
 |---|---|
@@ -56,16 +66,86 @@ same brush object and nothing is rebuilt. Ways to get a colour:
 
 **Nothing may snapshot a colour.** `new SolidColorBrush(slot.Color)`, a
 `static readonly Color` taken from the palette, or a static array of palette colours all
-freeze a view in the variant it was built in. Use the slot, a `Wash`, `InkOn`, a property
+freeze a view in the theme it was built in. Use the slot, a `Wash`, `InkOn`, a property
 (`static Color X => NotaPalette.Accent.Color;`), or read `.Color` inside `Render`.
 
 ### Changing a token
 
-1. Edit **both** branches in `NotaTheme.axaml` — `Dark` and `Light`.
-2. Mirror the pair into the `NotaPalette` slot (the smoke test fails until you do).
-3. Run `python3 scripts/design-html.py` to regenerate `DESIGN.html`, and update the table here.
-4. Look at it in both variants — the app (Preferences → Appearance) and `DESIGN.html`
-   (the toggle in its masthead, or `DESIGN.html?variant=light`).
+1. Change its value in **every** theme file in `Theme/Themes/` that should change — at
+   least both Studio themes. A new token is a new `T(nameof(X))` slot in `NotaPalette`
+   plus a value in every theme file (the smoke test names any file that lacks it), plus a
+   `KeyMap` entry if XAML uses it.
+2. Run `python3 scripts/design-html.py` to regenerate `DESIGN.html`, and update the table here.
+3. Look at it in every theme — the app (Preferences → Appearance) and `DESIGN.html`.
+
+## Colour themes
+
+A colour theme is one fixed look: an id, a name, a kind (**dark** or **light**) and one
+value for every token — the format is `specs/007-colour-themes/contracts/theme-file.md`.
+The kind sets the OS window chrome and Fluent's base, and decides which follow-system list
+the theme appears in. A theme changes colour only: never geometry, type, layout, or which
+element carries the accent.
+
+| Theme | Kind | Values |
+|---|---|---|
+| Studio Dark | dark | Saine's dark preset — the § Tokens tables below |
+| Studio Light | light | Saine's light preset — the § Tokens tables below |
+| Ember Graphite | dark | Nota 0.52.1's dark palette by token name; the tokens Studio added are derived by the role Studio gives them (seam = Ember's gutter, rule = its strong border, faint = its disabled ink, mute = its amber, solo = its steel blue, viz ink = 92 % primary over the well, viz grid = its well grid, master = its muted ink) |
+| Ember Paper | light | The same, from 0.52.1's light palette |
+
+**Appearance.** Preferences → Appearance stores one theme, or **Follow system** with a
+dark-mode and a light-mode theme (each list offers only themes of that kind). Old
+settings carry over: Dark → Studio Dark, Light → Studio Light, System → follow system with
+the two Studio themes. An unknown or wrong-kind id falls back to the Studio theme of the
+kind needed (`Nota.Application.Appearance`).
+
+**Adding a theme.** Add `Theme/Themes/<id>.json` with every token and append its id to
+`NotaThemes.BuiltInOrder`. Nothing else names a theme. The smoke test checks the file
+against the catalogue and the readability bar.
+
+### Readability bar
+
+Every theme meets these (WCAG 2.x contrast ratio; ΔE = CIE76). They are calibrated on
+Studio: WCAG where Studio meets it, Studio's own value where it does not.
+
+| | Pairing | Minimum |
+|---|---|---|
+| T3.1 | `TextPrimary`, `TextSecondary`, `TextMuted` on `BgApp`, `Panel`, `SurfaceRaised`, `SurfaceHover`, `BgSunken` | 4.5 |
+| T3.2 | `TextTertiary` on the same five | 3.0 |
+| T3.3 | `TextFaint`, `TextDisabled`, `TextAxis` on the same five | 2.5 |
+| T3.4 | `AccentBright` on `BgApp`, `Panel`, `BgSunken` | 2.3 |
+| T3.5 | Derived ink on `Accent`, `Mute`, `Solo`, `Record` | 4.5 |
+| T3.6 | Derived ink on the track and return colours | 3.0 |
+| T3.7 | The nine track colours, pairwise | ΔE ≥ 12 |
+| T3.8 | `Accent`, `Mute`, `Solo`, `Record`, pairwise | ΔE ≥ 15 |
+
+Track colours are not compared with state colours: solo blue is the Keys track blue by
+design. **Known gap:** in Studio Light the accent line on the ground (2.39) and faint ink
+(2.58) sit below WCAG's 3:1 for graphics and incidental text; T3.3 / T3.4 hold Studio at
+those values until a Studio change raises them.
+
+### Ember adjustments
+
+Ember is 0.52.1's palette exactly, except these values, each moved the smallest step in
+HSL lightness (hue kept) that passes the bar:
+
+| Theme | Token | 0.52.1 / derived | Shipped | Failed |
+|---|---|---|---|---|
+| ember-graphite | `TextMuted` | `#8D8779` | `#8F897C` | T3.1 TextMuted/SurfaceHover 4.45 < 4.5 |
+| ember-graphite | `TextTertiary` | `#6E6A5E` | `#716D60` | T3.2 TextTertiary/SurfaceHover 2.94 < 3.0 |
+| ember-graphite | `TextFaint` | `#55514A` | `#646054` | T3.3 TextFaint/Panel 2.36 < 2.5; T3.3 TextFaint/SurfaceHover 2.31 < 2.5; T3.3 TextFaint/SurfaceRaised 2.41 < 2.5 |
+| ember-graphite | `TextDisabled` | `#55514A` | `#646054` | T3.3 TextDisabled/Panel 2.36 < 2.5; T3.3 TextDisabled/SurfaceHover 2.31 < 2.5; T3.3 TextDisabled/SurfaceRaised 2.41 < 2.5 |
+| ember-graphite | `TextAxis` | `#4A463D` | `#65614F` | T3.3 TextAxis/BgApp 2.10 < 2.5; T3.3 TextAxis/Panel 2.38 < 2.5; T3.3 TextAxis/SurfaceHover 2.33 < 2.5; T3.3 TextAxis/SurfaceRaised 2.44 < 2.5 |
+| ember-graphite | `Record` | `#C25B44` | `#BE563E` | T3.5 Record 4.31 < 4.5 |
+| ember-paper | `TextMuted` | `#746D5C` | `#625B50` | T3.1 TextMuted/BgApp 3.54 < 4.5 |
+| ember-paper | `TextTertiary` | `#8A8474` | `#7E786C` | T3.2 TextTertiary/BgApp 2.57 < 3.0 |
+| ember-paper | `TextFaint` | `#9E9786` | `#8D866F` | T3.3 TextFaint/BgApp 2.00 < 2.5 |
+| ember-paper | `TextDisabled` | `#9E9786` | `#8D866F` | T3.3 TextDisabled/BgApp 2.00 < 2.5 |
+| ember-paper | `TextAxis` | `#ADA694` | `#8D8669` | T3.3 TextAxis/BgApp 1.67 < 2.5 |
+| ember-paper | `Accent` | `#A87415` | `#AD7716` | T3.5 Accent 4.38 < 4.5 |
+| ember-paper | `Track9` | `#4D7A5D` | `#598C69` | T3.7 Track2/Track9 7.53 < 12 |
+| ember-paper | `ReturnA` | `#4D7A5D` | `#598C69` | follows Track9 (returns draw from the ninth role) |
+
 
 ## The rules
 
@@ -108,7 +188,8 @@ freeze a view in the variant it was built in. Use the slot, a `Wash`, `InkOn`, a
 
 ## Tokens
 
-Values are Dark / Light, as `NotaTheme.axaml` declares them. Several Ember-era keys now
+Values are Studio Dark / Studio Light, as `Theme/Themes/studio-dark.json` and
+`studio-light.json` declare them. Several Ember-era keys now
 alias one Saine role; the names stayed so the ~1,000 call sites kept working (§ Known
 drift).
 
@@ -222,7 +303,10 @@ index, which now points at the hue at that place in the table.
 | `Shadow.Popover` | `0 0 0 1 #141517, 0 10 28 0 #6B000000` | `0 0 0 1 #9DA0A6, 0 10 28 0 #381E2024` | A popover drawn inside the main window |
 | `Shadow.Modal` | `0 0 0 1 #141517, 0 24 64 0 #80000000` | `0 0 0 1 #9DA0A6, 0 24 64 0 #401E2024` | The command palette |
 
-Only `Shadow.Popover` and `Shadow.Modal` carry a blur; everything docked is flat.
+Only `Shadow.Popover` and `Shadow.Modal` carry a blur; everything docked is flat. The
+geometry is Studio's (built in `NotaThemeService`); a theme supplies the colours: the
+bevel (`ShadowBevel`), the drop (`ShadowPopover`, `ShadowModal`), and the rings, which are
+its `Seam` and `Rule`.
 
 ### Geometry
 
@@ -532,7 +616,9 @@ Every region is **docked**: radius 0, no gutter, separated by 1 px seams (the wi
 
 | Check | Holds |
 |---|---|
-| `Run` | Dark/Light key parity (brushes and `Shadow.*`); every `NotaPalette` slot matches its XAML pair; `KeyMap` keys exist |
+| `Run` | `NotaTheme.axaml` holds no colour; every referenced `Brush.*` key is published (`KeyMap`); every `Shadow.*` key is built from the theme |
+| `RunThemes` | Every theme file: shape, id, kind, exactly the token catalogue, valid opaque colours (shadows may be translucent), and every readability pairing (§ Readability bar); `BuiltInOrder` lists exactly the files |
+| `RunAppearance` | Old settings migrate (Dark / Light / System); unknown and wrong-kind ids fall back; storing keeps the legacy setting in step |
 | `RunGeometry` | XAML ↔ `NotaGeometry` values; no undefined `Radius`/`Control`/`Space` keys; no `CornerRadius` literals, drop shadows or gradients in views |
 | `RunType` | Fonts bundled and matched; no font names in views; nothing under 7 px |
 | `RunControls` | No unicode icons typed as text; Knob / Switch / Slider sizes |
@@ -540,7 +626,7 @@ Every region is **docked**: radius 0, no gutter, separated by 1 px seams (the wi
 | `RunLayout` | Device header 22; cards 700 except the listed exceptions; transport a docked row at the top at `Control.TransportBar` with its recessed console; browser rows 26–28 |
 | `RunNumbers` | Display culture installed; no hyphen minus; no invariant culture on readouts; thin space before units; no vowel-dropped labels |
 | `RunBans` | No hex outside `Ink()` (bar three data tables), no RGB typed as numbers, no named system colours, `Opacity` only on drag ghosts, no brush snapshotting a theme colour |
-| `RunStudio` | Every `Radius.*` on the 0/1/2/3/4 scale; only `Shadow.Popover` / `Shadow.Modal` blurred, no literal `BoxShadow` in views; no positive `LetterSpacing` in the theme, `NotaType` tracking 0, no upper-casing in the shared label builders; knob arcs, slider fills and graph curves neutral at rest (`VizInk`); transport 44 · console 30 · seam 1; no Ember value left in the tokens |
+| `RunStudio` | Every `Radius.*` on the 0/1/2/3/4 scale; only `Shadow.Popover` / `Shadow.Modal` blurred, no literal `BoxShadow` in views; no positive `LetterSpacing` in the theme, `NotaType` tracking 0, no upper-casing in the shared label builders; knob arcs, slider fills and graph curves neutral at rest (`VizInk`); transport 44 · console 30 · seam 1; no Ember value in the Studio themes |
 
 When a check fails, fix the view — or, for a genuine exception, add it to the check's
 allow-list with a comment saying why.

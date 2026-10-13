@@ -59,7 +59,7 @@ Console.WriteLine($"engine v{NotaEngine.Version}");
 // NotaTheme.axaml and NotaPalette.cs carry the same palette for two different
 // consumers and nothing but discipline kept them in step. See DESIGN.md § Enforced by tests.
 {
-    Console.WriteLine("-- design: palette mirror --");
+    Console.WriteLine("-- design: palette wiring --");
     foreach (var (ok, label) in Nota.SmokeTest.DesignTokenCheck.Run()) Check(ok, label);
     Console.WriteLine("-- design: geometry --");
     foreach (var (ok, label) in Nota.SmokeTest.DesignTokenCheck.RunGeometry()) Check(ok, label);
@@ -77,6 +77,10 @@ Console.WriteLine($"engine v{NotaEngine.Version}");
     foreach (var (ok, label) in Nota.SmokeTest.DesignTokenCheck.RunBans()) Check(ok, label);
     Console.WriteLine("-- design: studio --");
     foreach (var (ok, label) in Nota.SmokeTest.DesignTokenCheck.RunStudio()) Check(ok, label);
+    Console.WriteLine("-- design: themes --");
+    foreach (var (ok, label) in Nota.SmokeTest.DesignTokenCheck.RunThemes()) Check(ok, label);
+    Console.WriteLine("-- design: appearance --");
+    foreach (var (ok, label) in Nota.SmokeTest.DesignTokenCheck.RunAppearance()) Check(ok, label);
 }
 
 // Opt-in plugin-scan check (M3-1): `--scan <path-to-nota-scanworker>`. Kept out

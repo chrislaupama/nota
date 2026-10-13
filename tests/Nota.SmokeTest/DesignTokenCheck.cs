@@ -1,27 +1,25 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 // Copyright (c) 2026 Egor Khindikaynen (Nota). See LICENSES/ for license terms.
 //
-// The palette lives in two files that nothing but discipline kept in step:
-// Theme/NotaTheme.axaml serves XAML through {DynamicResource Brush.*}, and
-// Theme/NotaPalette.cs serves the custom-drawn layer, which cannot cheaply
-// resolve a resource inside a Render override. A token changed in one and
-// missed in the other is invisible until someone opens the other variant.
+// Colour has one home (spec 007): the theme files in Theme/Themes/*.json. NotaPalette
+// declares one slot per token by name and re-tints it from the active theme, and
+// NotaThemeService publishes those same brushes to XAML under their Brush.* keys
+// (NotaPalette.KeyMap). So instead of keeping two copies of a palette in step, these
+// checks keep the *wiring* honest — read as text, with no reference to Nota.App, no
+// Avalonia and no UI thread:
 //
-// So this reads both as text — no reference to Nota.App, no Avalonia, no UI
-// thread — and enforces what the two files claim about each other:
+//   1. NotaTheme.axaml holds no colour at all (no brush, colour or shadow resource);
+//   2. every Brush.* key a style or view names is in KeyMap, so it resolves to a slot;
+//   3. every Shadow.* key a style names is one NotaThemeService builds.
 //
-//   1. the Dark and Light dictionaries declare the same keys;
-//   2. a NotaPalette slot tagged `// Brush.Key` holds the same dark/light pair
-//      that NotaTheme.axaml gives that key;
-//   3. every key NotaPalette.KeyMap hands out actually exists in the theme.
-//
-// See DESIGN.md § How theming works.
+// The theme files themselves are checked in DesignTokenCheck.Themes.cs.
+// See DESIGN.md § Colour themes.
 
 using System.Text.RegularExpressions;
 
 namespace Nota.SmokeTest;
 
-internal static class DesignTokenCheck
+internal static partial class DesignTokenCheck
 {
     public static IEnumerable<(bool Ok, string Label)> Run()
     {
@@ -32,87 +30,47 @@ internal static class DesignTokenCheck
             yield break;
         }
 
-        var themePath = Path.Combine(root, "src/managed/Nota.App/Theme/NotaTheme.axaml");
-        var palettePath = Path.Combine(root, "src/managed/Nota.App/Theme/NotaPalette.cs");
-        if (!File.Exists(themePath) || !File.Exists(palettePath))
-        {
-            yield return (false, "both palette files found");
-            yield break;
-        }
-
-        var theme = File.ReadAllText(themePath);
-        var palette = File.ReadAllText(palettePath);
-
-        var dark = Brushes(theme, "Dark");
-        var light = Brushes(theme, "Light");
-
-        // 1. Both variants must declare the same keys: a token added to one branch
-        //    and not the other is a colour that vanishes when the variant flips.
-        var onlyDark = dark.Keys.Except(light.Keys).OrderBy(k => k).ToArray();
-        var onlyLight = light.Keys.Except(dark.Keys).OrderBy(k => k).ToArray();
-        yield return (onlyDark.Length == 0 && onlyLight.Length == 0,
-            onlyDark.Length == 0 && onlyLight.Length == 0
-                ? $"NotaTheme Dark and Light declare the same {dark.Count} keys"
-                : $"NotaTheme variants disagree — only Dark: [{string.Join(", ", onlyDark)}]; only Light: [{string.Join(", ", onlyLight)}]");
-
-        // 2. Every mirrored slot must carry the theme's pair. A slot claims its
-        //    mirror in a trailing comment: T("#dark", "#light"); // Brush.Key — note
-        var slot = new Regex(
-            """public\s+static\s+readonly\s+SolidColorBrush\s+(?<name>\w+)\s*=\s*T\(\s*"(?<d>#[0-9A-Fa-f]{6,8})"\s*,\s*"(?<l>#[0-9A-Fa-f]{6,8})"\s*\)\s*;\s*//\s*(?<key>Brush\.\w+)""",
-            RegexOptions.Compiled);
-
-        var mismatched = new List<string>();
-        int mirrored = 0;
-        foreach (Match m in slot.Matches(palette))
-        {
-            var key = m.Groups["key"].Value;
-            if (!dark.TryGetValue(key, out var td) || !light.TryGetValue(key, out var tl))
-            {
-                mismatched.Add($"{m.Groups["name"].Value} claims {key}, which the theme does not declare");
-                continue;
-            }
-            mirrored++;
-            var sd = m.Groups["d"].Value;
-            var sl = m.Groups["l"].Value;
-            if (!Same(sd, td)) mismatched.Add($"{key} dark: palette {sd} vs theme {td}");
-            if (!Same(sl, tl)) mismatched.Add($"{key} light: palette {sl} vs theme {tl}");
-        }
-
-        yield return (mirrored > 0, $"NotaPalette mirrors {mirrored} theme keys by name");
-        yield return (mismatched.Count == 0,
-            mismatched.Count == 0
-                ? "every mirrored slot matches the theme in both variants"
-                : $"palette/theme drift ({mismatched.Count}): {string.Join("; ", mismatched.Take(8))}");
-
-        // 3. KeyMap is how a code-built view resolves a token by its XAML key, so
-        //    every key it offers has to be a key the theme really defines.
-        var keyMap = Regex.Match(palette, @"KeyMap\s*=\s*new\([^)]*\)\s*\{(?<body>.*?)\n    \};", RegexOptions.Singleline);
-        var unknown = new List<string>();
-        int mapped = 0;
-        if (keyMap.Success)
-        {
-            foreach (Match m in Regex.Matches(keyMap.Groups["body"].Value, @"\[""(?<key>Brush\.\w+)""\]"))
-            {
-                mapped++;
-                if (!dark.ContainsKey(m.Groups["key"].Value)) unknown.Add(m.Groups["key"].Value);
-            }
-        }
-        yield return (keyMap.Success && mapped > 0, $"NotaPalette.KeyMap parsed ({mapped} keys)");
-        yield return (unknown.Count == 0,
-            unknown.Count == 0
-                ? "every KeyMap key exists in NotaTheme"
-                : $"KeyMap offers keys the theme lacks: {string.Join(", ", unknown)}");
-
-        // 4. Every Brush.* a style or view names must exist: a DynamicResource that resolves
-        //    to nothing fails silently — the control just keeps its previous colour.
         var app = Path.Combine(root, "src/managed/Nota.App");
+        var theme = File.ReadAllText(Path.Combine(app, "Theme/NotaTheme.axaml"));
+        var palette = File.ReadAllText(Path.Combine(app, "Theme/NotaPalette.cs"));
+        var service = File.ReadAllText(Path.Combine(app, "Theme/NotaThemeService.cs"));
+
+        // 1. A colour in the XAML would be a second copy that no theme switch reaches.
+        var inXaml = Regex.Matches(theme, """<(?<t>SolidColorBrush|Color|BoxShadows)\s+x:Key="(?<k>[^"]+)">""")
+            .Select(m => m.Groups["k"].Value).ToArray();
+        yield return (inXaml.Length == 0 && !theme.Contains("<ResourceDictionary.ThemeDictionaries>"),
+            inXaml.Length == 0 ? "NotaTheme.axaml holds no colour (the theme files are the only home)"
+                               : $"colour resources left in NotaTheme.axaml: {string.Join(", ", inXaml.Take(8))}");
+
+        // 2. KeyMap is what NotaThemeService publishes, so a key missing from it is a
+        //    DynamicResource that resolves to nothing — the control keeps a stale colour.
+        var keyMap = KeyMapKeys(palette);
+        yield return (keyMap.Count > 0, $"NotaPalette.KeyMap parsed ({keyMap.Count} keys)");
         var referenced = Directory.EnumerateFiles(app, "*.*", SearchOption.AllDirectories)
             .Where(f => (f.EndsWith(".cs") || f.EndsWith(".axaml")) && !f.Contains("/obj/") && !f.Contains("/bin/"))
             .SelectMany(f => Regex.Matches(File.ReadAllText(f), @"(?:DynamicResource |"")(?<key>Brush\.\w+)[}""]").Select(m => m.Groups["key"].Value))
-            .Distinct().Where(k => !dark.ContainsKey(k)).OrderBy(k => k).ToArray();
+            .Distinct().Where(k => !keyMap.Contains(k)).OrderBy(k => k).ToArray();
         yield return (referenced.Length == 0,
-            referenced.Length == 0 ? "every referenced Brush.* key exists in NotaTheme"
-                                   : $"references to undefined brush keys: {string.Join(", ", referenced)}");
+            referenced.Length == 0 ? "every referenced Brush.* key is published (in KeyMap)"
+                                   : $"references to unpublished brush keys: {string.Join(", ", referenced)}");
+
+        // 3. Shadows are values built from theme colours on every switch.
+        var built = Regex.Matches(service, @"res\[""(?<k>Shadow\.\w+)""\]").Select(m => m.Groups["k"].Value).ToHashSet();
+        var shadowRefs = Directory.EnumerateFiles(app, "*.*", SearchOption.AllDirectories)
+            .Where(f => (f.EndsWith(".cs") || f.EndsWith(".axaml")) && !f.Contains("/obj/") && !f.Contains("/bin/"))
+            .SelectMany(f => Regex.Matches(File.ReadAllText(f), @"(?:DynamicResource |"")(?<key>Shadow\.\w+)[}""]").Select(m => m.Groups["key"].Value))
+            .Distinct().Where(k => !built.Contains(k)).OrderBy(k => k).ToArray();
+        yield return (built.Count == 4 && shadowRefs.Length == 0,
+            shadowRefs.Length == 0 ? $"every Shadow.* key is built from the theme ({string.Join(", ", built.OrderBy(k => k))})"
+                                   : $"Shadow.* keys nothing builds: {string.Join(", ", shadowRefs)}");
+    }
+
+    private static HashSet<string> KeyMapKeys(string palette)
+    {
+        var keyMap = Regex.Match(palette, @"KeyMap\s*=\s*new\([^)]*\)\s*\{(?<body>.*?)\n    \};", RegexOptions.Singleline);
+        return keyMap.Success
+            ? Regex.Matches(keyMap.Groups["body"].Value, @"\[""(?<key>Brush\.\w+)""\]").Select(m => m.Groups["key"].Value).ToHashSet()
+            : new HashSet<string>();
     }
 
     /// <summary>Geometry: Radius.* / Control.* / Space.* in NotaTheme.axaml must equal the
@@ -366,7 +324,8 @@ internal static class DesignTokenCheck
         var hits = rules.ToDictionary(r => r.Name, _ => new List<string>());
         foreach (var f in Directory.EnumerateFiles(app, "*.*", SearchOption.AllDirectories)
                      .Where(f => (f.EndsWith(".cs") || f.EndsWith(".axaml")) && !f.Contains("/obj/") && !f.Contains("/bin/")
-                              && !f.EndsWith("Theme/NotaPalette.cs") && !f.EndsWith("Theme/NotaTheme.axaml")))
+                              && !f.EndsWith("Theme/NotaPalette.cs") && !f.EndsWith("Theme/NotaTheme.axaml")
+                              && !f.EndsWith("Theme/NotaColourTheme.cs")))   // the theme loader parses colour values by definition
         {
             var rel = Path.GetRelativePath(app, f);
             int n = 0;
@@ -424,7 +383,6 @@ internal static class DesignTokenCheck
         if (root is null) { yield return (false, "repo root located"); yield break; }
         var app = Path.Combine(root, "src/managed/Nota.App");
         var theme = File.ReadAllText(Path.Combine(app, "Theme/NotaTheme.axaml"));
-        var palette = File.ReadAllText(Path.Combine(app, "Theme/NotaPalette.cs"));
         var inv = System.Globalization.CultureInfo.InvariantCulture;
 
         // Radius: 0 docked · 1 plot bars · 2 inner keys, rows, clips · 3 controls, cards · 4 modals.
@@ -435,18 +393,12 @@ internal static class DesignTokenCheck
             radii.Length == 0 ? "every Radius.* is on the 0/1/2/3/4 scale" : $"radii off the scale: {string.Join(", ", radii)}");
 
         // A blurred shadow means the element floats. Only Shadow.Popover / Shadow.Modal may
-        // carry a blur; every other shadow resource is a bevel or an edge (blur 0).
-        var blurred = new List<string>();
-        foreach (Match m in Regex.Matches(theme, """<BoxShadows x:Key="(?<k>Shadow\.\w+)">(?<v>[^<]+)</BoxShadows>"""))
-        {
-            if (m.Groups["k"].Value is "Shadow.Popover" or "Shadow.Modal") continue;
-            foreach (var part in m.Groups["v"].Value.Split(','))
-            {
-                var tokens = part.Replace("inset", "").Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries);
-                if (tokens.Length >= 3 && double.TryParse(tokens[2], System.Globalization.NumberStyles.Float, inv, out var blur) && blur > 0)
-                    blurred.Add(m.Groups["k"].Value);
-            }
-        }
+        // carry a blur; every other shadow is a bevel or an edge. They are built from the
+        // theme in NotaThemeService, one res["Shadow.*"] = … statement each.
+        var service = File.ReadAllText(Path.Combine(app, "Theme/NotaThemeService.cs"));
+        var blurred = Regex.Matches(service, @"res\[""(?<k>Shadow\.\w+)""\]\s*=(?<v>[^;]+);")
+            .Where(m => m.Groups["v"].Value.Contains("Blur") && m.Groups["k"].Value is not ("Shadow.Popover" or "Shadow.Modal"))
+            .Select(m => m.Groups["k"].Value).ToList();
         yield return (blurred.Count == 0,
             blurred.Count == 0 ? "only Shadow.Popover / Shadow.Modal carry a blur (floating layers)" : $"blurred shadows on docked surfaces: {string.Join(", ", blurred.Distinct())}");
         var axamlShadows = Directory.EnumerateFiles(app, "*.axaml", SearchOption.AllDirectories)
@@ -483,41 +435,16 @@ internal static class DesignTokenCheck
         yield return (Regex.IsMatch(geo, @"TransportBar = 44;") && Regex.IsMatch(geo, @"Console = 30;") && Regex.IsMatch(geo, @"Gutter = 1;"),
             "transport row 44 · console 30 · panels meet on a 1px seam");
 
-        // No value of the earlier Ember palette is left in a token.
-        string[] ember = { "#D8A03D", "#0B0A09", "#141310", "#E9E4D8", "#A87415", "#EAE5D7", "#241F17", "#F0C060" };
-        var tokenLines = string.Join("\n", palette.Split('\n').Where(l => l.Contains(" T(\"") || l.Contains("T(\"#")))
-                         + theme;
-        var left = ember.Where(h => tokenLines.Contains(h, StringComparison.OrdinalIgnoreCase)).ToArray();
-        yield return (left.Length == 0, left.Length == 0 ? "no Ember palette value left in the tokens" : $"Ember values still in tokens: {string.Join(", ", left)}");
+        // No value of the earlier Ember palette is in a Studio theme (the Ember themes are
+        // Ember by definition — spec 007 FR-016).
+        var studio = string.Join("\n", Directory.EnumerateFiles(Path.Combine(app, "Theme/Themes"), "studio-*.json").Select(File.ReadAllText));
+        var left = EmberHexes.Where(h => studio.Contains(h, StringComparison.OrdinalIgnoreCase)).ToArray();
+        yield return (studio.Length > 0 && left.Length == 0,
+            left.Length == 0 ? "no Ember palette value in the Studio themes" : $"Ember values in Studio themes: {string.Join(", ", left)}");
     }
 
-    /// <summary>The Brush.* keys and values of one ThemeDictionary.</summary>
-    private static Dictionary<string, string> Brushes(string theme, string variant)
-    {
-        var dict = new Dictionary<string, string>(StringComparer.Ordinal);
-        var block = Regex.Match(theme,
-            $"""x:Key="{variant}">(?<body>.*?)\n        </ResourceDictionary>""", RegexOptions.Singleline);
-        if (!block.Success) return dict;
-        foreach (Match m in Regex.Matches(block.Groups["body"].Value,
-                     """<SolidColorBrush\s+x:Key="(?<key>Brush\.\w+)">(?<val>#[0-9A-Fa-f]{6,8})</SolidColorBrush>"""))
-            dict[m.Groups["key"].Value] = m.Groups["val"].Value;
-        // Shadows are per-variant too (the seam ring and the bevel differ): a key in one
-        // branch and not the other would drop the elevation of every control that names it.
-        foreach (Match m in Regex.Matches(block.Groups["body"].Value,
-                     """<BoxShadows\s+x:Key="(?<key>Shadow\.\w+)">(?<val>[^<]+)</BoxShadows>"""))
-            dict[m.Groups["key"].Value] = m.Groups["val"].Value;
-        return dict;
-    }
-
-    // #RRGGBB and #FFRRGGBB name the same colour; compare on the opaque form.
-    private static bool Same(string a, string b) => Norm(a) == Norm(b);
-
-    private static string Norm(string hex)
-    {
-        hex = hex.TrimStart('#').ToUpperInvariant();
-        if (hex.Length == 8 && hex.StartsWith("FF", StringComparison.Ordinal)) hex = hex[2..];
-        return hex;
-    }
+    // Signature values of the Ember palette (0.52.1): brass accents, warm grounds.
+    private static readonly string[] EmberHexes = { "#D8A03D", "#0B0A09", "#141310", "#E9E4D8", "#A87415", "#EAE5D7", "#241F17", "#F0C060" };
 
     /// <summary>Walk up from the test binary until the solution file appears.</summary>
     private static string? RepoRoot()

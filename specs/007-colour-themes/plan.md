@@ -82,7 +82,7 @@ Follow system reacts within 1 s (SC-008).
   working.
 
 **Scale/Scope**:
-- 107 tokens × 4 themes;
+- 106 tokens × 4 themes;
 - ~10 files changed in `Nota.App/Theme`, `PreferencesWindow.cs`, `App.axaml.cs`,
   `Nota.Application/Settings.cs` (+ new `Appearance.cs`);
 - 4 new JSON files;

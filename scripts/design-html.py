@@ -2,20 +2,43 @@
 # SPDX-License-Identifier: AGPL-3.0-only
 # Copyright (c) 2026 Egor Khindikaynen (Nota). See LICENSES/ for license terms.
 #
-# Regenerates DESIGN.html from the theme: the colour and shadow variables for both
-# variants, the geometry and the type classes are read from
-# src/managed/Nota.App/Theme/NotaTheme.axaml, so the page can never show a value the app
+# Regenerates DESIGN.html. Colour comes from the theme files
+# (src/managed/Nota.App/Theme/Themes/*.json, in NotaThemes.BuiltInOrder), mapped onto the
+# Brush.* keys the app publishes (NotaPalette.KeyMap); the shadows are built from theme
+# colours exactly as NotaThemeService builds them; geometry and type classes come from
+# src/managed/Nota.App/Theme/NotaTheme.axaml. So the page can never show a value the app
 # does not use. Run after changing a token:  python3 scripts/design-html.py
-import re, math, os, sys
+import re, math, os, sys, json
 ROOT=os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-t=open(ROOT+'/src/managed/Nota.App/Theme/NotaTheme.axaml',encoding='utf-8').read()
+THEME_DIR=ROOT+'/src/managed/Nota.App/Theme'
+t=open(THEME_DIR+'/NotaTheme.axaml',encoding='utf-8').read()
+pal=open(THEME_DIR+'/NotaPalette.cs',encoding='utf-8').read()
+order_src=re.search(r'BuiltInOrder\s*=\s*\{([^}]*)\}',open(THEME_DIR+'/NotaColourTheme.cs',encoding='utf-8').read()).group(1)
+THEMES=[json.load(open(f'{THEME_DIR}/Themes/{i}.json',encoding='utf-8')) for i in re.findall(r'"([a-z0-9-]+)"',order_src)]
+KEYMAP=re.findall(r'\["Brush\.(\w+)"\]\s*=\s*(Wash\([^)]*\)|[\w\[\]]+)',
+                  re.search(r'KeyMap\s*=\s*new\([^)]*\)\s*\{(.*?)\n    \};',pal,re.S).group(1))
 
-def branch(name):
-    i=t.index('<ResourceDictionary x:Key="%s">'%name); j=t.index('</ResourceDictionary>',i); return t[i:j]
-rx=r'<SolidColorBrush x:Key="Brush\.([\w.]+)">(#[0-9A-Fa-f]+)</SolidColorBrush>'
-srx=r'<BoxShadows x:Key="Shadow\.(\w+)">([^<]+)</BoxShadows>'
-D=dict(re.findall(rx,branch('Dark'))); L=dict(re.findall(rx,branch('Light')))
-SD=dict(re.findall(srx,branch('Dark'))); SL=dict(re.findall(srx,branch('Light')))
+def brushes(c):
+    """Brush key (without 'Brush.') -> hex for one theme's colours, through KeyMap."""
+    out={}
+    for key,expr in KEYMAP:
+        m=re.match(r'TrackSlots\[(\d)\]',expr)
+        if m: out[key]=c[f'Track{int(m.group(1))+1}']; continue
+        m=re.match(r'ReturnSlots\[(\d)\]',expr)
+        if m: out[key]=c['Return'+'AB'[int(m.group(1))]]; continue
+        m=re.match(r'Wash\((\w+),\s*0x([0-9A-Fa-f]{2})\)',expr)
+        if m: out[key]='#'+m.group(2).upper()+c[m.group(1)].lstrip('#')[-6:]; continue
+        out[key]=c[expr]
+    return out
+def shadows(c):
+    """NotaThemeService.ApplyResources, as Avalonia BoxShadows strings."""
+    return {'Raised':f'inset 0 1 0 0 {c["ShadowBevel"]}','Sunken':f'inset 0 0 0 1 {c["Rule"]}',
+            'Popover':f'0 0 0 1 {c["Seam"]}, 0 10 28 0 {c["ShadowPopover"]}','Modal':f'0 0 0 1 {c["Seam"]}, 0 24 64 0 {c["ShadowModal"]}'}
+BY_ID={th['id']:th for th in THEMES}
+D=brushes(BY_ID['studio-dark']['colors']); L=brushes(BY_ID['studio-light']['colors'])
+SD=shadows(BY_ID['studio-dark']['colors']); SL=shadows(BY_ID['studio-light']['colors'])
+# The page's variant names: Studio keeps "dark" (the default) and "light"; the others use their id.
+def vname(th): return {'studio-dark':'dark','studio-light':'light'}.get(th['id'],th['id'])
 
 def css(h):
     h=h.lstrip('#')
@@ -48,17 +71,14 @@ for m in re.finditer(r'<Style Selector="TextBlock\.(\w+)">(.*?)</Style>',t,re.S)
 # here with its name, rather than a KeyError deep in the template.
 def need(keys, where, dark, light):
     missing=[k for k in keys if k not in dark or k not in light]
-    if missing: sys.exit(f'design-html.py: {where} missing from NotaTheme.axaml (Dark or Light): {", ".join(missing)}')
+    if missing: sys.exit(f'design-html.py: {where} missing from the Studio themes (Dark or Light): {", ".join(missing)}')
 
-root='\n'.join(f'  {var(k)}: {css(v)};' for k,v in D.items())
-light='\n'.join(f'  {var(k)}: {css(L[k])};' for k in D if k in L)
-root+='\n'+'\n'.join(f'  --shadow-{k.lower()}: {css_shadow(v)};' for k,v in SD.items())
-# Derived ink on the semantic fills, per variant (NotaPalette.InkOn): computed, never fixed.
+# Derived ink on the semantic fills, per theme (NotaPalette.InkOn): computed, never fixed.
 INKON=('Mute','Solo','Record')
-light+='\n'+'\n'.join(f'  --shadow-{k.lower()}: {css_shadow(SL[k])};' for k in SD if k in SL)
 
 def sw(key, name, use):
-    return (f'<button class="sw" data-dark="{D[key]}" data-light="{L[key]}" title="Copy hex">'
+    hexes=json.dumps({vname(th):brushes(th['colors'])[key] for th in THEMES}).replace('"','&quot;')
+    return (f'<button class="sw" data-hex="{hexes}" title="Copy hex">'
             f'<span class="sw__chip" style="background:var({var(key)})"></span>'
             f'<span class="sw__name">{name}</span><code class="sw__key">Brush.{key}</code>'
             f'<span class="sw__hex mono"></span><span class="sw__use">{use}</span></button>')
@@ -104,13 +124,21 @@ def lum(c):
 def contrast(a,b): la,lb=lum(a),lum(b); return (max(la,lb)+0.05)/(min(la,lb)+0.05)
 def ink_on(fill): dark,white=(0x17,0x18,0x1A),(0xFF,0xFF,0xFF); return hexs(dark) if contrast(dark,fill)>=contrast(white,fill) else hexs(white)
 SHADE_D,SHADE_L=(0x17,0x18,0x1A),(0x16,0x17,0x1A)   # NotaPalette.ShadeDown
-root+='\n'+'\n'.join(f'  --ink-on-{k.lower()}: {ink_on(rgb(D[k]))};' for k in INKON)
-light+='\n'+'\n'.join(f'  --ink-on-{k.lower()}: {ink_on(rgb(L[k]))};' for k in INKON)
+def theme_vars(th):
+    """Every CSS variable one theme sets: brushes, shadows, derived ink, clip shades."""
+    c=th['colors']; B=brushes(c); shade=rgb(c['ShadeDown'])
+    out=[f'  {var(k)}: {css(v)};' for k,v in B.items()]
+    out+=[f'  --shadow-{k.lower()}: {css_shadow(v)};' for k,v in shadows(c).items()]
+    out+=[f'  --ink-on-{k.lower()}: {ink_on(rgb(B[k]))};' for k in INKON]
+    for i in range(9):
+        body=rgb(c[f'Track{i+1}']); band=mix(body,shade,0.30)
+        out+=[f'  --t{i}-body: {hexs(body)}; --t{i}-band: {hexs(band)}; --t{i}-ink: {ink_on(band)}; --t{i}-cont: {hexs(mix(body,shade,0.58))};']
+    out.append(f"  color-scheme: {th['kind']};")
+    return '\n'.join(out)
+VARIANTS='\n'.join((':root' if vname(th)=='dark' else f':root[data-variant="{vname(th)}"]')+' {\n'+theme_vars(th)+'\n}' for th in THEMES)
+
 def clip(idx, name, w, sel=False, notes=True):
-    k=f'Track{idx+1}'; bd,bl=rgb(D[k]),rgb(L[k])
-    band_d,band_l=mix(bd,SHADE_D,0.30),mix(bl,SHADE_L,0.30)
-    style=(f'--c-body-d:{hexs(bd)};--c-body-l:{hexs(bl)};--c-band-d:{hexs(band_d)};--c-band-l:{hexs(band_l)};'
-           f'--c-ink-d:{ink_on(band_d)};--c-ink-l:{ink_on(band_l)};--c-cont-d:{hexs(mix(bd,SHADE_D,0.58))};--c-cont-l:{hexs(mix(bl,SHADE_L,0.58))};width:{w}px')
+    style=f'--c-body:var(--t{idx}-body);--c-band:var(--t{idx}-band);--c-ink:var(--t{idx}-ink);--c-cont:var(--t{idx}-cont);width:{w}px'
     marks=''.join(f'<i style="left:{8+j*11}px;top:{18+((j*7)%4)*6}px"></i>' for j in range(max(1,(w-12)//11))) if notes else ''
     return f'<div class="clip{" sel" if sel else ""}" style="{style}"><b>{name}</b>{marks}</div>'
 
@@ -278,15 +306,11 @@ td:first-child{color:var(--text-primary)}
 .meter i{position:absolute;left:0;right:0;bottom:0}
 /* clips */
 .lane{display:flex;gap:2px;align-items:center;height:64px;padding:0 6px;background:var(--bg-app);border:1px solid var(--seam);border-radius:var(--r-control);overflow-x:auto;position:relative}
-.clip{position:relative;flex:none;height:60px;border-radius:var(--r-clip);background:var(--c-body-d);overflow:hidden}
-.clip b{display:block;height:12px;padding:0 5px;background:var(--c-band-d);color:var(--c-ink-d);font:600 9.5px/12px var(--font-ui);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.clip i{position:absolute;width:8px;height:3px;border-radius:1px;background:var(--c-cont-d)}
+.clip{position:relative;flex:none;height:60px;border-radius:var(--r-clip);background:var(--c-body);overflow:hidden}
+.clip b{display:block;height:12px;padding:0 5px;background:var(--c-band);color:var(--c-ink);font:600 9.5px/12px var(--font-ui);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.clip i{position:absolute;width:8px;height:3px;border-radius:1px;background:var(--c-cont)}
 .clip.sel b{background:var(--accent);color:var(--text-on-accent)}
 .clip.sel{box-shadow:inset 0 0 0 1px var(--accent)}
-:root[data-variant="light"] .clip{background:var(--c-body-l)}
-:root[data-variant="light"] .clip b{background:var(--c-band-l);color:var(--c-ink-l)}
-:root[data-variant="light"] .clip i{background:var(--c-cont-l)}
-:root[data-variant="light"] .clip.sel b{background:var(--accent);color:var(--text-on-accent)}
 .playhead{position:absolute;top:0;bottom:0;width:1px;background:var(--accent)}
 /* card */
 .card{width:700px;height:260px;background:var(--panel);border:1px solid var(--seam);border-radius:var(--r-body);overflow:hidden;display:grid;grid-template-rows:22px 1fr}
@@ -330,24 +354,20 @@ HEAD=f'''<!-- SPDX-License-Identifier: AGPL-3.0-only -->
 <style>
 /* ============================================================================
    Studio — Nota's design system (Saine's, applied to Nota), documented in its own palette.
-   The colour and shadow variables below are generated from
-   src/managed/Nota.App/Theme/NotaTheme.axaml (Dark → :root, Light → [data-variant=light]).
+   The colour and shadow variables below are generated from the colour themes in
+   src/managed/Nota.App/Theme/Themes/ (Studio Dark → :root, every other theme →
+   [data-variant=…]).
    Generated by scripts/design-html.py — edit that, then rerun it. Every specimen on the page
    is painted through these variables — nothing uses a raw hex.
    ========================================================================= */
 :root {{
-{root}
   --r-docked: {geo['Radius.Docked']}px; --r-bar: {geo['Radius.Bar']}px; --r-clip: {geo['Radius.Clip']}px; --r-badge: {geo['Radius.Badge']}px;
   --r-control: {geo['Radius.Control']}px; --r-tile: {geo['Radius.Tile']}px; --r-panel: {geo['Radius.Panel']}px; --r-body: {geo['Radius.Body']}px;
   --r-pill: {geo['Radius.Pill']}px; --r-modal: {geo['Radius.Modal']}px;
   --font-ui: "Geist", system-ui, sans-serif;
   --font-mono: "Geist Mono", ui-monospace, Menlo, monospace;
-  color-scheme: dark;
 }}
-:root[data-variant="light"] {{
-{light}
-  color-scheme: light;
-}}
+{VARIANTS}
 '''
 
 g=lambda k: geo[k]
@@ -359,7 +379,7 @@ BODY=f'''</style>
   <div><p class="eyebrow">Nota · design</p><h1>Studio</h1></div>
   <nav><a href="#rules">Rules</a><a href="#colour">Colour</a><a href="#type">Type</a><a href="#geometry">Geometry</a><a href="#controls">Controls</a><a href="#states">States</a><a href="#graphs">Graphs</a><a href="#cards">Cards</a><a href="#shell">Shell</a></nav>
   <span class="spacer"></span>
-  <div class="seg" role="group" aria-label="Variant"><button data-v="dark" aria-pressed="true">Dark</button><button data-v="light" aria-pressed="false">Light</button></div>
+  <div class="seg" role="group" aria-label="Colour theme">{''.join(f'<button data-v="{vname(th)}" aria-pressed="{str(vname(th)=="dark").lower()}">{th["name"]}</button>' for th in THEMES)}</div>
 </header>
 
 <section id="rules">
@@ -629,22 +649,23 @@ SCRIPT=r'''<script>
 (() => {
   const root = document.documentElement;
   const buttons = document.querySelectorAll('.mast .seg button');
-  // "paper" and "graphite" are the Ember names; they still open the matching variant.
-  const norm = v => (v === 'light' || v === 'paper') ? 'light' : 'dark';
+  // A theme id or the Studio names dark / light; "graphite" and "paper" open the Ember themes.
+  const known = Array.from(buttons, b => b.dataset.v);
+  const norm = v => { v = ({ 'studio-dark': 'dark', 'studio-light': 'light', graphite: 'ember-graphite', paper: 'ember-paper' })[v] || v; return known.includes(v) ? v : 'dark'; };
   function hexes() {
-    const light = root.dataset.variant === 'light';
-    document.querySelectorAll('.sw').forEach(s => { s.querySelector('.sw__hex').textContent = light ? s.dataset.light : s.dataset.dark; });
+    const v = root.dataset.variant || 'dark';
+    document.querySelectorAll('.sw').forEach(s => { s.querySelector('.sw__hex').textContent = JSON.parse(s.dataset.hex)[v]; });
   }
   function set(v) {
     v = norm(v);
-    if (v === 'light') root.dataset.variant = 'light'; else delete root.dataset.variant;
+    if (v === 'dark') delete root.dataset.variant; else root.dataset.variant = v;
     buttons.forEach(b => b.setAttribute('aria-pressed', String(b.dataset.v === v)));
     hexes();
     try { localStorage.setItem('studio-variant', v); } catch (e) {}
   }
   buttons.forEach(b => b.addEventListener('click', () => set(b.dataset.v)));
   let saved = null; try { saved = localStorage.getItem('studio-variant'); } catch (e) {}
-  const asked = new URLSearchParams(location.search).get('variant');   // ?variant=light (or paper)
+  const asked = new URLSearchParams(location.search).get('variant');   // ?variant=light, ?variant=ember-paper…
   set(asked || saved || 'dark');
   document.querySelectorAll('.sw').forEach(s => s.addEventListener('click', () => {
     const hex = s.querySelector('.sw__hex').textContent;

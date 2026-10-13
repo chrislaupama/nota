@@ -18,6 +18,7 @@ using Avalonia.Collections;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
 using Avalonia.Controls.Shapes;
+using Avalonia.Controls.Templates;
 using Avalonia.Input;
 using Avalonia.Input.Platform;
 using Avalonia.Layout;
@@ -787,47 +788,118 @@ public sealed partial class PreferencesWindow : NotaWindow
 
     // ---- Appearance -------------------------------------------------------
 
-    // Dark / Light / System as a segmented control, each with a swatch of its ground. The
-    // choice applies immediately — NotaThemeService re-tints the palette and repaints every
-    // open window — and is persisted so the next launch starts in the same variant.
+    // The colour themes (spec 007) as a list: one row per theme with a chip of its own
+    // colours, its name and its kind, then a "Follow system" row that pairs a dark-mode
+    // theme with a light-mode one. Single selection across all rows: picking a theme turns
+    // follow-system off (its two per-mode choices are kept). Every pick applies at once —
+    // NotaThemeService re-tints the palette and repaints every open window — and is saved.
     private static Control ThemePicker()
     {
         var settings = App.Services.GetRequiredService<ISettingsService>();
-        var strip = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 2 };
-        var buttons = new List<(AppTheme Mode, ToggleButton Btn)>();
-
-        foreach (var (mode, label) in new[]
-                 {
-                     (AppTheme.Dark, "Dark"),
-                     (AppTheme.Light, "Light"),
-                     (AppTheme.System, "System"),
-                 })
+        var themes = NotaThemes.BuiltIn;
+        var list = new ListBox
         {
-            var m = mode;
-            var btn = new ToggleButton
-            {
-                Classes = { "seg" }, FontSize = 12,
-                Content = new StackPanel
-                {
-                    Orientation = Orientation.Horizontal, Spacing = 7,
-                    Children = { new ThemeSwatch(m), new TextBlock { Text = label, VerticalAlignment = VerticalAlignment.Center } },
-                },
-                IsChecked = settings.Current.Theme == m,
-            };
-            btn.Click += (_, _) =>
-            {
-                // A segment can only be turned on: clicking the live one must not clear it.
-                foreach (var (bm, b) in buttons) b.IsChecked = bm == m;
-                if (settings.Current.Theme == m) return;
-                settings.Current.Theme = m;
-                settings.Save();
-                NotaThemeService.Set(m);
-            };
-            buttons.Add((m, btn));
-            strip.Children.Add(btn);
+            SelectionMode = SelectionMode.Single, Width = 300, HorizontalAlignment = HorizontalAlignment.Left,
+            Background = Brushes.Transparent, Padding = new Thickness(0),
+        };
+        foreach (var t in themes)
+            list.Items.Add(ThemeRow(new ThemeChip(t), t.Name, t.IsDark ? "Dark" : "Light"));
+        list.Items.Add(ThemeRow(null, "Follow system", "Dark · Light"));
+        int followIndex = themes.Count;
+
+        var darkPick = ModeCombo(NotaThemeKind.Dark);
+        var lightPick = ModeCombo(NotaThemeKind.Light);
+        var modes = new StackPanel
+        {
+            Spacing = 6, Margin = new Thickness(0, 8, 0, 0),
+            Children = { ModeRow("In dark mode", darkPick), ModeRow("In light mode", lightPick) },
+        };
+
+        bool loading = true;
+        void Show()
+        {
+            var c = NotaThemeService.Choice;
+            list.SelectedIndex = c.FollowSystem ? followIndex : Math.Max(0, IndexOf(c.Single));
+            darkPick.SelectedItem = NotaThemes.Find(c.Dark);
+            lightPick.SelectedItem = NotaThemes.Find(c.Light);
+            modes.IsVisible = c.FollowSystem;
+        }
+        int IndexOf(string id) { for (int i = 0; i < themes.Count; i++) if (themes[i].Id == id) return i; return -1; }
+
+        void Commit(AppearanceChoice choice)
+        {
+            var single = NotaThemes.Find(choice.Single) ?? NotaThemes.Default;
+            Appearance.Store(settings.Current, choice, single.IsDark);
+            settings.Save();
+            NotaThemeService.Set(choice);
+            modes.IsVisible = choice.FollowSystem;
         }
 
-        return new Border { Classes = { "segmented" }, HorizontalAlignment = HorizontalAlignment.Left, Child = strip };
+        list.SelectionChanged += (_, _) =>
+        {
+            if (loading || list.SelectedIndex < 0) return;
+            var c = NotaThemeService.Choice;
+            if (list.SelectedIndex == followIndex)
+            {
+                if (!c.FollowSystem) Commit(c with { FollowSystem = true });
+            }
+            else
+            {
+                var id = themes[list.SelectedIndex].Id;
+                if (c.FollowSystem || c.Single != id) Commit(c with { FollowSystem = false, Single = id });
+            }
+        };
+        darkPick.SelectionChanged += (_, _) =>
+        {
+            if (!loading && darkPick.SelectedItem is NotaColourTheme t && t.Id != NotaThemeService.Choice.Dark)
+                Commit(NotaThemeService.Choice with { Dark = t.Id });
+        };
+        lightPick.SelectionChanged += (_, _) =>
+        {
+            if (!loading && lightPick.SelectedItem is NotaColourTheme t && t.Id != NotaThemeService.Choice.Light)
+                Commit(NotaThemeService.Choice with { Light = t.Id });
+        };
+
+        Show();
+        loading = false;
+        return new StackPanel { Children = { list, modes } };
+    }
+
+    // A theme row: accent tick (styled on selection), chip, name, kind on the right.
+    private static ListBoxItem ThemeRow(Control? chip, string name, string kind)
+    {
+        var grid = new Grid { ColumnDefinitions = new ColumnDefinitions("Auto,Auto,*,Auto"), ColumnSpacing = 8 };
+        var edge = new Border { Classes = { "RowEdge" }, Height = 14, VerticalAlignment = VerticalAlignment.Center };
+        grid.Children.Add(edge);
+        var c = chip ?? new Border { Width = ThemeChip.ChipWidth };
+        c.VerticalAlignment = VerticalAlignment.Center;
+        Grid.SetColumn(c, 1); grid.Children.Add(c);
+        var label = new TextBlock { Text = name, Classes = { "RowName" }, VerticalAlignment = VerticalAlignment.Center };
+        Grid.SetColumn(label, 2); grid.Children.Add(label);
+        var tag = new TextBlock { Text = kind, FontSize = 11, Foreground = TextMuted, VerticalAlignment = VerticalAlignment.Center };
+        Grid.SetColumn(tag, 3); grid.Children.Add(tag);
+        return new ListBoxItem { Content = grid, Padding = new Thickness(0, 0, 8, 0) };
+    }
+
+    // The theme for one OS mode while following the system: only themes of that kind.
+    private static ComboBox ModeCombo(NotaThemeKind kind)
+    {
+        var combo = Combo(220);
+        combo.ItemsSource = NotaThemes.OfKind(kind).ToList();
+        combo.ItemTemplate = new FuncDataTemplate<NotaColourTheme>((t, _) => t is null ? new TextBlock() : new StackPanel
+        {
+            Orientation = Orientation.Horizontal, Spacing = 8,
+            Children = { new ThemeChip(t) { VerticalAlignment = VerticalAlignment.Center }, new TextBlock { Text = t.Name, VerticalAlignment = VerticalAlignment.Center } },
+        });
+        return combo;
+    }
+
+    private static Control ModeRow(string label, Control picker)
+    {
+        var grid = new Grid { ColumnDefinitions = new ColumnDefinitions("110,Auto"), ColumnSpacing = 10 };
+        grid.Children.Add(new TextBlock { Text = label, FontSize = 12, Foreground = TextSecondary, VerticalAlignment = VerticalAlignment.Center });
+        Grid.SetColumn(picker, 1); grid.Children.Add(picker);
+        return grid;
     }
 
     // Bars / Solid for the arrangement's audio-clip waveforms. Saving fires Settings.Changed,
@@ -854,36 +926,23 @@ public sealed partial class PreferencesWindow : NotaWindow
         return new Border { Classes = { "segmented" }, HorizontalAlignment = HorizontalAlignment.Left, Child = strip };
     }
 
-    // A 10px chip of a variant's ground — both variants at once, whichever one is live.
-    // System is split corner to corner, Light over Dark.
-    private sealed class ThemeSwatch : Control
+    // A theme in four 10px squares of its own colours — ground, panel, primary text,
+    // accent — whichever theme is live, so every row previews itself.
+    private sealed class ThemeChip : Control
     {
-        private readonly AppTheme _mode;
-        public ThemeSwatch(AppTheme mode) { _mode = mode; Width = 10; Height = 10; VerticalAlignment = VerticalAlignment.Center; }
+        public const double ChipWidth = 4 * 10 + 3 * 2;
+        private readonly NotaColourTheme _theme;
+        public ThemeChip(NotaColourTheme theme) { _theme = theme; Width = ChipWidth; Height = 10; }
 
         public override void Render(DrawingContext ctx)
         {
-            var dark = new ImmutableSolidColorBrush(NotaPalette.ColorIn(NotaPalette.SurfaceCard, NotaThemeVariant.Dark));
-            var light = new ImmutableSolidColorBrush(NotaPalette.ColorIn(NotaPalette.SurfaceCard, NotaThemeVariant.Light));
-            var r = new Rect(0, 0, Width, Height);
-            var box = new RoundedRect(r, NotaRadius.ClipValue);
-            using (ctx.PushClip(box))
+            var slots = new[] { NotaPalette.BgApp, NotaPalette.Panel, NotaPalette.TextPrimary, NotaPalette.Accent };
+            for (int i = 0; i < slots.Length; i++)
             {
-                ctx.FillRectangle(_mode == AppTheme.Dark ? dark : light, r);
-                if (_mode == AppTheme.System)
-                {
-                    var g = new StreamGeometry();
-                    using (var c = g.Open())
-                    {
-                        c.BeginFigure(new Point(r.Right, r.Top), true);
-                        c.LineTo(r.BottomRight);
-                        c.LineTo(r.BottomLeft);
-                        c.EndFigure(true);
-                    }
-                    ctx.DrawGeometry(dark, null, g);
-                }
+                var r = new Rect(i * 12, 0, 10, 10);
+                ctx.DrawRectangle(new ImmutableSolidColorBrush(NotaPalette.ColorIn(slots[i], _theme)),
+                    new Pen(BorderStrong, 1), new RoundedRect(r.Deflate(0.5), NotaRadius.ClipValue));
             }
-            ctx.DrawRectangle(null, new Pen(BorderStrong, 1), new RoundedRect(r.Deflate(0.5), NotaRadius.ClipValue));
         }
     }
 
@@ -971,8 +1030,8 @@ public sealed partial class PreferencesWindow : NotaWindow
 
         return Sections(
             Section("UI", 10,
-                Row("Theme", ThemePicker()),
-                Row("", Caption("Dark is the studio grey palette; Light is the same system in light greys. System follows the OS appearance and switches with it.")),
+                Row("Colour theme", ThemePicker()),
+                Row("", Caption("Themes change colours only. Follow system switches between a dark-mode and a light-mode theme with the OS appearance.")),
                 Row("Waveform", WaveformPicker()),
                 Row("", Caption("How audio clips draw on the arrangement: Bars spaces the peaks out so the rhythm reads; Solid draws every pixel."))),
             Section("AI control (MCP)", 12, enable, details));
