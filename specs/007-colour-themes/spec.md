@@ -11,6 +11,7 @@
 ### Session 2026-10-13
 
 - Q: Should a theme hold both a dark and a light version (switch picks the side), or be one fixed look per entry? → A: One fixed look per entry (Studio Dark, Studio Light, Ember Graphite, Ember Paper…), each marked dark or light. "Follow system" needs its own pairing: a chosen theme for dark mode and one for light mode.
+- Q: Should each theme set its own colours for tracks, or should track colours stay the same in every theme? → A: Each theme sets its own colour for each of the nine track colour slots (and the return and master colours); a track keeps its slot and shows the active theme's colour for it.
 
 **Input**: User description: "Selectable colour themes: turn Nota's two fixed palette variants (the dark/light token pairs) into a set of named colour themes the user picks in Preferences → Appearance — e.g. Studio Dark, Studio Light, and a warm 'Ember' colour set — keeping the Studio layout, type and behaviour unchanged; designed so user-editable/importable themes (like Saine's theme editor) can follow later."
 
@@ -259,7 +260,8 @@ it.
 
 - **FR-008**: A colour theme MUST consist of a unique identifier, a display name, a kind
   (**dark** or **light**), and a value for **every** colour token. The colour tokens are
-  the full set the design language defines, including track hues, semantic colours
+  the full set the design language defines, including the nine track colour slots and
+  the return and master colours, semantic colours
   (mute, solo, arm/record, warning, success) and shadow colours.
 - **FR-009**: A theme's kind MUST decide which family the operating system's native
   chrome uses (dark or light) and which list it appears in for follow system.
@@ -352,7 +354,7 @@ it.
   shape ready for them.
 - **Four built-in themes** (Studio Dark/Light, Ember Graphite/Paper) are enough to ship. More, e.g. a high-contrast
   theme, can be added later per FR-012 without a new spec.
-- **Track colours are themed.** Projects store track colours as palette roles, not raw
+- **Track colours are themed (clarified).** Projects store track colours as palette roles, not raw
   colours, so a theme can give each role its own hue without touching project files.
 - **Ember values** come from the last pre-Studio release (0.52.1) palette. Studio-only
   tokens get Ember-palette values by Studio's derivation rules (e.g. seam = Ember's
