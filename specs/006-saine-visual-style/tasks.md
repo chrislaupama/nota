@@ -95,7 +95,7 @@ edited together because `DesignTokenCheck.Run` fails on a dark/light or XAML/C# 
 - [ ] T031 [US2] Run `scripts/build-linux.sh`; all smoke-test checks pass (including the updated `DesignTokenCheck`)
 - [X] T032 [US2] Confirm hit-test geometry is untouched: `git diff main -- App/ArrangementView*.cs App/PianoRollView*.cs App/ClipEditorKit.cs App/DeviceCardKit.cs` shows no change to row heights, header column 228, overview/sections/ruler heights, piano keys/rows, `CardH`/`HeaderH`/`ParamCell`/knob sizes (contract C6.2); revert any accidental change
 - [X] T033 [US2] Open a project saved before the change (smoke-test fixture or a newly saved one from `main`), save it with the restyled build, and diff the JSON: no difference in content or track colour indices (contract C6.3)
-- [ ] T034 [US2] Walk the FEATURES.md sections in the running app (Xvfb) and confirm each listed view/panel/menu/window opens from the same place; record anything not reachable and fix it
+- [X] T034 [US2] Walk the FEATURES.md sections in the running app (Xvfb) and confirm each listed view/panel/menu/window opens from the same place; record anything not reachable and fix it
 
 ---
 
@@ -128,9 +128,9 @@ edited together because `DesignTokenCheck.Run` fails on a dark/light or XAML/C# 
 
 ### Device bodies (labels and resting accent)
 
-- [ ] T044 [US4] Replace the 39 local `Caps(...)` helpers and the two `FormattedText Caps(...)` (`ChamberViews.cs:33`, `PrismViews.cs:41`) under `App/DeviceCards/` and `App/` with calls through `NotaText.Label` and the `DeviceSection`/`RowLabel` styles (no Bold, LetterSpacing 0); remove hand-set positive `LetterSpacing` on label text in views (112 occurrences / 65 files, `grep -rn "LetterSpacing" App/ --include=*.cs`)
-- [ ] T045 [US4] Audit resting accent in device visualisers file by file under `App/DeviceCards/` and `App/Controls/` (start with ChamberViews, BeatRepeatViews, ConsortViews, then the rest by `grep -rln "NotaPalette.Accent\|Brass\b" App/DeviceCards App/Controls`): resting curves/fills/bars → `VizInk` or `TextSecondary`; keep accent only for selection, playhead, active step, dragged node, toggles on (contract C1.3–C1.4)
-- [ ] T046 [US4] Screenshot every built-in device card (dark) and fix any truncated label caused by the new label size/case (contract C4.3)
+- [X] T044 [US4] Replace the 39 local `Caps(...)` helpers and the two `FormattedText Caps(...)` (`ChamberViews.cs:33`, `PrismViews.cs:41`) under `App/DeviceCards/` and `App/` with calls through `NotaText.Label` and the `DeviceSection`/`RowLabel` styles (no Bold, LetterSpacing 0); remove hand-set positive `LetterSpacing` on label text in views (112 occurrences / 65 files, `grep -rn "LetterSpacing" App/ --include=*.cs`)
+- [X] T045 [US4] Audit resting accent in device visualisers file by file under `App/DeviceCards/` and `App/Controls/` (start with ChamberViews, BeatRepeatViews, ConsortViews, then the rest by `grep -rln "NotaPalette.Accent\|Brass\b" App/DeviceCards App/Controls`): resting curves/fills/bars → `VizInk` or `TextSecondary`; keep accent only for selection, playhead, active step, dragged node, toggles on (contract C1.3–C1.4)
+- [X] T046 [US4] Screenshot every built-in device card (dark) and fix any truncated label caused by the new label size/case (contract C4.3)
 
 ### Custom-drawn views
 
@@ -141,7 +141,7 @@ edited together because `DesignTokenCheck.Run` fails on a dark/light or XAML/C# 
 - [X] T051 [P] [US4] Piano roll / clip editor `App/PianoRollView*.cs`, `App/ClipEditorKit.cs`, `App/ClipEditorView.cs`: notes in velocity shades of the clip colour with a dark 1 px edge, selection = 2 px accent frame; keys `KeyWhite`/`KeyBlack` re-valued (T005); loop strip accent; tools-panel Apply = the one accent action only while a preview is pending
 - [X] T052 [P] [US4] Audio editor and automation: `App/AudioClipEditorView.cs`, `App/ArrangementView.Automation.cs`, `App/ArrangementView.LaneControl.cs`: curve and points `VizInk`, selected point accent; automation clip body 16 % owner colour over well, title band 30 % toward black
 - [X] T053 [P] [US4] Modular `App/ModularView*.cs`: canvas `BgApp`, node cards like device cards (T038), cable colours unchanged except any resting accent → `VizInk`
-- [ ] T054 [US4] Build and verify US4 against contract C4–C5 under Xvfb in dark and light
+- [X] T054 [US4] Build and verify US4 against contract C4–C5 under Xvfb in dark and light
 
 ---
 
@@ -162,9 +162,9 @@ edited together because `DesignTokenCheck.Run` fails on a dark/light or XAML/C# 
 
 ## Phase 8: Polish & cross-cutting
 
-- [ ] T061 Remove dead Ember-only code left behind (unused slots/aliases with zero references, e.g. `AccentMute` if unused) only where `DesignTokenCheck` parity allows; keep names that are still referenced
+- [X] T061 Remove dead Ember-only code left behind (unused slots/aliases with zero references, e.g. `AccentMute` if unused) only where `DesignTokenCheck` parity allows; keep names that are still referenced
 - [ ] T062 Final `scripts/build-linux.sh` run; smoke test green
-- [ ] T063 Final before/after screenshots (dark + light) for the PR description; note `../nota-docs` screenshots as a follow-up (repository not available here)
+- [X] T063 Final before/after screenshots (dark + light) for the PR description; note `../nota-docs` screenshots as a follow-up (repository not available here)
 
 ---
 

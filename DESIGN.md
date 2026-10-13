@@ -594,16 +594,16 @@ True today, not yet fixed:
   `BrowserView.cs`, `DeviceChainView.Shell.cs`, `QrView.cs`, `BrandMark.cs`,
   `ScaleNoteMap.cs`, `ChordKeysViz.cs`) still say Graphite, Paper, brass or almanac. A
   rename pass can follow.
-- **Device bodies not audited card by card.** About sixty files in `DeviceCards/` and
-  `Controls/` still name `Accent` / `Brass` directly. The shared controls are neutral at
-  rest, but each device's own visualisers have not been checked against the live-or-chosen
-  rule.
+- **Accent judgement calls in device views.** Each device's visualisers were audited for
+  the live-or-chosen rule; a few accent uses were kept as "chosen" and are worth a second
+  look: the last-struck ball in Pendulum, in-scale note chips (Scale map, Auto Shift), the
+  live pitch readout in Auto Shift, the step strip wash in Rhythm, the zone chip in Mosaic,
+  the macro-mapped chip in a rack (teal might suit it better).
 - **Device sections** are still boxes framed by a 1 px seam (`BorderDefault`); the
   contract asks for sections divided by rules.
 - **The user manual** (`../nota-docs`) screenshots still show Ember; they are not re-shot.
 - **Column order** choice → work → output is applied in Utility; the other cards have not
   been audited card by card.
-- **`Lookahead`** in Compressor may still truncate.
 - **Slider reset** on double-click works only where the card passes a default.
 - **Names:** presets with emotional names (Screaming Lead, VHS Fever, Gentle Master,
   Transparent Safety, Dive Bomb, Laser Zap…) and multi-word device names (Auto Filter,
