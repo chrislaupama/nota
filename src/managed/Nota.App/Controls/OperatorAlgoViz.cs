@@ -105,7 +105,7 @@ internal sealed class OperatorAlgoMini : Control
     {
         double w = Bounds.Width, h = Bounds.Height;
         if (w <= 0 || h <= 0) return;
-        ctx.DrawRectangle(_active ? AccentSubtle : Sunken, new Pen(_active ? Accent : BorderDef, 1), new Rect(0, 0, w, h), 4, 4);
+        ctx.DrawRectangle(_active ? AccentSubtle : Sunken, new Pen(_active ? Accent : BorderDef, 1), new Rect(0, 0, w, h), NotaRadius.ControlValue, NotaRadius.ControlValue);
         var num = new FormattedText((_algo + 1).ToString(), CultureInfo.InvariantCulture, FlowDirection.LeftToRight, Mono, 7, _active ? AccentBright : TextTertiary);
         ctx.DrawText(num, new Point(3, 2));
 

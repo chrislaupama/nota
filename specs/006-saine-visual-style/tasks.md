@@ -200,3 +200,12 @@ T049 Mixer | T050 Session | T051 Piano roll | T052 Audio/automation | T053 Modul
 - Then US4 (devices and canvases — the bulk of the screen while working), US3 (light
   pass), US2 as the regression gate after each, and US5 so the rules stick.
 - Commits are layered to match: tokens → shell/styles → controls/devices → views → docs.
+
+## Phase 9: Convergence
+
+- [ ] T064 Restyle `src/managed/Nota.App/Remote/ConnectPhoneView.cs` (and `Remote/QrView.cs` comments): sentence-case labels via `NotaText.Label`, remove positive `LetterSpacing` and bold caps ("USB", section labels), resting ring/chip colours from `AccentDim`/`BorderBrass` to neutral ink, accent only while connecting per FR-012, FR-004 (partial)
+- [ ] T065 Make `src/managed/Nota.App/Controls/Inactive.cs` dim `NotaPalette.VizInk` (and the neutral value fills that replaced brass) so a bypassed card's resting values take the disabled look per FR-015 / US4 bypassed card (partial)
+- [ ] T066 Restyle device section frames in `src/managed/Nota.App/DeviceCards/**` (shared section builders) so sections sit on the panel tone divided by 1px rules instead of seam-framed boxes per FR-015 (partial)
+- [ ] T067 Resolve floating-layer elevation for menus/popovers: either render popups in-window (Avalonia overlay popups) so `Shadow.Popover` can blur, or record the departure in spec FR-009 with the user's agreement per FR-009 (partial)
+- [ ] T068 Replace the literal radius 4 in `src/managed/Nota.App/Controls/OperatorAlgoViz.cs:108` with `NotaRadius.ControlValue` per FR-010 (partial)
+- [ ] T069 Re-shoot the user-manual screenshots in `../nota-docs` (EN + RU) for the Studio look via the nota-docs skill per FR-024 (partial)
