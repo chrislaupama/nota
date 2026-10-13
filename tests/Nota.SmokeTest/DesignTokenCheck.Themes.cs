@@ -51,6 +51,17 @@ internal static partial class DesignTokenCheck
             unlisted.Length == 0 && noFile.Length == 0 ? $"BuiltInOrder lists exactly the {files.Count} theme files"
                 : $"theme files vs BuiltInOrder — not listed: [{string.Join(", ", unlisted)}]; no file: [{string.Join(", ", noFile)}]");
 
+        // Nothing else names a theme: the built-in list, the palette's seed and the
+        // appearance defaults are the only places a theme id may appear in code.
+        var allowed = new[] { "Theme/NotaColourTheme.cs", "Theme/NotaPalette.cs" };
+        var naming = Directory.EnumerateFiles(app, "*.cs", SearchOption.AllDirectories)
+            .Where(f => !f.Contains("/obj/") && !f.Contains("/bin/") && !allowed.Any(a => f.EndsWith(a)))
+            .Where(f => fileIds.Any(id => File.ReadAllText(f).Contains($"\"{id}\"")))
+            .Select(f => Path.GetRelativePath(app, f)).ToArray();
+        yield return (naming.Length == 0,
+            naming.Length == 0 ? "no view or control names a theme id (adding a theme is its file + BuiltInOrder)"
+                               : $"theme ids named in: {string.Join(", ", naming)}");
+
         foreach (var file in files)
         {
             var id = Path.GetFileNameWithoutExtension(file)!;
