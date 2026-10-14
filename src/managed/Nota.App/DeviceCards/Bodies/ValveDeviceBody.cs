@@ -307,9 +307,9 @@ internal sealed class ValveDeviceBody : IDeviceBody
         var faders = new Grid { ColumnDefinitions = new ColumnDefinitions("Auto,Auto"), ColumnSpacing = 9, HorizontalAlignment = HorizontalAlignment.Center, Margin = new Thickness(0, 4, 0, 4) };
         faders.Children.Add(StageFader(Gain, "GAIN", NotaPalette.VizInk, "Gain — how hard the signal hits the preamp. Double-click resets."));
         faders.Children.Add(Col(StageFader(Output, "OUT", Teal, "Output — the master level after the cabinet, ±12 dB. Double-click resets."), 1));
-        var stageCol = new Border
+        var stageCol = new RuleSection
         {
-            Width = 56, Background = Card2, BorderBrush = BorderDef, BorderThickness = new Thickness(1), CornerRadius = NotaRadius.Tile, Padding = new Thickness(0, 5, 0, 4),
+            Width = 56, Padding = new Thickness(0, 5, 0, 4),
             Child = new DockPanel { Children = { Docked(stageTitle, Dock.Top), Docked(stageOut, Dock.Bottom), Docked(stageGain, Dock.Bottom), faders } },
         };
         DockPanel.SetDock(stageCol, Dock.Left);
@@ -543,9 +543,9 @@ internal sealed class ValveDeviceBody : IDeviceBody
 
         var centre = TabFrame(new[] { "Amp", "Cab", "Harmonics" }, centreHost, CentreBody, false, t => { centreTab = t; Refresh(); }, extras);
         var rightFrame = TabFrame(new[] { "Cabinet", "Output" }, rightHost, RightBody, true, _ => RefreshAll(), null);
-        var right = new Border { Width = 186, Background = Card2, BorderBrush = BorderDef, BorderThickness = new Thickness(1), CornerRadius = NotaRadius.Tile, ClipToBounds = true, Child = rightFrame };
+        var right = new RuleSection { Width = 186, Child = rightFrame };
         DockPanel.SetDock(right, Dock.Right);
-        var centreBox = new Border { Background = Card2, BorderBrush = BorderDef, BorderThickness = new Thickness(1), CornerRadius = NotaRadius.Tile, Margin = new Thickness(5, 0), ClipToBounds = true, Child = centre };
+        var centreBox = new RuleSection { Margin = new Thickness(5, 0), Child = centre };
 
         // ======================================================================
         // Status strip

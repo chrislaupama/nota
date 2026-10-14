@@ -152,10 +152,9 @@ internal sealed class Eq3DeviceBody : IDeviceBody
                 },
             };
             var bar = new Border { Height = 2, Background = hue, CornerRadius = NotaRadius.Top(NotaRadius.TileValue) };
-            return new Border
+            return new RuleSection
             {
-                Width = 62, Margin = new Thickness(0, 0, 5, 0), Background = Card2, BorderBrush = BorderDef, BorderThickness = new Thickness(1),
-                CornerRadius = NotaRadius.Tile, ClipToBounds = true,
+                Width = 62, Margin = new Thickness(0, 0, 5, 0),
                 Child = new DockPanel { Children = { Docked(bar, Dock.Top), col } },
             };
         }
@@ -258,9 +257,8 @@ internal sealed class Eq3DeviceBody : IDeviceBody
         var headRight = Row(8, OutControl(), RangeSeg(), SlopeSeg());
         Grid.SetColumn(headRight, 1); head.Children.Add(headRight);
         var headBar = new Border { Height = 20, BorderBrush = BorderDef, BorderThickness = new Thickness(0, 0, 0, 1), Child = head };
-        var graphBox = new Border
+        var graphBox = new RuleSection
         {
-            Background = Card2, BorderBrush = BorderDef, BorderThickness = new Thickness(1), CornerRadius = NotaRadius.Tile, ClipToBounds = true,
             Child = new DockPanel { Children = { Docked(headBar, Dock.Top), new Border { Padding = new Thickness(5), Child = graph } } },
         };
 

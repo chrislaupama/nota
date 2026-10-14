@@ -399,9 +399,9 @@ internal sealed class ReverbDeviceBody : IDeviceBody
 
         var centre = TabFrame(new[] { "Space", "Tone · Mod" }, centreHost, CentreBody, false, t => { centreTab = t; foreach (var a in readouts) a(); }, extras);
         var rightFrame = TabFrame(new[] { "Levels", "Output" }, rightHost, RightBody, true, _ => { foreach (var a in readouts) a(); }, null);
-        var right = new Border { Width = 186, Background = Card2, BorderBrush = BorderDef, BorderThickness = new Thickness(1), CornerRadius = NotaRadius.Tile, ClipToBounds = true, Child = rightFrame };
+        var right = new RuleSection { Width = 186, Child = rightFrame };
         DockPanel.SetDock(right, Dock.Right);
-        var centreBox = new Border { Background = Card2, BorderBrush = BorderDef, BorderThickness = new Thickness(1), CornerRadius = NotaRadius.Tile, Margin = new Thickness(5, 0), ClipToBounds = true, Child = centre };
+        var centreBox = new RuleSection { Margin = new Thickness(5, 0), Child = centre };
 
         // ======================================================================
         // Status strip

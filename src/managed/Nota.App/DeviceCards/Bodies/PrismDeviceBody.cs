@@ -240,7 +240,7 @@ internal sealed class PrismDeviceBody : IDeviceBody
         var faders = new Grid { ColumnDefinitions = new ColumnDefinitions("Auto,Auto"), ColumnSpacing = 9, HorizontalAlignment = HorizontalAlignment.Center, Margin = new Thickness(0, 4, 0, 3) };
         faders.Children.Add(Fader(Amount, "AMOUNT", "Amount — scales every band's compression and expansion (0\u2009% = none). Double-click: 100\u2009%"));
         faders.Children.Add(Col(Fader(Output, "OUT", "Output gain ±24\u2009dB — double-click: 0\u2009dB"), 1));
-        var globCol = new Border { Width = 56, Background = Panel, BorderBrush = Border2, BorderThickness = new Thickness(1), CornerRadius = NotaRadius.Tile, Padding = new Thickness(0, 5, 0, 4),
+        var globCol = new RuleSection { Width = 56, Padding = new Thickness(0, 5, 0, 4),
             Child = new DockPanel { Children = { Docked(globTitle, Dock.Top), Docked(outTxt, Dock.Bottom), Docked(amtTxt, Dock.Bottom), faders } } };
         DockPanel.SetDock(globCol, Dock.Left);
 
@@ -628,9 +628,9 @@ internal sealed class PrismDeviceBody : IDeviceBody
         {
             view = (band, view.Centre, t); ViewState[(track, di)] = view; foreach (var a in readouts) a();
         }, null);
-        var right = new Border { Width = 186, Background = Panel, BorderBrush = Border2, BorderThickness = new Thickness(1), CornerRadius = NotaRadius.Tile, ClipToBounds = true, Child = rightFrame };
+        var right = new RuleSection { Width = 186, Child = rightFrame };
         DockPanel.SetDock(right, Dock.Right);
-        var centreBox = new Border { Background = Panel, BorderBrush = Border2, BorderThickness = new Thickness(1), CornerRadius = NotaRadius.Tile, Margin = new Thickness(5, 0), ClipToBounds = true, Child = centre };
+        var centreBox = new RuleSection { Margin = new Thickness(5, 0), Child = centre };
 
         // ======================================================================
         // Status strip
