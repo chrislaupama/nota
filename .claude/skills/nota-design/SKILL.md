@@ -109,8 +109,8 @@ Most of these are enforced by `DesignTokenCheck`; the smoke test fails when one 
 - **Header 22** (`BuildCardShell` in `DeviceChainView.Shell.cs` — every card uses it,
   racks, the generic instrument card, plug-ins and Sends included; never build a header of
   your own): a raised strip with the `Shadow.Raised` bevel, in fixed slots **name · preset ·
-  badges · power**. The name column is fixed per card width (22 %, 56–160) so presets line
-  up; the preset picker `‹ Name ⌄ ›` only when the device has presets; the badges — the
+  badges · power**. The preset picker `‹ Name ⌄ ›` is centred in the header between two
+  equal halves (name left, badges and power right), only when the device has presets; the badges — the
   type badge (mono, muted, sentence case) and the card's accessories (`HeaderExtra`: Learn,
   S / L) — right-aligned; the power switch (accent while on) last, its slot reserved even
   on a card that cannot be bypassed. A/B, move and delete go in the right-click menu.
