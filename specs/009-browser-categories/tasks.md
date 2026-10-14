@@ -134,13 +134,15 @@ The Xvfb harness and capture scripts from 008 live in `/tmp/claude-0/`, outside 
 
 **Independent test**: untick "Group by category" and the flat list returns row for row; it stays off after a restart.
 
-- [ ] T015 [US2] In `App/BrowserView.cs` `ShowOptionsMenu`, add a `CheckItem("Group by category", _vm?.CategoryView ?? true, v => …)` directly after "Show type tags" and before "Group by source". It sets `_vm.CategoryView`, saves `_settings.Current.BrowserCategoryView`, and calls `RefreshCounts()`.
-- [ ] T016 [US2] In `App/BrowserView.cs` `SetSettings` and `SetViewModel`, apply `settings.Current.BrowserCategoryView` to `vm.CategoryView`, alongside `GroupBySource` and `FavoritesFirst`.
-- [ ] T017 [US2] Add checks to `Smoke/Program.cs`:
+- [X] T015 [US2] In `App/BrowserView.cs` `ShowOptionsMenu`, add a `CheckItem("Group by category", _vm?.CategoryView ?? true, v => …)` directly after "Show type tags" and before "Group by source". It sets `_vm.CategoryView`, saves `_settings.Current.BrowserCategoryView`, and calls `RefreshCounts()`.
+- [X] T016 [US2] In `App/BrowserView.cs` `SetSettings` and `SetViewModel`, apply `settings.Current.BrowserCategoryView` to `vm.CategoryView`, alongside `GroupBySource` and `FavoritesFirst`.
+- [X] T017 [US2] Add checks to `Smoke/Program.cs`:
   - **(a)** With `CategoryView = false`, the Instruments sequence is `BUILT-IN` followed by every built-in instrument in `Name` order, which is today's flat list (SC-003). Same for the Audio effects tab.
   - **(b)** Turning it back on restores the category headers.
   - **(c)** `JsonSerializer.Deserialize<Settings>("{}")` has `BrowserCategoryView == true` and an empty `BrowserFoldedCategories` (FR-003, existing users).
-- [ ] T018 [US2] Manual check under Xvfb (quickstart § 2 step 4): untick, relaunch with the same `HOME`, and it's still off. Compare the flat-list screenshot with the T002 baseline: it must be identical.
+- [X] T018 [US2] Manual check under Xvfb (quickstart § 2 step 4): untick, relaunch with the same `HOME`, and it's still off. Compare the flat-list screenshot with the T002 baseline: it must be identical.
+
+  *Result*: the checks are in `Smoke/BrowserCategoryTests.cs`; all pass. Under Xvfb, unticking wrote `"BrowserCategoryView": false`. After a relaunch the Instruments list matches the T002 baseline except a 40×36 patch on the rail button that had just been clicked (hover state); the list itself is pixel-identical.
 
 ---
 

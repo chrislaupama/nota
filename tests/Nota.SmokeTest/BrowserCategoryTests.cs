@@ -6,6 +6,7 @@
 // shelf, favourites and Group by source inside a shelf, folding, search, and the flat list
 // coming back exactly when the view is off. Run alone with `--browser`.
 
+using System.Text.Json;
 using Nota.Infrastructure;
 using Nota.Presentation;
 
@@ -78,5 +79,22 @@ internal static class BrowserCategoryTests
         yield return (hc > 0 && hits.Take(hc).Last(r => r.IsGroup).Name == "Dynamics" && everyHeaderHasRows,
               $"a search keeps hits under their category and hides the empty ones ({string.Join(" · ", hits.Where(r => r.IsGroup).Select(r => r.Name))})");
         vm.FilterTree(1, "");
+
+        // Off restores today's flat list exactly: one Built-in header, then every built-in by
+        // its full name (SC-003); on again brings the categories back.
+        vm.CategoryView = false;
+        foreach (var (type, rows) in tabs)
+        {
+            var flat = new[] { "BUILT-IN" }.Concat(BuiltinDeviceCatalog.All.Where(d => d.Type == type).Select(d => d.Name).OrderBy(x => x)).ToList();
+            yield return (rows.Select(r => r.Name).SequenceEqual(flat), $"{type}: category view off shows today's flat list");
+        }
+        vm.CategoryView = true;
+        yield return (vm.Effects.Where(r => r.IsGroup).Select(r => r.Name).SequenceEqual(DeviceCategories.Order(BuiltinDeviceType.AudioEffect)),
+            "turning the category view back on restores the headers");
+
+        // An existing settings file has neither key: the category view is on, nothing folded (FR-003).
+        var old = JsonSerializer.Deserialize<Settings>("{}")!;
+        yield return (old.BrowserCategoryView && old.BrowserFoldedCategories.Count == 0,
+            "settings without the new keys open in the category view, nothing folded");
     }
 }

@@ -446,6 +446,7 @@ public sealed class BrowserView : UserControl
         _settings = settings;
         SetCollapsed(settings.Current.BrowserCollapsed, persist: false);
         if (_vm is null) return;
+        _vm.CategoryView = settings.Current.BrowserCategoryView;
         _vm.GroupBySource = settings.Current.BrowserGroupBySource;
         _vm.FavoritesFirst = settings.Current.BrowserFavoritesFirst;
         RefreshRows();
@@ -456,6 +457,7 @@ public sealed class BrowserView : UserControl
         _vm = vm;
         if (_settings is not null)
         {
+            vm.CategoryView = _settings.Current.BrowserCategoryView;
             vm.GroupBySource = _settings.Current.BrowserGroupBySource;
             vm.FavoritesFirst = _settings.Current.BrowserFavoritesFirst;
         }
@@ -982,6 +984,12 @@ public sealed class BrowserView : UserControl
             _settings.Current.BrowserShowTypeTags = v;
             _settings.Save();
             RefreshRows();
+        }));
+        flyout.Items.Add(CheckItem("Group by category", _vm?.CategoryView ?? true, v =>
+        {
+            if (_vm is not null) _vm.CategoryView = v;
+            if (_settings is not null) { _settings.Current.BrowserCategoryView = v; _settings.Save(); }
+            RefreshCounts();
         }));
         flyout.Items.Add(CheckItem("Group by source", _vm?.GroupBySource ?? true, v =>
         {
