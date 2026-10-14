@@ -58,6 +58,8 @@ the shared icon set). Stacked on that branch.
   delay (Reverb, Chamber, Delay) · Modulation (Chorus, Flanger, Phaser, Orbit) · Distortion
   (Valve, Vintage, Forge, Crush) · Pitch & time (Auto Shift, Beat Repeat, Strata) · Utility
   (Utility, Level, Lens) · Racks (Audio Effect Rack).
+- Q: Should the 6 MIDI effects be categorised? → A: Yes — Generate (Arp, Chord, Random) ·
+  Shape (Scale, Length, Velocity).
 
 ## User Scenarios & Testing *(mandatory)*
 
@@ -183,7 +185,7 @@ category.
 ### Functional Requirements
 
 - **FR-001**: Every built-in instrument, audio effect and MIDI effect MUST belong to
-  exactly one category. The categories and their order MUST be fixed per tab (proposed in
+  exactly one category. The categories and their order MUST be fixed per tab (listed in
   Assumptions), named in sentence case.
 - **FR-002**: The device tabs MUST present the list as category section headers, in the
   style of today's Built-in / Plug-ins headers (name and device count), each foldable by
@@ -239,7 +241,7 @@ category.
 
 ## Assumptions
 
-- **Proposed categories** (to be confirmed in clarify/plan; names sentence case):
+- **Categories** (confirmed in clarify; names sentence case):
   - *Instruments* (confirmed): Synths (Synth, Volt, Bass, Monolith, Pentad, Consort,
     Operator, Aurora, Flux, Pendulum), Keys & physical (Keys, Physical), Drums (Rhythm, Drum
     Rack), Samplers (Sampler, Mosaic, Grain), Racks (Instrument Rack) — in that order.
@@ -248,9 +250,8 @@ category.
     Modulation (Chorus, Flanger, Phaser, Orbit), Distortion (Valve, Vintage, Forge, Crush),
     Pitch & time (Auto Shift, Beat Repeat, Strata), Utility (Utility, Level, Lens), Racks
     (Audio Effect Rack) — in that order.
-  - *MIDI effects*: Generate (Arp, Chord, Random), Shape (Scale, Length, Velocity).
-  - Exact membership is checked against each device's sound and documentation during
-    planning.
+  - *MIDI effects* (confirmed): Generate (Arp, Chord, Random), Shape (Scale, Length,
+    Velocity) — in that order.
 - The existing type tag on each row stays; the category is a separate, coarser grouping.
 - "Other" exists only for plug-ins (or a future uncategorised device) and is always last.
 - Plug-in categories are mapped from the VST3 sub-categories and Audio Unit types the

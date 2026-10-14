@@ -33,3 +33,5 @@
 
 - Both clarifications resolved 2026-10-14: FR-002 → foldable section headers (A);
   FR-005 → plug-ins join the categories, unknown under "Other" (A). 16/16 items pass.
+- Clarify session 2026-10-14 (3 questions): instrument, audio-effect and MIDI-effect
+  category membership confirmed in Assumptions; FR-001 no longer "proposed". 16/16 pass.
