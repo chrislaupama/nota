@@ -248,6 +248,7 @@
   <Style Selector="ToggleButton.danger:checked /template/ ContentPresenter#PART_ContentPresenter">
     <Setter Property="Background" Value="{DynamicResource Brush.Danger}"/>
     <Setter Property="BorderBrush" Value="{DynamicResource Brush.Danger}"/>
+    <Setter Property="TextElement.Foreground" Value="{DynamicResource Brush.RecordInk}"/>   <!-- beats the checked presenter's on-accent ink -->
   </Style>
   <Style Selector="ToggleButton.danger:checked">
     <Setter Property="Foreground" Value="{DynamicResource Brush.RecordInk}"/>
@@ -273,6 +274,7 @@
   <Style Selector="ToggleButton.tp-icon.rec:checked /template/ ContentPresenter#PART_ContentPresenter">
     <Setter Property="Background" Value="{DynamicResource Brush.Record}"/>
     <Setter Property="BorderBrush" Value="{DynamicResource Brush.Record}"/>
+    <Setter Property="TextElement.Foreground" Value="{DynamicResource Brush.RecordInk}"/>   <!-- beats the checked presenter's on-accent ink -->
   </Style>
   <Style Selector="ToggleButton.tp-icon.rec:checked">
     <Setter Property="Foreground" Value="{DynamicResource Brush.RecordInk}"/>
