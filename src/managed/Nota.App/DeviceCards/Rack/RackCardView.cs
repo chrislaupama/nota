@@ -1652,7 +1652,7 @@ internal sealed class RackZoneMap : Control
     }
     protected override void OnPointerMoved(PointerEventArgs e) { if (_drag >= 0) Apply(e.GetPosition(this).X); }
     protected override void OnPointerReleased(PointerReleasedEventArgs e)
-    { if (_drag >= 0) { RangeEdited?.Invoke(_drag, _lo[_drag], _hi[_drag]); _drag = -1; e.Pointer.Capture(null); } }
+    { if (_drag >= 0) { RangeEdited?.Invoke(_drag, _lo[_drag], _hi[_drag]); _drag = -1; InvalidateVisual(); e.Pointer.Capture(null); } }
 
     private void Apply(double x)
     {
