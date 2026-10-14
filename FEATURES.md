@@ -978,7 +978,7 @@ and user presets, automation, persistence and cloning.
   third-party attribution notices (`LICENSES/THIRD-PARTY-NOTICES.md`).
 - **Settings** — a larger window with a sidebar grouped into Devices, Plug-ins and General
   (each page with an icon and a short description), large switches, latency in
-  milliseconds, a colour-theme list that previews each theme, and key-cap shortcuts with a filter.
+  milliseconds, colour themes shown as miniature Nota windows, and key-cap shortcuts with a filter.
 - **Device window** (a device opened from a Drum Rack, Instrument Rack, Audio Effect Rack or
   a Nota Rhythm voice): the title bar carries the device, track, preset picker, bypass and
   S / L size switch; a footer shows where the device sits, its live voice count and type.
@@ -1009,8 +1009,9 @@ and user presets, automation, persistence and cloning.
 - **Plug-ins**: scan paths, Rescan.
 - **Downloads**: Plug-ins, Sample Packs and AI Models (see [Plugin hosting](#plugin-hosting)).
 - **Library**: library folders.
-- **Appearance**: **Colour theme** — Studio Dark, Studio Light, Ember Graphite or Ember
-  Paper, each with a preview of its colours, or **Follow system** with a chosen theme for
+- **Appearance**: **Colour theme** — **Dark**, **Light** or **Follow system** over two
+  rows of cards (Studio Dark and Ember Graphite; Studio Light and Ember Paper), each a
+  miniature Nota window in its own colours. Pick one theme, or with Follow system one for
   dark mode and one for light mode, switched with the OS appearance; the choice applies
   live and is remembered. Also **AI control (MCP)** on/off, a port field, and "Copy config" (copies a
   ready-made client JSON config to the clipboard).

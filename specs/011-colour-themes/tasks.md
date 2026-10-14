@@ -235,3 +235,16 @@ Stream B (US4):        T029 → T030 → T031 → T032
 
 - [X] T042 Add a `RunThemes` guard that the Preferences theme chip draws each theme's own colours (`NotaPalette.ColorIn(slot, _theme)` in `App/PreferencesWindow.cs` `ThemeChip`), never the live slot colour, per FR-015 (partial)
 - [ ] T043 With follow system on, open a context menu and a tooltip, then flip the OS appearance. Confirm the open popups recolour with the windows, on a desktop with an appearance signal (the macOS build), together with T028, per spec Edge Cases / contracts T2.1 (partial)
+
+## Phase 10: Appearance page, mode first (revision)
+
+The first picker showed themes as list rows with four 10 px squares; it read as a font
+menu and hid Follow system's pairing behind drop-downs. Revised after review: mode first,
+then cards.
+
+- [X] T044 `Nota.Application/Appearance.cs`: `AppearanceMode`, `ModeOf`, `WithMode`, `WithPick` — the page's rules, pure, with `RunAppearance` checks (remembered per-mode pick, follow-system picks set one mode)
+- [X] T045 `App/PreferencesWindow.cs`: replace the list and drop-downs with the Dark · Light · Follow system segmented control and a `ListBox.themes` row of cards per kind; `ThemePreview` draws a miniature window with `NotaPalette.ColorIn(slot, _theme)`; the label row is top-aligned (`TopRow`)
+- [X] T046 `Theme/NotaTheme.axaml`: `ListBox.themes` (no list chrome) and `Border.ThemeFrame` (2 px, seam / rule / accent by state); `RunThemes` guard now reads `ThemePreview`
+- [X] T047 Contract T1.1–T1.4, FR-001/FR-002, US1/US2 scenarios, CHANGELOG, FEATURES and DESIGN updated; screenshots in all four themes and in follow system
+- [X] T048 No layout shift: both rows always show (labels change text and ink, the mode only decides which cards are chosen), and shell `ToggleButton.seg` keeps its weight when checked so keys never change width (DESIGN.md rule 11); measured identical in every mode
+

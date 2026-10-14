@@ -61,8 +61,9 @@ current Dark / Light / System control is replaced by this.
 
 ### User Story 1 - Pick a colour theme (Priority: P1)
 
-A producer opens Preferences → Appearance and sees a list of colour themes, each with a
-small preview of its colours and marked dark or light. They pick "Ember Graphite". Every
+A producer opens Preferences → Appearance, chooses **Dark**, and sees the dark colour
+themes as cards, each a miniature Nota window in that theme's colours. They pick "Ember
+Graphite". Every
 open window recolours at once — arrangement, mixer, device cards, browser, menus,
 dialogs — without a restart and without losing their place. They quit, relaunch, and
 Nota opens in Ember Graphite.
@@ -81,9 +82,10 @@ every surface recolours live. Relaunch and confirm the choice is kept.
    layout stay as they were.
 2. **Given** the user chose Ember Paper and quit, **When** Nota launches again, **Then**
    it opens in Ember Paper, and no frame is first drawn in another theme.
-3. **Given** any theme, **When** the user looks at the Preferences theme list, **Then**
-   each entry shows its name, whether it is dark or light, and a preview of its ground,
-   panel, text and accent. The active theme is marked as chosen.
+3. **Given** any theme, **When** the user looks at the Preferences theme cards, **Then**
+   each card shows its name and a miniature Nota window in that theme's colours (ground,
+   panel, text, accent, seams and the first track colours), and sits under the mode of
+   its kind. The active theme is marked as chosen.
 4. **Given** a settings file from before this feature, **When** Nota launches, **Then**
    the old appearance maps across: Dark → Studio Dark, Light → Studio Light, System →
    follow system with Studio Dark for dark mode and Studio Light for light mode.
@@ -110,8 +112,8 @@ appearance both ways, and check that Nota follows. Relaunch in each OS mode.
    Ember Paper.
 2. **Given** follow system is on, **When** the user picks a theme for dark mode,
    **Then** only themes marked dark are offered. The same goes for light mode.
-3. **Given** follow system is on, **When** the user picks a single theme from the main
-   list, **Then** follow system turns off and that theme applies. The two per-mode
+3. **Given** follow system is on, **When** the user chooses **Dark** or **Light**,
+   **Then** follow system turns off and that mode's theme applies. The two per-mode
    choices are kept for next time.
 4. **Given** follow system and the OS in light mode at launch, **Then** Nota opens in the
    light-mode theme on the first frame.
@@ -237,12 +239,13 @@ it.
 
 **Choosing a theme**
 
-- **FR-001**: Preferences → Appearance MUST replace the Dark / Light / System control with
-  a **colour theme** choice. It lists every available theme by name, each marked
-  dark or light, and offers a **follow system** option.
-- **FR-002**: Each entry in the theme list MUST show a small preview of that theme's
-  colours (at least ground, panel, primary text and accent). The active entry MUST be
-  visibly marked as chosen, following Studio's selected-option treatment.
+- **FR-001**: Preferences → Appearance MUST offer a **colour theme** choice, mode first:
+  **Dark**, **Light** or **Follow system**, over the dark and the light themes by name.
+  Both kinds always show, so changing mode never moves the page; the mode decides which
+  theme is chosen (one per kind while following the system).
+- **FR-002**: Each theme MUST be shown with a preview of that theme's colours (at least
+  ground, panel, primary text and accent), drawn as a miniature Nota window. The active
+  theme MUST be visibly marked as chosen, following Studio's selected-option treatment.
 - **FR-003**: Choosing a theme MUST recolour every open window and every colour drawn by
   the app (controls, custom-drawn views, graphs, meters, waveforms, track colours,
   shadows) right away, without a restart, and without changing any other state.

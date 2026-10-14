@@ -6,23 +6,28 @@ every theme; the only change is that "token values" now means the active theme's
 
 ## T1 — Preferences → Appearance
 
-- T1.1 The section shows a **Colour theme** list. It replaces the Dark / Light / System
-  segmented control. Each row (26 px, the list-row height) shows:
-  - a preview chip: four 10×10 squares of the theme's own colours (ground, panel,
-    primary text, accent);
-  - the theme name;
-  - its kind in muted text ("Dark" / "Light").
-
-  Rows follow the built-in order of [data-model.md](../data-model.md).
-- T1.2 The active row uses Studio's selected-row treatment (raised-hover fill + 2 px
-  accent tick). With follow system on, **no** list row is selected, because the follow
-  row is.
-- T1.3 Below the list sits a **Follow system** row, with the same treatment when
-  active. While it is active, two pickers appear under it: **In dark mode** and
-  **In light mode**. Each is a drop-down listing only themes of that kind, with the same
-  preview chip.
-- T1.4 Picking any list row turns follow system off and applies that theme (FR-005).
-  Turning follow system on applies the theme for the current OS mode.
+- T1.1 **Colour theme** leads with a segmented control: **Dark · Light · Follow system**.
+  Below it sit two rows of cards, **Dark** then **Light** themes, in the built-in order
+  of [data-model.md](../data-model.md). Both rows always show, so the page never changes
+  height with the mode. Each card is:
+  - a 184 × 112 preview: a miniature Nota window (title bar, transport with the view
+    keys, browser names, four arrangement lanes with clips in the first track colours and
+    the playhead, the device panel) drawn in **that theme's own colours**, whichever
+    theme is live;
+  - in a 2 px frame, radius 3: seam at rest, rule on hover, the accent when chosen —
+    state changes the colour only;
+  - the theme name under it.
+- T1.2 With **Dark** or **Light**, one card is chosen and the row in use has the brighter
+  label. With **Follow system**, the labels read **In dark mode** and **In light mode** and
+  one card is chosen in each row. Labels change text and ink only. The segment keys keep
+  their weight when chosen (the accent fill marks the choice), so the switch never
+  changes width.
+- T1.3 **Dark** or **Light** wears that mode's remembered pick, so switching modes and
+  back returns to the same theme. Picking a card wears it and remembers it for its mode,
+  so a card in the other row switches mode; while following, it sets only that mode's
+  theme (`Appearance.WithMode` / `WithPick`).
+- T1.4 Turning follow system on applies the theme for the current OS mode (FR-005).
+  The cards are a `ListBox`, so keyboard focus and selection work as in any list.
 - T1.5 All changes apply on click (no Apply button), are saved at once, and are live
   in every open window within 0.5 s (SC-001).
 - T1.6 Labels are sentence case per Studio. Theme names are shown as written.

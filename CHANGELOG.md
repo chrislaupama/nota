@@ -45,10 +45,11 @@ Entry categories: `Added`, `Changed`, `Fixed`, `Removed`.
   cloud on its dot, a wide pad spans the map — plus the master's phase correlation. Drag a dot
   to set pan and volume together (one undo step), double-click to centre it, ⌥ double-click
   for 0 dB; hover for the numbers; click to select the track.
-- **Colour themes:** Preferences → Appearance now lists colour themes — Studio Dark,
+- **Colour themes:** Preferences → Appearance now offers colour themes — Studio Dark,
   Studio Light, and **Ember Graphite** / **Ember Paper**, the warm browns and brass of
-  Nota's earlier look, on the new layout. Each shows a preview of its colours; picking one
-  recolours every window at once. Themes change colours only, and each gives the track
+  Nota's earlier look, on the new layout. Choose **Dark**, **Light** or **Follow system**,
+  then a theme: each is a card showing a miniature Nota window in its own colours, and
+  picking one recolours every window at once. Themes change colours only, and each gives the track
   colours its own shades — your projects are untouched.
 - **Follow system, with a theme for each mode:** choose a theme for when your computer is
   in dark mode and one for light mode, and Nota switches between them with the OS.

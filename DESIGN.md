@@ -20,8 +20,9 @@ themes are built in:
 - **Ember Graphite** / **Ember Paper** — the warm browns and brass of Nota's earlier
   language, dark and light, on Studio's structure.
 
-Preferences → Appearance lists the themes and offers **Follow system** (a dark-mode and a
-light-mode theme, switched with the OS); every change is live.
+Preferences → Appearance picks a mode — **Dark**, **Light** or **Follow system** (a
+dark-mode and a light-mode theme, switched with the OS) — then a theme of that kind, each
+shown as a miniature Nota window in its own colours; every change is live.
 
 This file is the guideline the app is held to: Studio's rules, the tests that enforce them,
 and the few places where a screen's needs override a general rule (§ Accepted exceptions).
@@ -458,7 +459,7 @@ Builders live in `DeviceCardKit`; controls in `Controls/`. Reuse before writing 
 | `Knob` | 52-grid: groove r21 stroke 5 in Well, 270° from −135°, raised face r14 with a seam edge, pointer 2.4 in primary ink. Value arc: `VizInk` at rest on the audio path (`Accent = true`), `Rule` off the path or disabled, `Accent` while hovered or dragged; `ArcColor` for a modulation source. Sizes snap to 34 / 36 / 44; `Inline` pins 24 for a knob inside a table row. `IsModified`, `IsDim`. |
 | `DeviceCardKit.KnobCell` | Knob → name 8/500 sentence case, secondary → value mono 8, no gap; 53 tall under a 34 knob. A modified or `emphasised` parameter lifts its name to primary ink — no accent, no dot. |
 | `SwitchTrack` / `DeviceCardKit.Switch` | 18 × 10, knob 7, inset 1.5, radius 2, a squared knob; on = accent track + panel-coloured knob right, off = well track + Ink 5 knob left, on but inactive = `Rule`. Word to the right, 8 sentence case in a device, 12 in the shell (`CheckBox`). The Settings window uses the large 28 × 16 size (knob 12, inset 2). |
-| `DeviceCardKit.Segments` | Well strip with a rule edge; chosen = solid accent with derived ink, 600. 9 px in a device; in the shell `ToggleButton.seg` (24, raised, 12 px) inside `Border.segmented` — keys butted on 1px seams, only the group's outer corners round. |
+| `DeviceCardKit.Segments` | Well strip with a rule edge; chosen = solid accent with derived ink, 600. 9 px in a device; in the shell `ToggleButton.seg` (24, raised, 12 px, the weight unchanged when chosen so auto-width keys never shift) inside `Border.segmented` — keys butted on 1px seams, only the group's outer corners round. |
 | `SliderTrack` / `DeviceCardKit.SliderRow` | Name 9/500 · 3 px well track · 6 × 7 handle · fixed-width mono value right. Fill `VizInk` and handle primary at rest, accent while hovered or dragged; teal under modulation. Bipolar fills from centre. Inactive drops to `Rule` and faint ink, keeps the number. |
 | `MiniFader`, `PanBar`, `ValueBar`, `MixBar`, `VFader` | Track-header gain and pan, value bars, mixer fader — same drag contract, same rule: neutral at rest, accent while live. |
 | `DragNumber` | Mono field: drag, or double-click to type. |

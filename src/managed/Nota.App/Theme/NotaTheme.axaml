@@ -485,9 +485,10 @@
          foreground doesn't win over the control-level Foreground. -->
     <Setter Property="TextElement.Foreground" Value="{DynamicResource Brush.TextOnAccent}"/>
   </Style>
+  <!-- The weight stays: shell keys size to their text, so a bolder chosen key would widen
+       and push its neighbours. The solid accent fill marks the choice. -->
   <Style Selector="ToggleButton.seg:checked">
     <Setter Property="Foreground" Value="{DynamicResource Brush.TextOnAccent}"/>
-    <Setter Property="FontWeight" Value="SemiBold"/>
   </Style>
   <Style Selector="ToggleButton.seg:disabled">
     <Setter Property="Foreground" Value="{DynamicResource Brush.TextDisabled}"/>
@@ -897,6 +898,35 @@
   </Style>
   <Style Selector="ListBoxItem:selected TextBlock.RowTag">
     <Setter Property="Foreground" Value="{DynamicResource Brush.TextSecondary}"/>
+  </Style>
+
+  <!-- Theme cards (Preferences → Appearance): a row of previews with no list chrome. The
+       frame is always 2px; state changes only its colour — seam at rest, rule on hover,
+       the accent when chosen. -->
+  <Style Selector="ListBox.themes">
+    <Setter Property="Background" Value="Transparent"/>
+    <Setter Property="BorderThickness" Value="0"/>
+    <Setter Property="Padding" Value="0"/>
+  </Style>
+  <Style Selector="ListBox.themes ListBoxItem">
+    <Setter Property="Padding" Value="0"/>
+    <Setter Property="MinHeight" Value="0"/>
+    <Setter Property="CornerRadius" Value="0"/>
+  </Style>
+  <Style Selector="ListBox.themes ListBoxItem /template/ ContentPresenter#PART_ContentPresenter, ListBox.themes ListBoxItem:pointerover /template/ ContentPresenter#PART_ContentPresenter, ListBox.themes ListBoxItem:selected /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="Transparent"/>
+  </Style>
+  <Style Selector="Border.ThemeFrame">
+    <Setter Property="BorderThickness" Value="2"/>
+    <Setter Property="CornerRadius" Value="{StaticResource Radius.Tile}"/>
+    <Setter Property="ClipToBounds" Value="True"/>
+    <Setter Property="BorderBrush" Value="{DynamicResource Brush.Seam}"/>
+  </Style>
+  <Style Selector="ListBox.themes ListBoxItem:pointerover Border.ThemeFrame">
+    <Setter Property="BorderBrush" Value="{DynamicResource Brush.Rule}"/>
+  </Style>
+  <Style Selector="ListBox.themes ListBoxItem:selected Border.ThemeFrame">
+    <Setter Property="BorderBrush" Value="{DynamicResource Brush.Accent}"/>
   </Style>
   <Style Selector="TextBlock.GroupLabel">     <!-- browser section: 11 / 600, muted, sentence case -->
     <Setter Property="FontSize" Value="11"/>

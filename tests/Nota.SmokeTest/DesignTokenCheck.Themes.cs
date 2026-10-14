@@ -64,9 +64,9 @@ internal static partial class DesignTokenCheck
 
         // A theme's preview shows that theme, whichever one is live (FR-015).
         var prefs = File.ReadAllText(Path.Combine(app, "PreferencesWindow.cs"));
-        var chip = Regex.Match(prefs, @"class ThemeChip\b.*?\n    \}", RegexOptions.Singleline).Value;
-        yield return (chip.Contains("NotaPalette.ColorIn(") && chip.Contains("_theme)") && !Regex.IsMatch(chip, @"slots\[i\]\.Color\b"),
-            "the theme preview chip draws the theme's own colours (ColorIn), not the live slots");
+        var chip = Regex.Match(prefs, @"class ThemePreview\b.*?\n    \}", RegexOptions.Singleline).Value;
+        yield return (chip.Contains("NotaPalette.ColorIn(") && chip.Contains("_theme)") && !Regex.IsMatch(chip, @"\b(slot|track)\.Color\b"),
+            "the theme card preview draws the theme's own colours (ColorIn), not the live slots");
 
         foreach (var file in files)
         {
@@ -213,6 +213,24 @@ internal static partial class DesignTokenCheck
         yield return (a.FollowSystem && a.Dark == "studio-dark" && a.Light == "studio-light", "unknown dark-mode id and wrong-kind light-mode id fall back per mode");
         yield return (a.Active(osIsDark: true) == "studio-dark" && R(new Settings { ColourTheme = "system", SystemLightTheme = "ember-paper" }).Active(osIsDark: false) == "ember-paper",
             "follow system wears the theme for the OS mode");
+
+        // The Appearance page: a mode first, then a theme of that kind.
+        var m = new AppearanceChoice(false, "ember-graphite", "ember-graphite", "studio-light");
+        yield return (Appearance.ModeOf(m, singleIsDark: true) == AppearanceMode.Dark
+                      && Appearance.ModeOf(m with { FollowSystem = true }, singleIsDark: true) == AppearanceMode.FollowSystem,
+            "the page shows Follow system while following, else the single theme's kind");
+        var toLight = Appearance.WithMode(m, AppearanceMode.Light);
+        yield return (!toLight.FollowSystem && toLight.Single == "studio-light" && Appearance.WithMode(toLight, AppearanceMode.Dark).Single == "ember-graphite",
+            "Dark / Light wear that mode's remembered pick, and switching back returns to it");
+        var picked = Appearance.WithPick(toLight, "ember-paper", isDark: false);
+        yield return (picked.Single == "ember-paper" && picked.Light == "ember-paper" && picked.Dark == "ember-graphite",
+            "picking a theme wears it and remembers it for its mode");
+        var across = Appearance.WithPick(m, "studio-light", isDark: false);
+        yield return (!across.FollowSystem && across.Single == "studio-light" && Appearance.ModeOf(across, singleIsDark: false) == AppearanceMode.Light && across.Dark == "ember-graphite",
+            "picking a theme of the other kind switches mode and keeps the other mode's pick");
+        var follow = Appearance.WithPick(Appearance.WithMode(picked, AppearanceMode.FollowSystem), "studio-dark", isDark: true);
+        yield return (follow.FollowSystem && follow.Dark == "studio-dark" && follow.Light == "ember-paper" && follow.Single == "ember-paper",
+            "while following, a pick sets only that mode's theme");
 
         var s = new Settings();
         Appearance.Store(s, new AppearanceChoice(false, "ember-paper", "ember-graphite", "studio-light"), singleIsDark: false);

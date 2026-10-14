@@ -11,6 +11,10 @@ using System.Collections.Generic;
 
 namespace Nota.Application;
 
+/// <summary>How Preferences → Appearance presents a choice: one dark theme, one light
+/// theme, or follow the OS with a theme per mode.</summary>
+public enum AppearanceMode { Dark, Light, FollowSystem }
+
 /// <summary>A resolved appearance: one theme, or follow the OS with a theme per mode. Every
 /// id is known and of the right kind.</summary>
 public sealed record AppearanceChoice(bool FollowSystem, string Single, string Dark, string Light)
@@ -44,6 +48,28 @@ public static class Appearance
         if (stored == System) return new AppearanceChoice(true, dark, dark, light);
         string single = known.ContainsKey(stored) ? stored : StudioDark;
         return new AppearanceChoice(false, single, dark, light);
+    }
+
+    /// <summary>The page's mode for a choice: following the system, or the kind of the
+    /// single theme.</summary>
+    public static AppearanceMode ModeOf(AppearanceChoice c, bool singleIsDark) =>
+        c.FollowSystem ? AppearanceMode.FollowSystem : singleIsDark ? AppearanceMode.Dark : AppearanceMode.Light;
+
+    /// <summary>Switch mode. Dark and Light wear that mode's remembered pick, so switching
+    /// back and forth returns to the same theme; follow system keeps both picks.</summary>
+    public static AppearanceChoice WithMode(AppearanceChoice c, AppearanceMode mode) => mode switch
+    {
+        AppearanceMode.FollowSystem => c with { FollowSystem = true },
+        AppearanceMode.Dark => c with { FollowSystem = false, Single = c.Dark },
+        _ => c with { FollowSystem = false, Single = c.Light },
+    };
+
+    /// <summary>Pick a theme of one kind. While following the system it becomes that
+    /// mode's pick; otherwise it is worn and also remembered as that mode's pick.</summary>
+    public static AppearanceChoice WithPick(AppearanceChoice c, string id, bool isDark)
+    {
+        var picked = isDark ? c with { Dark = id } : c with { Light = id };
+        return c.FollowSystem ? picked : picked with { Single = id };
     }
 
     /// <summary>Write <paramref name="choice"/> into <paramref name="s"/>, keeping the legacy
