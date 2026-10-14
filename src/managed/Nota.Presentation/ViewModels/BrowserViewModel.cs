@@ -156,6 +156,16 @@ public sealed partial class BrowserViewModel : ObservableObject
         set { if (_favoritesFirst == value) return; _favoritesFirst = value; RebuildDeviceTabs(); }
     }
 
+    private bool _categoryView = true;
+
+    /// <summary>Group the device tabs under category headers (Synths, Dynamics…) instead of
+    /// one alphabetical list per source.</summary>
+    public bool CategoryView
+    {
+        get => _categoryView;
+        set { if (_categoryView == value) return; _categoryView = value; RebuildDeviceTabs(); }
+    }
+
     private void RebuildDeviceTabs() { RebuildVisible(0); RebuildVisible(1); RebuildVisible(2); }
 
     public ObservableCollection<BrowserItem> Instruments { get; } = new();
@@ -463,6 +473,7 @@ public sealed partial class BrowserViewModel : ObservableObject
         var dst = tab == 2 ? MidiEffects : tab == 1 ? Effects : Instruments;
         string q = _treeQuery[tab].Trim();
         dst.Clear();
+        if (_categoryView) { RebuildCategoryView(tab, tree, dst, q); return; }
 
         // Favorited devices float to the top (stable sorts: alphabetical order survives
         // inside each run, and the source sort keeps the favorites-first order within a section).
@@ -504,6 +515,45 @@ public sealed partial class BrowserViewModel : ObservableObject
             else AddPresetRows(node.Children, Matches(node, q) ? "" : q, dst);
         }
     }
+
+    // The category view: a header per category with something to show, in the tab's fixed
+    // order (Other last). Inside a category, built-ins come before plug-ins (Group by source),
+    // favourites first, then the name the row prints — so a plug-in sorts next to "Reverb",
+    // not after every "Nota …". Search and the favourite/tag chip filter exactly as the flat
+    // list does; device rows are the same objects, so expand, drag and favourite carry over.
+    private void RebuildCategoryView(int tab, List<BrowserItem> tree, ObservableCollection<BrowserItem> dst, string q)
+    {
+        var type = tab == 2 ? BuiltinDeviceType.MidiEffect : tab == 1 ? BuiltinDeviceType.AudioEffect : BuiltinDeviceType.Instrument;
+        string Shelf(BrowserItem n) => DeviceCategories.Position(type, n.DeviceCategory) == int.MaxValue ? DeviceCategories.Other : n.DeviceCategory;
+        var devices = tree
+            .Where(n => PassesLibraryFilter(n) && (q.Length == 0 || Matches(n, q) || AnyMatch(n.Children, q)))
+            .OrderBy(n => DeviceCategories.Position(type, Shelf(n)))
+            .ThenBy(n => _groupBySource && n.IsPlugin ? 1 : 0)
+            .ThenBy(n => _favoritesFirst && _library is not null && !_library.IsFavorite(n.LibraryKey) ? 1 : 0)
+            .ThenBy(n => n.ShortName, StringComparer.OrdinalIgnoreCase)
+            .ToList();
+
+        foreach (var shelf in devices.GroupBy(Shelf))
+        {
+            dst.Add(new BrowserItem
+            {
+                Name = shelf.Key,
+                Kind = BrowserItemKind.Group,
+                GroupCount = shelf.Count(),
+                Path = $"cat:{TabKey(tab)}:{shelf.Key}",
+                IsFoldable = true,
+            });
+            foreach (var node in shelf)
+            {
+                dst.Add(node);
+                // Presets as in the flat list: shown while expanded, or the hits of a query.
+                if (q.Length == 0) { if (node.IsExpanded) AddPresetRows(node.Children, "", dst); }
+                else AddPresetRows(node.Children, Matches(node, q) ? "" : q, dst);
+            }
+        }
+    }
+
+    private static string TabKey(int tab) => tab == 2 ? "midi" : tab == 1 ? "fx" : "instr";
 
     // A device's preset rows: loose presets, then category folders with their presets. With
     // no query, a folder shows its presets only while expanded; with one, a folder shows up

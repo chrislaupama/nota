@@ -93,8 +93,8 @@ The Xvfb harness and capture scripts from 008 live in `/tmp/claude-0/`, outside 
 
 **Independent test**: on a fresh profile, each device tab lists its categories in the fixed order, and every built-in appears exactly once, alphabetically within its category.
 
-- [ ] T009 [US1] In `VM`, add the `CategoryView` property: a `bool _categoryView = true`, and a setter that rebuilds the device tabs, following the `GroupBySource` pattern. Doc comment: "Group the device tabs under category headers."
-- [ ] T010 [US1] In `VM` `RebuildVisible(tab)`, branch on `_categoryView`, leaving the existing flat path **byte-for-byte unchanged**. In the category branch:
+- [X] T009 [US1] In `VM`, add the `CategoryView` property: a `bool _categoryView = true`, and a setter that rebuilds the device tabs, following the `GroupBySource` pattern. Doc comment: "Group the device tabs under category headers."
+- [X] T010 [US1] In `VM` `RebuildVisible(tab)`, branch on `_categoryView`, leaving the existing flat path **byte-for-byte unchanged**. In the category branch:
   1. Filter devices with today's library-filter and query rules.
   2. Order them by these keys:
      - `DeviceCategories.Position(type, DeviceCategory)`;
@@ -107,9 +107,9 @@ The Xvfb harness and capture scripts from 008 live in `/tmp/claude-0/`, outside 
      - `Path = $"cat:{TabKey(tab)}:{name}"`, where `TabKey` is `instr`, `fx` or `midi`;
      - `IsFoldable = true`.
   4. Emit the devices and their preset rows exactly as the flat path does.
-- [ ] T011 [P] [US1] Add `FakeBrowserLibrary : IBrowserLibrary` to `Smoke/BrowserTestSupport.cs`: in-memory favourites (a `HashSet<string>`), no tags (empty lists, no-op tag methods).
-- [ ] T012 [US1] Update the existing browser search assertion in `Smoke/Program.cs` (around line 14510): with the category view on by default, the expected sequence for "Glacier" is `Synths, Nota Aurora, Pads, Glacier Pad`.
-- [ ] T013 [US1] Add category-view checks to the browser block of `Smoke/Program.cs`, using a fresh `BrowserViewModel` over `EmptyPluginCatalog`:
+- [X] T011 [P] [US1] Add `FakeBrowserLibrary : IBrowserLibrary` to `Smoke/BrowserTestSupport.cs`: in-memory favourites (a `HashSet<string>`), no tags (empty lists, no-op tag methods).
+- [X] T012 [US1] Update the existing browser search assertion in `Smoke/Program.cs` (around line 14510): with the category view on by default, the expected sequence for "Glacier" is `Synths, Nota Aurora, Pads, Glacier Pad`.
+- [X] T013 [US1] Add category-view checks to the browser block of `Smoke/Program.cs`, using a fresh `BrowserViewModel` over `EmptyPluginCatalog`:
   - **(a)** On each tab, the `Group` row names equal `DeviceCategories.Order(type)`.
   - **(b)** Each built-in appears exactly once, under its `DeviceCategories.For` header.
   - **(c)** Within each category, devices are in `ShortName` order.
@@ -117,10 +117,12 @@ The Xvfb harness and capture scripts from 008 live in `/tmp/claude-0/`, outside 
   - **(e)** With a `FakeBrowserLibrary` where Nota Delay is a favourite, Delay is first under Reverb & delay (FR-004).
   - **(f)** Expanding a device in the category view inserts its preset rows directly beneath it, inside its category (FR-007).
   - **(g)** A search for "Compressor" shows Compressor under the Dynamics header; every header shown has at least one device row beneath it, and categories without matches are absent (FR-006).
-- [ ] T014 [US1] Build, run the smoke test, then capture the three tabs in all four themes into `/tmp/claude-0/shots/browser-after/` with `browser-tabs.sh`. Check:
+- [X] T014 [US1] Build, run the smoke test, then capture the three tabs in all four themes into `/tmp/claude-0/shots/browser-after/` with `browser-tabs.sh`. Check:
   - the headers match the Built-in header style (FR-008, SC-005);
   - "EQ & filter" keeps its casing;
   - every device is visible under a header (SC-001).
+
+  *Result*: the category checks live in `Smoke/BrowserCategoryTests.cs` (run in sequence from `Program.cs`, or alone with `--browser`) rather than inline, so they can be run in seconds. 18/18 pass. Studio Dark capture: headers in order with counts, devices alphabetical, "EQ & filter" keeps its casing. The four-theme run is in T025 and T034, once the caret is in.
 
 **Checkpoint**: MVP. The browser is categorised by default; folding, the off switch and plug-in mapping follow.
 
