@@ -15,6 +15,7 @@
 - Q: Should this pass also settle the two open questions from 006 — device-card sections divided by rules instead of framed boxes, and soft menu shadows? → A: Sections divided by rules, yes; menu shadows no (later, separately).
 - User addition (same session): replace the Arrangement / Session / Modular word buttons with icons, as part of the icon-set work.
 - Q: To reach two header rows above the first track, should the Sections row or the Overview strip give way? → A: Neither. Keep the Overview, Sections and Zoom/ruler rows exactly as they are, with no removal, merge, move or restyle. Critique F9 is out of scope.
+- Q: Should the "Nota" prefix on built-in browser rows go, dim, or stay? → A: Go, in the browser rows only. Rows read "Aurora", "Bass"…, and full names ("Nota Aurora") stay everywhere else: card headers, device chain, menus and search.
 
 ## Nota Context *(fill in — drives plan and tasks)*
 
@@ -193,9 +194,11 @@ the critique screenshots. Confirm the arrangement header rows are unchanged.
 1. **Given** the arrangement, **When** it shows, **Then** the Overview, Sections and
    Zoom/ruler rows are exactly as before, with the same rows, positions, contents and
    controls.
-2. **Given** the browser's built-in list, **When** it shows, **Then** the name leads each
-   row. Product branding does not repeat on every row, and the type tag is visually
-   quieter than the name.
+2. **Given** the browser's built-in list, **When** it shows, **Then** each row starts with
+   the device's own name ("Aurora", "Bass"…) without the "Nota" prefix, and the type tag
+   is visually quieter than the name. The full name ("Nota Aurora") still appears on the
+   device card, in the device chain and in menus, and searching "Nota Aurora" or "Aurora"
+   still finds it.
 3. **Given** an empty device chain, **When** the dock shows, **Then** the add-device
    target is a slim element at the end of the chain. A dashed outline appears only while
    something is being dragged.
@@ -276,8 +279,9 @@ the critique screenshots. Confirm the arrangement header rows are unchanged.
 - **FR-012**: The arrangement's header rows (Overview, Sections, Zoom/ruler) MUST NOT be
   removed, merged, moved or restyled by this feature. Critique F9 is deferred
   (clarified).
-- **FR-013**: Built-in browser rows MUST lead with the device name, without a repeated
-  brand prefix. The type tag MUST be visually quieter than the name (F10).
+- **FR-013**: Built-in browser rows MUST show the device name without the "Nota" prefix,
+  in the browser list only. Full names stay everywhere else, and search still matches
+  both forms. The type tag MUST be visually quieter than the name (F10).
 - **FR-014**: An empty device chain MUST show a slim add-device target at the end of the
   chain. A dashed outline appears only during a drag (F11).
 - **FR-015**: Ranges MUST be set with an en dash and negative numbers with the true minus
@@ -335,8 +339,8 @@ the critique screenshots. Confirm the arrangement header rows are unchanged.
   spec. The final drawings are a plan and design decision.
 - **Sentence case** follows the existing Studio rule and acronym list. Proper nouns and
   product names stay capitalised ("Nota Auto Filter" keeps its capitals as a name).
-- **The browser's "Nota" prefix** is branding, not data. Removing it from each row is
-  allowed; the product name can appear once, as the section heading.
+- **The browser's "Nota" prefix** is dropped from the browser rows only (clarified). Device
+  names themselves are unchanged.
 - **Overlay = in-window panel.** OS windows (Preferences, plugin windows) keep their own
   title bars and are out of scope.
 - **Arrangement header rows** are out of scope (clarified): Overview, Sections and the
