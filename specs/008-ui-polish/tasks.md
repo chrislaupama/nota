@@ -209,7 +209,7 @@ workstream (plan § Complexity Tracking).
 
 ## Phase 9: Polish & Cross-Cutting
 
-- [ ] T055 [P] DESIGN.md:
+- [X] T055 [P] DESIGN.md:
   - § Floating windows (Escape, sizing, sentence-case titles);
   - § Device cards: the header anatomy with slots and a reserved power slot, plus rule-divided sections (replacing `:516-517` and `:167-168`);
   - § Icons: the one set, the grid and stroke, filled vs stroked, the new kinds;
@@ -217,8 +217,8 @@ workstream (plan § Complexity Tracking).
   - § Enforced by tests: `RunLabels`, `RunIcons`, the extended `RunNumbers` and `RunGeometry`.
 
   Regenerate `DESIGN.html` with `python3 scripts/design-html.py`.
-- [ ] T056 [P] `.claude/skills/nota-design/SKILL.md`: the header anatomy, `DeviceCardKit.Section`, "every icon is a Glyph", and the label rule with its check.
-- [ ] T057 [P] `CHANGELOG.md` `[Unreleased]` Changed:
+- [X] T056 [P] `.claude/skills/nota-design/SKILL.md`: the header anatomy, `DeviceCardKit.Section`, "every icon is a Glyph", and the label rule with its check.
+- [X] T057 [P] `CHANGELOG.md` `[Unreleased]` Changed:
   - icon view switcher;
   - calmer device cards (line-divided sections, one header layout);
   - fitted mixer window and Escape to close;
@@ -227,7 +227,7 @@ workstream (plan § Complexity Tracking).
   - a slimmer add-device target.
 
   Fixed: new tracks now scroll into view; the session toolbar fits small windows; Modular lists tracks on open.
-- [ ] T058 [P] Run the nota-features skill for `FEATURES.md`: the view switcher wording and the session inspector toggle. Note nota-docs as a follow-up in the PR (the repo is unavailable here).
+- [X] T058 [P] Run the nota-features skill for `FEATURES.md`: the view switcher wording and the session inspector toggle. Note nota-docs as a follow-up in the PR (the repo is unavailable here).
 - [ ] T059 Re-run the critique tour in all four themes and tick off F1–F8 and F10–F12 against contracts/ui-contract.md (SC-001). Take before/after contact sheets for the PR.
 - [ ] T060 Final gate: a full `scripts/build-linux.sh`. Only the known "Consort stress" failure is allowed, and it must also fail on the base. Then run `/speckit-converge`.
 

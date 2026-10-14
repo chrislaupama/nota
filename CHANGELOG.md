@@ -44,6 +44,37 @@ Entry categories: `Added`, `Changed`, `Fixed`, `Removed`.
   system in light greys (see *Colour themes* above; your Dark / Light / System choice
   carries over). Every feature, shortcut and menu stays where it was, and projects open
   unchanged (track colours keep their place in the new palette).
+- **View switcher as icons:** Arrangement, Session and Modular are now three small icon
+  keys in the transport instead of words, freeing about 140 px. Hover one for its name.
+  Every icon in the app now comes from one set, drawn at one line weight.
+- **Calmer device cards:** sections inside a card are no longer boxes — they sit on the
+  card and a thin line divides neighbours, with every control where it was. Every card,
+  including the Instrument Rack, the generic instrument card and Sends, has the same
+  header: name, presets, badges, then the power switch, each in the same place, so presets
+  and power switches line up down a chain.
+- **A mixer window that fits:** the Mixer window is as wide as its channel strips (up to
+  the screen width) and resizes as you add or remove tracks — no more empty space beside
+  the master. Escape closes it, and cancels Export.
+- **One labelling voice:** menus, the command palette, window titles, the Session view,
+  Preferences and the mixer use sentence case throughout ("Save as…", "Export audio",
+  "Recent") instead of a mix of capitals and Title Case.
+- **A quieter browser list:** built-in devices are listed by their short name ("Aurora",
+  not "Nota Aurora" — searching either still finds it), and the type on the right is a
+  shade quieter.
+- **A slimmer "add device" target:** the end of a device chain is a narrow "+" instead of
+  a large dashed tile; the dashed outline appears only while you drag a device over the
+  chain.
+
+### Fixed
+- **New tracks scroll into view:** a track added to a full arrangement was drawn under the
+  pinned Return and Master rows. The arrangement now scrolls to show it, and the pinned
+  rows sit on a line of their own.
+- **The Session toolbar fits small windows:** controls no longer run off the edge — when
+  space runs out, the least-used ones move into a "⋯" menu. The inspector is narrower and
+  can be hidden with the new Inspector button; Nota remembers your choice.
+- **Modular lists your tracks on open:** opening Modular after loading a project showed an
+  empty track list. It now lists the tracks and opens on the first one, and an empty
+  project says "No tracks yet".
 
 ## [0.52.1] — 2026-10-13
 

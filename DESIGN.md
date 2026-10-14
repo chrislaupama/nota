@@ -166,7 +166,8 @@ HSL lightness (hue kept) that passes the bar:
    hard-coded label colour.
 5. **Seam between, rule within.** Panels meet on the dark 1px `Seam` and so do keys in a
    segmented group; items inside a panel are divided by the lighter 1px `Rule` (toolbar and
-   menu separators, field edges, graph frames).
+   menu separators, field edges, graph frames). A device card's sections are not boxes:
+   they sit on the card and a rule divides neighbours (§ Device cards).
 6. **Flat docked, blur only floating.** No gradients, glow, textures or skeuomorphism.
    Depth is a tone step plus a 1px seam, with a faint top bevel on raised controls. Only
    floating layers (the command palette, in-window overlays) cast a blurred shadow.
@@ -184,7 +185,8 @@ HSL lightness (hue kept) that passes the bar:
 12. **Real time is not animated.** Meters, playhead and spectra jump to the value.
 13. **Opacity is not a state.** Muted and disabled take the next ink step.
 14. **Numbers are set, not printed:** point decimal, U+2212 minus, thin space before the
-    unit, fixed precision.
+    unit, fixed precision, en-dash ranges.
+15. **One icon set.** Every icon is a `Glyph` kind (§ Icons); nothing else draws one.
 
 ## Tokens
 
@@ -395,7 +397,13 @@ with a point on any OS locale; typed input still accepts a hyphen. Project and p
 files are JSON and never go through it.
 
 - The unit follows a **thin space**: `4.6 s`, `−3.3 dB`, `72 %` (` ` in source).
+- **Minus is U+2212** on every number shown, scale and tick labels included (the mixer
+  scale reads `+6 · 0 · −12 · −48`). A literal typed with a hyphen-minus (`"-12"`) fails
+  `RunNumbers`.
 - A plus only where the sign matters: `+0.8 dB`.
+- **Ranges take an en dash** (U+2013): closed between plain numbers or note names
+  (`1–127`, `1.1–5.1`, `C1–C3`), spaced when either endpoint contains a space
+  (`0.20 – 1.50 s`, `20 Hz – 20 kHz`).
 - Fixed precision: dB one decimal · tempo two (`120.00`) · percent whole · Hz whole up to
   999, then `3.2 k`. Helpers: `NotaNum.Db`, `Hz`, `Pct`, `Bpm`, `Time`, `Unit`, `F`.
 - Width must not jump across 10 or 100 — mono plus fixed precision.
@@ -407,9 +415,18 @@ files are JSON and never go through it.
   `Pre-delay`, `Feedback`. Views may still pass caps literals (`"PRE-DELAY"`): every label
   builder routes them through `NotaText.Label`, which sentence-cases an all-caps string and
   keeps acronyms and units (`LFO`, `EQ`, `ADSR`, `MIDI`, `dB`, `Hz`, `kHz`, `ms`) in their
-  own case. A string with any lower-case letter is left as written. No colons, no
-  "Value", no vowel-dropped contractions (`Fdbk`, `Atk`, `Lvl`); the established
-  truncations `Freq`, `Reso`, `Thresh` are allowed — the full words do not fit a 53 px cell.
+  own case (`NotaText.Fixed`, which also holds `LUFS`, `USB`, `OK`, `DAW`). A string with
+  any lower-case letter is left as written. No colons, no "Value", no vowel-dropped
+  contractions (`Fdbk`, `Atk`, `Lvl`); the established truncations `Freq`, `Reso`,
+  `Thresh` are allowed — the full words do not fit a 53 px cell.
+- **Every label is sentence case** — menu items, command titles, palette headings, window
+  titles, tooltips, section heads, buttons: "Save as…", "Live freeze", "Export audio",
+  "Recent", "Suggested · Arrangement". Capitals stay only on acronyms and units
+  (`NotaText.Fixed`), product and device names ("Nota Aurora"), the view names
+  (Arrangement, Session, Modular, Mixer — "Back to Arrangement", "Show Mixer") and other
+  proper nouns (Finder), and a Settings page named after "Settings: " ("Settings: Audio").
+  Data keeps its own case: preset names, engine parameter names, MIDI-learn names, user
+  data. `RunLabels` holds the rule.
 - Shell tooltips: short and verb-first — "Snap clips to the grid (hold Alt to drag
   freely)", "Clear the peak hold". Not "Click to…". The value stays on the control;
   a tooltip may add the unit or range.
@@ -448,7 +465,7 @@ Builders live in `DeviceCardKit`; controls in `Controls/`. Reuse before writing 
 | Readouts and fields (`Border.well`, `.cell`, `TextBox.field`, `ComboBox`, `.search`) | 26, well fill, 1 px rule edge, radius 3; a mono value with its muted unit on one line. Focus = the edge turns accent, no ring. |
 | Filter chips | 20, radius 3, 9 side pad, raised with a seam border; a category-colour dot instead of an icon; active = solid accent with derived ink; one line, overflow folds into `+N`. |
 | Track toggles (M / S / arm) | Raised keys at rest; on = solid `Mute` / `Solo` / `Record` with `InkOn` text. |
-| `Glyph` | Icons drawn as geometry: a round-capped monoline stroke of 1.5 px at 16 px (scaled, min 1.2); play and record filled. No icon font, no unicode glyphs. |
+| `Glyph` | The one icon set (§ Icons): geometry on a 16-unit grid, a round-capped 1.5 px stroke at 16 px (scaled, min 1.2) or a solid fill. No icon font, no unicode glyphs. |
 | `MeterBar`, `StereoMeter`, `GrMeter` | 11 wide, 5 apart, radius 2 on Well; green → −6 dB amber → 0 red; −60…+6; peak hold stays until clicked. |
 | `Inactive.Set(root, on, interactive)` | Puts a subtree into the disabled look by colour (faint ink, accent → rule, controls `IsDim`). |
 | `NaBadge` | Feature not built yet; the control stays so nothing shifts later. |
@@ -474,6 +491,35 @@ Builders live in `DeviceCardKit`; controls in `Controls/`. Reuse before writing 
 **Motion:** hover and colour 120 ms ease-out (`BrushTransition`); nothing real-time is
 animated. **Empty state:** one line of Ink 5, centred, no illustration or call-to-action
 button; details go in a tooltip; the area keeps its size and frame.
+
+### Icons
+
+`Controls/Glyph.cs` is the app's only icon set: every icon is a `GlyphKind`, used as a
+`Glyph` control or drawn with `Glyph.Draw` inside a `Render`. Nothing else parses path
+geometry, and no icon is a typed character (`RunIcons`).
+
+- **Grid:** a path kind is drawn on a 16-unit grid and scaled as a whole to the size asked
+  for — never `Stretch.Uniform`, so a wide and a tall icon keep their optical balance. The
+  natural size is 16; the transport shapes keep theirs (Stop 10, Record 11, Play 11 × 14).
+- **Stroke:** stroked parts take the shared pen — round caps and joins,
+  `max(1.2, size × 1.5/16)`, so 1.5 px at 16. Icons in the rail, browser, Preferences,
+  palette, history and player match in weight.
+- **Filled vs stroked:** a shape is outlined unless it needs mass to read. Filled: the
+  transport shapes, the view keys Arrangement and Session, the OS marks (Apple, Windows,
+  Linux), `StarFilled` (a favourite; `Star` is the outline), the disclosure carets and
+  Snap. Metronome, Follow and Automation mix a stroked frame with a filled weight, flag or
+  handle. Fills take the ink, never a second colour.
+- **Kinds:** besides the transport and context-menu set — the views (`Arrangement`,
+  `Session`, `Modular`); rail and Settings pages (`Keyboard`, `Sliders`, `Folder`,
+  `Downloads`, `Star`, `Bookmark`, `Doc`, `Midi`, `Map`, `History`, `Sidebar`, `Options`,
+  `Search`, `Gamepad`, `Phone`, `Plug`, `Library`, `Appearance`, `Shortcuts`, `MidiPort`);
+  palette kinds (`Action`, `Track`, `Device`, `Preset`, `Patch`); the player (`Loop`,
+  `Speaker` with `SpeakerLow` / `SpeakerHigh` / `SpeakerMute` layered on it, `Levels`);
+  the transport toggles (`Metronome`, `Follow`, `Snap`, `Automation`); `ChainLink` (Live
+  freeze); `CaretRight` / `CaretDown`. Each kind carries a one-line comment naming what it
+  depicts.
+- **A new icon** is a new kind in `Glyph.cs`, drawn on the grid with the shared pen — not a
+  path in the view that needs it.
 
 ## Visualisers
 
@@ -505,23 +551,47 @@ Every built-in device is a **700 × 260** card (`DeviceCardKit.CardH`, width fro
 `IDeviceBody.Width`): panel body, radius 3, a 1 px seam frame. A selected card carries a
 1.5 px accent ring outside its frame.
 
-- **Header 22** (`HeaderH`): a raised strip with the `Shadow.Raised` bevel and a seam under
-  it. Device name (12/600) on the left; on the right the **preset picker** `‹ Name ⌄ ›`
-  (an 18 px well field: the name opens the factory presets, the chevrons step through them,
-  wrapping), the processing-type badge (mono 10, muted, sentence case; instruments add live
-  voices, `Subtractive · 3/16`) and the **power switch** — accent while the device is on.
-  The picker appears only when the device has factory presets. A/B, move and delete live
-  in the header's right-click menu; drag the card by its whole header; Delete removes it.
-- **Body 238**, inset 6 (`NotaSpace.DeviceInset`) unless the body is `FullBleed`.
-  Sections sit on the panel tone like the body, radius 3, gap 5, section inset 6–8,
-  titled in `DeviceSection` (muted 600); dividers inside a section are rules. A knob row
-  is 52–54 tall.
+- **Header 22** (`HeaderH`, built by `DeviceChainView.Shell.cs` `BuildCardShell`): a
+  raised strip with the `Shadow.Raised` bevel and a seam under it, in **fixed slots, left to
+  right: name · preset · badges · power**.
+  - **Name** (12/600). For a card with a set width the name column is fixed — 22 % of the
+    card width, clamped to 56–160 (a card that sizes to its content lets the name take what
+    it needs) — so the preset picker starts at the same x on every card of that width. A
+    compact card drops the "Nota " prefix.
+  - **Preset** — the picker `‹ Name ⌄ ›`, an 18 px well field: the name opens the factory
+    presets, the chevrons step through them, wrapping. Only when the device has presets.
+  - **Badges**, right-aligned before the power slot: the processing-type badge (mono 10,
+    muted, sentence case; instruments add live voices, `Subtractive · 3/16`), then the
+    card's own accessories (Learn, the S / L size toggle).
+  - **Power** — the bypass switch, accent while the device is on. The slot
+    (`SwitchTrack.W` wide) is reserved on every card, empty when the device cannot be
+    bypassed (instruments), so right edges line up down a chain.
+
+  A/B, move and delete live in the header's right-click menu; drag the card by its whole
+  header; Delete removes it. Every card uses this header — effects, instruments, MIDI
+  effects, racks (the Instrument Rack's "Rack · N chains" is a badge), the generic
+  instrument card, hosted plug-ins — and the Sends card, a `Utility` card with no device
+  menu, selection or presets.
+- **Body 238**, inset 6 (`NotaSpace.DeviceInset`) unless the body is `FullBleed`. A knob
+  row is 52–54 tall.
+- **Sections are divided by rules, not boxed.** `DeviceCardKit.Section(body, edges)`
+  (`Controls/RuleSection.cs`) has no fill and no frame — it sits on the card surface — and
+  draws a 1 px `Rule` only on a top or left edge that faces a neighbouring section. By
+  default (`SectionEdge.Auto`) it finds those from the layout: a section within 16 px that
+  overlaps the edge by at least 4 px; a caller may name the edges instead. It keeps the
+  1 px inset of the old frame, so content does not move. Sections keep gap 5 and section
+  inset 6–8, titled in `DeviceSection` (muted 600). The cards' local section helpers
+  delegate to it. **Not sections:** graph windows (`NotaGraph`) and wells keep their frame; chips,
+  selectable tiles, rows and pads, and readouts keep theirs.
 - **Three columns, left to right: choice → work → output** — source or preset on the left,
   graph and parameters in the middle, levels and mix on the right.
 - **Values at rest are neutral**; the accent marks only what is live or chosen (a knob in
   the hand, a chosen segment, a switch that is on, the playing step). Modulation shows its
   source chroma (teal for LFOs and envelopes) on the arc.
 - A bypassed card keeps its layout and turns to the disabled look via `Inactive`.
+- **Add device** — the end of a chain is a 28 px-wide key with a `Plus` glyph and a
+  tooltip; its dashed outline (`BorderStrong`, radius 3) shows only while a drag is over
+  the chain, so an empty dock stays quiet. A rack's chain ends the same way.
 
 Width exceptions, by decision: **Bass 1060, Physical 720** (squeezing them would be a
 redesign) and the parameter-list stub (190). A hosted plug-in (VST3 / AU) is a two-size
@@ -554,7 +624,9 @@ Every region is **docked**: radius 0, no gutter, separated by 1 px seams (the wi
   below (`Border.transport`). Stop / play / record, position and loop share the console,
   one 30 px recessed group on the well with a rule edge (`Border.console`), keys butted on
   1 px seams. It reads left to right: the project name (13 semibold, Ink 1) · view switch
-  (Arrangement · Session · Modular) · the console · tempo `120.00 BPM`, signature, key,
+  (three 28 × 24 icon keys — `Glyph` Arrangement · Session · Modular — in a segmented
+  group, the current one solid accent; the tooltip and accessible name are the view name)
+  · the console · tempo `120.00 BPM`, signature, key,
   grid — each a 26 px readout well with its muted unit beside it · the switches
   (metronome, follow, snap, automation) — then, pinned right, MIDI, CPU and master.
   Transport keys are 26, Play 36 wide; Play is raised at rest and solid accent only while
@@ -571,7 +643,9 @@ Every region is **docked**: radius 0, no gutter, separated by 1 px seams (the wi
 - **Status 22** — one line of `Caption` text on the ground, a seam above it, aligned 16 px
   in.
 - **List rows** are 26 and one line: a colour dot or bar, the name, mono metadata right;
-  hover raised hover, selected raised hover with a 2 px accent tick.
+  hover raised hover, selected raised hover with a 2 px accent tick. A built-in device's
+  browser row shows its short name ("Aurora", not "Nota Aurora" — search still matches the
+  full name); the type tag on the right is `TextFaint` mono 10.
 - **Mixer strips** are panel-tone columns on seams, each with a 3 px top bar in the track
   colour (muted grey for master).
 - **Arrangement** (geometry unchanged): track rows 64 (the header carries every control),
@@ -582,7 +656,10 @@ Every region is **docked**: radius 0, no gutter, separated by 1 px seams (the wi
   neutral tone steps), Zoom + ruler 24. The horizontal scrollbar is a 12 px well with a
   5 px thumb (`ThinScrollBar`). Audio clips draw their waveform as spaced bars by default —
   a 1 px stroke every 3 px, mirrored about the centre; Settings → Appearance → Waveform
-  switches to Solid (a column per pixel).
+  switches to Solid (a column per pixel). The pinned Return / Master band meets the tracks
+  on a 1 px seam; below the last track the lane side keeps the lane colour and the header
+  side the header colour. A new track is scrolled fully into view
+  (`ArrangementView.RevealTrack`).
 - **Clips** are flat 2 px-radius rectangles: a full-colour body in the track colour, a
   12 px title band across the top in the track colour mixed 30 % toward black (the accent
   when the clip is selected) with the name in 9.5/600 derived ink, and the content — notes
@@ -598,6 +675,15 @@ Every region is **docked**: radius 0, no gutter, separated by 1 px seams (the wi
   everything outside the played region darkened. Envelopes and expression curves are
   neutral viz ink; only the point under the pointer is the accent.
 
+- **Session** — the inspector column is 260 and can be hidden: an "Inspector" toggle at
+  the right end of the toolbar, remembered (`SessionInspectorOpen`, on by default). When
+  the toolbar is narrow its least-used controls fold, one at a time, into a "⋯" menu that
+  lists whatever is hidden — the position readout first, then Back to Arrangement, Capture
+  scene, the section toggles, Follow — so every control stays reachable.
+- **Modular** — the sidebar always lists the tracks; opening the view with nothing
+  selected selects the first track that is neither a group nor a return. Empty states:
+  "No tracks yet" in the sidebar, "Pick a track to see its signal graph" on the canvas.
+
 ### Menus, popovers, dialogs
 
 - **Menus, context menus, flyouts, drop-downs, tooltips:** raised, radius 3, a 1 px seam
@@ -610,26 +696,47 @@ Every region is **docked**: radius 0, no gutter, separated by 1 px seams (the wi
 - **Dialog windows** (`NotaWindow`): panel body; on macOS and Windows a 32 px raised header
   with the bevel and a seam below, the title in `Heading`. The OS draws the window shadow.
 
+### Floating windows
+
+The mixer and the export dialog are OS windows (`NotaWindow`), not in-window overlays, so
+the mixer can live on a second screen. The command palette is the only in-window overlay.
+
+- **Escape** closes a floating window, as it closes the palette: the mixer closes (unless a
+  text field has focus — it owns Escape then), Export cancels (an open drop-down takes its
+  own Escape first).
+- **The mixer sizes to its strips** (`MixerWindow.FitWidth`): the window is as wide as the
+  strips and master plus padding, clamped to [560 (`MinWidth`), the screen's working
+  width], so there is no dead area right of the master. It refits when a track is added
+  or removed while it is open, and a window that grows past the screen's right edge moves
+  back onto it. The height stays 460.
+- **Titles are sentence case:** "Mixer", "Export audio", "Edit tags", "What's new in
+  Nota", "Connect phone".
+
 ## Enforced by tests
 
-`tests/Nota.SmokeTest/DesignTokenCheck.cs` runs in the smoke test and fails the build on:
+`tests/Nota.SmokeTest/DesignTokenCheck*.cs` runs in the smoke test (the `-- design: … --`
+sections) and fails the build on:
 
 | Check | Holds |
 |---|---|
 | `Run` | `NotaTheme.axaml` holds no colour; every referenced `Brush.*` key is published (`KeyMap`); every `Shadow.*` key is built from the theme |
 | `RunThemes` | Every theme file: shape, id, kind, exactly the token catalogue, valid opaque colours (shadows may be translucent), and every readability pairing (§ Readability bar); `BuiltInOrder` lists exactly the files |
 | `RunAppearance` | Old settings migrate (Dark / Light / System); unknown and wrong-kind ids fall back; storing keeps the legacy setting in step |
-| `RunGeometry` | XAML ↔ `NotaGeometry` values; no undefined `Radius`/`Control`/`Space` keys; no `CornerRadius` literals, drop shadows or gradients in views |
+| `RunGeometry` | XAML ↔ `NotaGeometry` values; no undefined `Radius`/`Control`/`Space` keys; no `CornerRadius` literals, drop shadows or gradients in views; `Rectangle` `RadiusX` / `RadiusY` literals on the 0/1/2/3/4 scale (`RadiusAllowList.txt`) |
 | `RunType` | Fonts bundled and matched; no font names in views; nothing under 7 px |
 | `RunControls` | No unicode icons typed as text; Knob / Switch / Slider sizes |
 | `RunVisualisers` | Graph windows via `NotaGraph`; no fills under curves; no meter ballistics; meter 11/5; playhead 1 px without glow |
 | `RunLayout` | Device header 22; cards 700 except the listed exceptions; transport a docked row at the top at `Control.TransportBar` with its recessed console; browser rows 26–28 |
-| `RunNumbers` | Display culture installed; no hyphen minus; no invariant culture on readouts; thin space before units; no vowel-dropped labels |
+| `RunNumbers` | Display culture installed; no hyphen minus in a negative format section or before ∞; no hyphen-minus before a digit in a view literal (`"-12"`, `" -3"`; `NumberAllowList.txt`); no invariant culture on readouts; thin space before units; no vowel-dropped labels |
 | `RunBans` | No hex outside `Ink()` (bar three data tables), no RGB typed as numbers, no named system colours, `Opacity` only on drag ghosts, no brush snapshotting a theme colour |
+| `RunLabels` | No all-caps or Title Case label literal in a label context (`Text`, `Content`, `Header`, `Title`, tooltips, menu headers, command titles, palette and Settings headings, local label builders), unless it is `NotaText.Fixed` acronyms, goes through `NotaText.Label`, or names a view, product or proper noun; interpolated strings are skipped. `LabelAllowList.txt` holds only data (preset, mode and window-tab names, proper names) |
+| `RunIcons` | No path geometry outside `Controls/Glyph.cs`: no `Geometry.Parse` / `StreamGeometry.Parse` / `PathGeometry.Parse`, no axaml `Data="M…"`, no SVG path string. `IconAllowList.txt` is empty |
 | `RunStudio` | Every `Radius.*` on the 0/1/2/3/4 scale; only `Shadow.Popover` / `Shadow.Modal` blurred, no literal `BoxShadow` in views; no positive `LetterSpacing` in the theme, `NotaType` tracking 0, no upper-casing in the shared label builders; knob arcs, slider fills and graph curves neutral at rest (`VizInk`); transport 44 · console 30 · seam 1; no Ember value in the Studio themes |
 
 When a check fails, fix the view — or, for a genuine exception, add it to the check's
-allow-list with a comment saying why.
+allow-list with a comment saying why. The ratchet lists in `tests/Nota.SmokeTest/`
+(`LabelAllowList.txt`, `IconAllowList.txt`, `NumberAllowList.txt`, `RadiusAllowList.txt`)
+only shrink: a new offender fails, and so does a line that no longer matches anything.
 
 ## Accepted departures from Saine
 
@@ -685,15 +792,13 @@ True today, not yet fixed:
   look: the last-struck ball in Pendulum, in-scale note chips (Scale map, Auto Shift), the
   live pitch readout in Auto Shift, the step strip wash in Rhythm, the zone chip in Mosaic,
   the macro-mapped chip in a rack (teal might suit it better).
-- **Device sections** are still boxes framed by a 1 px seam (`BorderDefault`); the
-  contract asks for sections divided by rules.
 - **The user manual** (`../nota-docs`) screenshots still show Ember; they are not re-shot.
 - **Column order** choice → work → output is applied in Utility; the other cards have not
   been audited card by card.
 - **Slider reset** on double-click works only where the card passes a default.
+- **Off-scale radii** still in `RadiusAllowList.txt`: Mosaic's drop target (6) and the
+  7 px switch knob (1.5).
 - **Names:** presets with emotional names (Screaming Lead, VHS Fever, Gentle Master,
   Transparent Safety, Dive Bomb, Laser Zap…) and multi-word device names (Auto Filter,
-  Beat Repeat, Dynamic EQ-8, EQ-3, the "Nota " prefix) remain; renaming touches MCP names,
-  the browser and saved projects.
-- **The "Add device" tile** at the end of a chain keeps a plus and two lines — it is a drop
-  target rather than an empty state.
+  Beat Repeat, Dynamic EQ-8, EQ-3, the "Nota " prefix — dropped only from browser rows and
+  compact card headers) remain; renaming touches MCP names, the browser and saved projects.

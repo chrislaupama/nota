@@ -79,8 +79,9 @@ JUCE module; the engine core is JUCE-free.
 
 ---
 
-Three top-level views, switched from the toolbar (**Arrangement · Session · Modular**);
-the mixer opens as a separate floating window (**View → Mixer**, ⌘M).
+Three top-level views, switched by three icon keys in the transport (**Arrangement ·
+Session · Modular**; each names its view in a tooltip); the mixer opens as a separate
+floating window (**View → Mixer**, ⌘M).
 
 - **Arrangement View** — a linear timeline, floating on the app ground as its own island:
   place, move, trim and duplicate clips; the snap grid (below); scroll and zoom;
@@ -118,18 +119,20 @@ the mixer opens as a separate floating window (**View → Mixer**, ⌘M).
   (trim brackets, warp markers and envelope points snap); ⌘1 / ⌘2 narrow / widen (in Auto,
   the density), ⌘3 triplets, ⌘4 snap on / off, ⌘5 Auto ↔ fixed (also Edit → Grid), acting
   on the editor used last. Hold ⌥ to drag freely; clip edges still attract a dragged clip.
-- **Session View** — a clip grid (tracks × scenes) with an inspector: named, coloured clips
-  with note / waveform previews and a progress pie on the clip's own clock; selection apart
-  from launching, keyboard editing (arrows, Return, ⌘C/X/V, ⌘D, ⌘I, F2, Delete) and drag
-  between slots; launch modes (Trigger / Gate / Toggle / Repeat), per-clip quantize, legato,
-  one-shot, velocity amount and follow actions with a global switch; scenes with names,
-  colours, tempo / signature and scene follow, inserted, duplicated, captured and reordered
-  without stopping playback; Session Rec with fixed length; group columns that fold;
-  returns + master; I/O · Sends · Mixer sections; removable stop buttons; per-track
-  Back to Arrangement; and moving material between Session and Arrangement — the clipboard
-  works both ways, and **⌘⇧C** (**Copy to Session** / **Copy to Arrangement** / **Copy to
-  Scene**) sends clips, slots or a whole scene across with notes, envelopes, warp, pitch and
-  gain, as one undo step.
+- **Session View** — a clip grid (tracks × scenes) with an inspector that the toolbar's
+  **Inspector** button shows or hides (remembered); on a narrow window the least-used
+  toolbar controls fold into a **⋯** menu. Named, coloured clips with note / waveform
+  previews and a progress pie on the clip's own clock; selection apart from launching,
+  keyboard editing (arrows, Return, ⌘C/X/V, ⌘D, ⌘I, F2, Delete) and drag between slots;
+  launch modes (Trigger / Gate / Toggle / Repeat), per-clip quantize, legato, one-shot,
+  velocity amount and follow actions with a global switch; scenes with names, colours,
+  tempo / signature and scene follow, inserted, duplicated, captured and reordered without
+  stopping playback; Session rec with fixed length; group columns that fold; returns +
+  master; I/O · Sends · Mixer sections; removable stop buttons; per-track Back to
+  Arrangement; and moving material between Session and Arrangement — the clipboard works
+  both ways, and **⌘⇧C** (**Copy to Session** / **Copy to Arrangement** / **Copy to
+  scene**) sends clips, slots or a whole scene across with notes, envelopes, warp, pitch
+  and gain, as one undo step.
 - **Modular View** — a signal-graph editor for the track's chain, on its own island: MIDI FX → instrument →
   effects shown as nodes you can expand, bypass, duplicate, delete and reorder right on the
   canvas (node positions are saved with the project), plus a **Global view** that shows

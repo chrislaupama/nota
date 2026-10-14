@@ -315,13 +315,14 @@ td:first-child{color:var(--text-primary)}
 /* card */
 .card{width:700px;height:260px;background:var(--panel);border:1px solid var(--seam);border-radius:var(--r-body);overflow:hidden;display:grid;grid-template-rows:22px 1fr}
 .card__head{display:flex;align-items:center;gap:8px;padding:0 8px;border-bottom:1px solid var(--seam);background:var(--surface-raised);box-shadow:var(--shadow-raised)}
-.card__name{font:600 12px/1 var(--font-ui);color:var(--text-primary)}
-.preset{margin-left:auto;display:inline-flex;align-items:stretch;height:18px;border-radius:var(--r-control);background:var(--bg-sunken);box-shadow:var(--shadow-sunken);overflow:hidden;font-size:11px}
+.card__name{font:600 12px/1 var(--font-ui);color:var(--text-primary);width:154px;flex:none;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.preset{display:inline-flex;align-items:stretch;height:18px;border-radius:var(--r-control);background:var(--bg-sunken);box-shadow:var(--shadow-sunken);overflow:hidden;font-size:11px}
 .preset i{font-style:normal;width:18px;display:grid;place-items:center;color:var(--text-tertiary)}
 .preset b{font-weight:500;width:132px;padding:0 7px;border-left:1px solid var(--rule);border-right:1px solid var(--rule);display:flex;align-items:center;color:var(--text-primary)}
-.card__badge{font:400 10px/1 var(--font-mono);color:var(--text-muted)}
+.card__badge{font:400 10px/1 var(--font-mono);color:var(--text-muted);margin-left:auto}
 .card__body{display:grid;grid-template-columns:150px 1fr 150px;gap:5px;padding:6px}
-.sect{background:var(--panel);border:1px solid var(--seam);border-radius:var(--r-panel);padding:6px 8px;display:flex;flex-direction:column;gap:6px;min-width:0}
+.sect{padding:6px 8px;display:flex;flex-direction:column;gap:6px;min-width:0}
+.sect+.sect{border-left:1px solid var(--rule)}
 .sect h5{margin:0;font:600 10.5px/1 var(--font-ui);color:var(--text-muted)}
 .scroll{overflow-x:auto;padding-bottom:4px}
 .note{font-size:11px;color:var(--text-muted)}
@@ -603,7 +604,7 @@ BODY=f'''</style>
 <section id="cards">
   <p class="eyebrow">08 · Device cards</p>
   <h2>700 × 260, at true size</h2>
-  <p>Panel body, radius 3, seam frame. Header 22: a raised strip with the bevel — name left; preset picker, the muted mono badge and the power switch right (A/B, move and delete are in the right-click menu). Body inset 6, sections gap 5, titled in muted 600. Three columns: choice → work → output.</p>
+  <p>Panel body, radius 3, seam frame. Header 22: a raised strip with the bevel, in fixed slots — name (a fixed column, so presets line up down a chain) · preset picker · the muted mono badge · power, a slot every card reserves (A/B, move and delete are in the right-click menu). Body inset 6; sections have no fill and no frame, divided by a 1 px rule, titled in muted 600. Three columns: choice → work → output.</p>
   <div class="scroll"><div class="card">
     <div class="card__head"><span class="card__name">Nota Chamber</span><span class="preset"><i>&lsaquo;</i><b>Stone Vault</b><i>&rsaquo;</i></span><span class="card__badge">Convolution</span><span class="switch on" style="margin-left:4px"><i></i></span></div>
     <div class="card__body">
