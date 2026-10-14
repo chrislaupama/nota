@@ -260,11 +260,15 @@ The Xvfb harness and capture scripts from 008 live in `/tmp/claude-0/`, outside 
   - FEATURES.md gains a "Device categories" bullet and "group by category" in View options. The compact-index bullet's stale "tertiary Nota prefix" claim now describes the short names shipped in 008.
   - The nota-docs follow-up goes in the PR.
 
-- [ ] T034 Run quickstart.md § 2 in full under Xvfb in all four themes. Make before/after contact sheets of the three device tabs (T002 vs final) for the PR.
-- [ ] T035 Nota closing checks:
+- [X] T034 Run quickstart.md § 2 in full under Xvfb in all four themes. Make before/after contact sheets of the three device tabs (T002 vs final) for the PR.
+- [X] T035 Nota closing checks:
   - the two-line SPDX header is on `Application/Palette/DeviceCategories.cs` and `Smoke/DesignTokenCheck.Browser.cs`;
   - no new dependency (`LICENSES/third-party.md` N/A);
   - no engine behaviour change (smoke engine coverage N/A).
+  *Result*:
+  - **T034**: the three device tabs, captured in all four themes plus Studio Light with folds, read correctly. Headers match the Built-in header style, and the caret sits in the device caret column. Contact sheets were sent in the session.
+  - **T035**: SPDX headers are on the three new files. No dependency, native or project-format change.
+
 - [ ] T036 Final gate: a full `scripts/build-linux.sh`. Only the known "Consort stress" failure is allowed (it also fails on the base). Then run `/speckit-converge`.
 
 ---
