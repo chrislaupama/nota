@@ -387,9 +387,9 @@ internal sealed class ShutterDeviceBody : IDeviceBody
         var pills = new Grid { ColumnDefinitions = new ColumnDefinitions("Auto,Auto"), ColumnSpacing = 9, HorizontalAlignment = HorizontalAlignment.Center, Margin = new Thickness(0, 4, 0, 4) };
         pills.Children.Add(PillCol(inPill, inLbl));
         pills.Children.Add(Col(PillCol(grPill, grLbl), 1));
-        var stateCol = new Border
+        var stateCol = new RuleSection
         {
-            Width = 56, Background = Card2, BorderBrush = BorderDef, BorderThickness = new Thickness(1), CornerRadius = NotaRadius.Tile, Padding = new Thickness(0, 5, 0, 4),
+            Width = 56, Padding = new Thickness(0, 5, 0, 4),
             Child = new DockPanel { Children = { Docked(stateTitle, Dock.Top), Docked(stateGr, Dock.Bottom), Docked(stateIn, Dock.Bottom), pills } },
         };
         DockPanel.SetDock(stateCol, Dock.Left);
@@ -835,7 +835,7 @@ internal sealed class ShutterDeviceBody : IDeviceBody
         // The right panel follows the centre: Rhythm / Detector beside the pattern, else Detector / Meters.
         var rightFrame = TabFrame(new[] { "Detector", "Meters" }, rightHost, RightBody, true, _ => RefreshAll(), null);
         Control? rhythmFrame = null;
-        var right = new Border { Width = 186, Background = Card2, BorderBrush = BorderDef, BorderThickness = new Thickness(1), CornerRadius = NotaRadius.Tile, ClipToBounds = true, Child = rightFrame };
+        var right = new RuleSection { Width = 186, Child = rightFrame };
         var centre = TabFrame(new[] { "Signal", "Envelope", "Sidechain", "Pattern" }, centreHost, CentreBody, false, t =>
         {
             centreTab = t;
@@ -843,7 +843,7 @@ internal sealed class ShutterDeviceBody : IDeviceBody
             Refresh();
         }, extrasHost);
         DockPanel.SetDock(right, Dock.Right);
-        var centreBox = new Border { Background = Card2, BorderBrush = BorderDef, BorderThickness = new Thickness(1), CornerRadius = NotaRadius.Tile, Margin = new Thickness(5, 0), ClipToBounds = true, Child = centre };
+        var centreBox = new RuleSection { Margin = new Thickness(5, 0), Child = centre };
 
         // ======================================================================
         // Status strip

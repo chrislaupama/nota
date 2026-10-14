@@ -145,10 +145,9 @@ internal sealed class EqDeviceBody : IDeviceBody
         };
         anaBar.RenderTransform = new ScaleTransform(0.85, 0.85);
         anaBar.RenderTransformOrigin = new RelativePoint(0, 0, RelativeUnit.Relative);
-        var graphPanel = new Border
+        var graphPanel = new RuleSection
         {
-            Background = Card2, BorderBrush = BorderDef, BorderThickness = new Thickness(1), CornerRadius = NotaRadius.Tile,
-            ClipToBounds = true, Margin = new Thickness(0, 0, 5, 0),
+            Margin = new Thickness(0, 0, 5, 0),
             Child = new DockPanel { LastChildFill = true, Children = { chipStrip, new Border { Padding = new Thickness(5), Child = new Panel { Children = { curve, anaBar } } } } },
         };
 
@@ -311,11 +310,7 @@ internal sealed class EqDeviceBody : IDeviceBody
             return panel;
         }
 
-        var right = new Border
-        {
-            Width = 186, Background = Card2, BorderBrush = BorderDef, BorderThickness = new Thickness(1), CornerRadius = NotaRadius.Tile,
-            ClipToBounds = true, Child = bandHost,
-        };
+        var right = new RuleSection { Width = 186, Child = bandHost };
         DockPanel.SetDock(right, Dock.Right);
         bandHost.Content = BandPanel(Sel());
         curve.SelectionChanged += () => { bandHost.Content = BandPanel(Sel()); RefreshAll(); };

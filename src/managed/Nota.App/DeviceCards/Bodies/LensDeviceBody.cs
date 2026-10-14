@@ -380,10 +380,9 @@ internal sealed class LensDeviceBody : IDeviceBody
         int centreTab = Sel(ViewP, 3);
         var railA = RailSlider(() => centreTab == 1 ? VoltDivP : ScaleTopP, NotaPalette.VizInk, () => centreTab == 1 ? "V/D" : "TOP");
         var railB = RailSlider(() => centreTab == 1 ? TimeDivP : ScaleRangeP, NotaPalette.Teal, () => centreTab == 1 ? "T/D" : "RNG");
-        var rail = new Border
+        var rail = new RuleSection
         {
-            Width = 56, Background = PanelBg, BorderBrush = Border2, BorderThickness = new Thickness(1),
-            CornerRadius = NotaRadius.Tile, Padding = new Thickness(0, 5),
+            Width = 56, Padding = new Thickness(0, 5),
             Child = new DockPanel
             {
                 LastChildFill = true,
@@ -488,18 +487,10 @@ internal sealed class LensDeviceBody : IDeviceBody
             return RightBody(t == 1 ? 3 : centreTab);
         }, true, null, null);
 
-        var right = new Border
-        {
-            Width = 186, Background = RailBg, BorderBrush = Border2, BorderThickness = new Thickness(1),
-            CornerRadius = NotaRadius.Tile, ClipToBounds = true, Child = rightFrame,
-        };
+        var right = new RuleSection { Width = 186, Child = rightFrame };
         DockPanel.SetDock(right, Dock.Right);
 
-        var centreBox = new Border
-        {
-            Background = RailBg, BorderBrush = Border2, BorderThickness = new Thickness(1),
-            CornerRadius = NotaRadius.Tile, Margin = new Thickness(5, 0), ClipToBounds = true, Child = centre,
-        };
+        var centreBox = new RuleSection { Margin = new Thickness(5, 0), Child = centre };
 
         // ---- status strip ---------------------------------------------------------------
         var statusLeft = new TextBlock { FontSize = 8, Foreground = Txt2, VerticalAlignment = VerticalAlignment.Center, TextTrimming = TextTrimming.CharacterEllipsis };
