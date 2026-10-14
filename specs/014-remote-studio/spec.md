@@ -236,7 +236,8 @@ theme message it receives.
 - **FR-016**: Numbers MUST be set as on the desktop: U+2212 minus, a thin space before a
   unit, fixed precision (dB one decimal, tempo two where fractional).
 - **FR-017**: Opacity MUST NOT signal a state (disabled, muted, dimmed) except the existing
-  link-lost dimming of the play surface and the queued-clip blink, which are time states.
+  time states: the link-lost dimming of the play surface and the blinks (a queued clip, the
+  connecting / reconnecting dot, the code caret).
 - **FR-018**: Layout, sizes of touch targets, gestures, screens and behaviour MUST stay as
   they are: this is a visual change.
 
