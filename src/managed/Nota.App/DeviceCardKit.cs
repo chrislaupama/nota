@@ -250,6 +250,13 @@ internal static class DeviceCardKit
         return g;
     }
 
+    /// <summary>A card section: no fill, no frame, a 1px Rule on the edges it shares with a
+    /// neighbouring section (found from the layout unless <paramref name="edges"/> names
+    /// them). Content keeps the 1px inset of the framed box it replaces. Graph windows and
+    /// wells keep their own frame — they are not sections.</summary>
+    internal static Decorator Section(Control body, SectionEdge edges = SectionEdge.Auto)
+        => new RuleSection { Edges = edges, Child = body };
+
     internal static Control Hint(string text) => new TextBlock
     {
         Text = text, FontSize = 9, Foreground = TextTertiary,

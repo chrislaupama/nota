@@ -845,8 +845,8 @@ internal sealed class RhythmInstrumentCard : IInstrumentCard
         }
     }
 
-    // A section: card ground, hairline, radius 6, with an 18px header strip.
-    private static Border Section(Control head, Control body)
+    // A section: a rule-divided area of the card, with an 18px header strip.
+    private static Decorator Section(Control head, Control body)
     {
         var headHost = new Border { Height = HeadH, BorderBrush = BorderDef, BorderThickness = new Thickness(0, 0, 0, 1), Child = head };
         var g = new Grid { RowDefinitions = new RowDefinitions("Auto,*") };
@@ -855,11 +855,7 @@ internal sealed class RhythmInstrumentCard : IInstrumentCard
         return SectionBox(g);
     }
 
-    private static Border SectionBox(Control child) => new()
-    {
-        Background = NotaPalette.SurfaceCard, BorderBrush = BorderDef, BorderThickness = new Thickness(1),
-        CornerRadius = NotaRadius.Tile, ClipToBounds = true, Child = child,
-    };
+    private static Decorator SectionBox(Control child) => DeviceCardKit.Section(child);
 
     /// <summary>Row definitions that put a caption for each dB mark at its place on the meter.</summary>
     private static IEnumerable<string> ScaleRows(params double[] dbs)

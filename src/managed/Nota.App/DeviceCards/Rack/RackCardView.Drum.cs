@@ -855,11 +855,7 @@ internal sealed partial class RackCardView
     private static readonly IBrush TextStrongInk = NotaPalette.TextStrong;
 
     // A device section: card ground, hairline, radius 6.
-    private static Border DrumBox(Control child) => new()
-    {
-        Background = NotaPalette.SurfaceCard, BorderBrush = BorderDef, BorderThickness = new Thickness(1),
-        CornerRadius = NotaRadius.Tile, ClipToBounds = true, Child = child,
-    };
+    private static Decorator DrumBox(Control child) => DeviceCardKit.Section(child);
 
     private static TextBlock DrumCap(string t) => new()
     {

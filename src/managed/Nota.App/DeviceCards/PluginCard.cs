@@ -294,9 +294,10 @@ internal static class PluginCard
     }
 
     // A device section: card ground, hairline, radius 6.
-    private static Border Section(Control child, double pad = 8) => new()
+    private static Decorator Section(Control child, double pad = 8)
     {
-        Background = NotaPalette.SurfaceCard, BorderBrush = BorderDef, BorderThickness = new Thickness(1),
-        CornerRadius = NotaRadius.Panel, Padding = new Thickness(pad, 6, pad, pad), ClipToBounds = true, Child = child,
-    };
+        var d = DeviceCardKit.Section(child);
+        d.Padding = new Thickness(pad, 6, pad, pad);
+        return d;
+    }
 }

@@ -565,11 +565,7 @@ internal sealed class KeysInstrumentCard : IInstrumentCard
         };
     }
 
-    private static Border SectionBox(Control child) => new()
-    {
-        Background = NotaPalette.SurfaceCard, BorderBrush = BorderDef, BorderThickness = new Thickness(1),
-        CornerRadius = NotaRadius.Tile, ClipToBounds = true, Child = child,
-    };
+    private static Decorator SectionBox(Control child) => DeviceCardKit.Section(child);
 
     private static Knob? FindKnob(Control cell)
         => cell is Panel p ? System.Linq.Enumerable.FirstOrDefault(System.Linq.Enumerable.OfType<Knob>(p.Children)) : null;

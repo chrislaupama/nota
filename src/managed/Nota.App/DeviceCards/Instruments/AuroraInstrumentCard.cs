@@ -1171,11 +1171,7 @@ internal sealed class AuroraInstrumentCard : IInstrumentCard
     }
 
     // A device section: card ground, hairline, radius 6 — the almanac's section box.
-    private static Border SectionBox(Control child) => new()
-    {
-        Background = NotaPalette.SurfaceCard, BorderBrush = BorderDef, BorderThickness = new Thickness(1),
-        CornerRadius = NotaRadius.Tile, ClipToBounds = true, Child = child,
-    };
+    private static Decorator SectionBox(Control child) => DeviceCardKit.Section(child);
 
     // A section's own header strip: a hairline under it, nothing else.
     private static Border HeaderStrip(Control child) => new()

@@ -325,10 +325,9 @@ internal sealed class ScaleMidiBody : IMidiDeviceBody
             return new Border { Height = 20, BorderBrush = Bd, BorderThickness = new Thickness(0, 0, 0, 1), Child = d };
         }
 
-        Border IslandBox(Control head, Control content, double width)
+        Decorator IslandBox(Control head, Control content, double width)
         {
-            var b = new Border { Background = Island, BorderBrush = Bd, BorderThickness = new Thickness(1), CornerRadius = NotaRadius.Tile, ClipToBounds = true,
-                Child = new DockPanel { Children = { WithDock(head, Dock.Top), content } } };
+            var b = DeviceCardKit.Section(new DockPanel { Children = { WithDock(head, Dock.Top), content } });
             if (!double.IsNaN(width)) b.Width = width;
             return b;
         }

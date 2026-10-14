@@ -1415,11 +1415,7 @@ internal sealed class MosaicInstrumentCard : IInstrumentCard
         return list;
     }
 
-    private static Border SectionBox(Control child) => new()
-    {
-        Background = NotaPalette.SurfaceCard, BorderBrush = BorderDef, BorderThickness = new Thickness(1),
-        CornerRadius = NotaRadius.Tile, ClipToBounds = true, Child = child,
-    };
+    private static Decorator SectionBox(Control child) => DeviceCardKit.Section(child);
 
     private static Border HeaderStrip(Control child) => new()
     {
