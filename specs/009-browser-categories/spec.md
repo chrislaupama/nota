@@ -50,6 +50,9 @@ the shared icon set). Stacked on that branch.
   Built-in / Plug-ins headers), each foldable. No category chips.
 - Q: Should plug-ins be categorised too? → A: Yes — plug-ins join the same categories from
   the category they report; anything unrecognised goes under "Other".
+- Q: How should the 18 instruments be grouped? → A: Synths (Synth, Volt, Bass, Monolith,
+  Pentad, Consort, Operator, Aurora, Flux, Pendulum) · Keys & physical (Keys, Physical) ·
+  Drums (Rhythm, Drum Rack) · Samplers (Sampler, Mosaic, Grain) · Racks (Instrument Rack).
 
 ## User Scenarios & Testing *(mandatory)*
 
@@ -232,9 +235,9 @@ category.
 ## Assumptions
 
 - **Proposed categories** (to be confirmed in clarify/plan; names sentence case):
-  - *Instruments*: Synths (Synth, Aurora, Volt, Bass, Operator, Flux, Monolith, Pentad,
-    Consort, Pendulum), Keys & physical (Keys, Physical), Drums (Rhythm, Drum Rack),
-    Samplers (Sampler, Mosaic, Grain), Racks (Instrument Rack).
+  - *Instruments* (confirmed): Synths (Synth, Volt, Bass, Monolith, Pentad, Consort,
+    Operator, Aurora, Flux, Pendulum), Keys & physical (Keys, Physical), Drums (Rhythm, Drum
+    Rack), Samplers (Sampler, Mosaic, Grain), Racks (Instrument Rack) — in that order.
   - *Audio effects*: EQ & filter (EQ-3, EQ-8, Dynamic EQ-8, Auto Filter), Dynamics
     (Compressor, Ceiling, Level, Auto Gain), Reverb & delay (Reverb, Chamber, Delay, Orbit),
     Modulation (Chorus, Flanger, Phaser, Auto Pan, Shutter), Distortion & saturation (Valve,
