@@ -302,7 +302,7 @@ internal sealed partial class RackCardView(DeviceCardContext ctx)
     {
         var plus = new Glyph(GlyphKind.Plus, 10) { Foreground = IrMuted };
         var lbl = new TextBlock { Text = "Device", FontSize = 8, Foreground = IrMuted, HorizontalAlignment = HorizontalAlignment.Center };
-        var dash = new Avalonia.Controls.Shapes.Rectangle { Stroke = DashIdle, StrokeThickness = 1, StrokeDashArray = new Avalonia.Collections.AvaloniaList<double> { 3, 2.5 }, RadiusX = 6, RadiusY = 6 };
+        var dash = new Avalonia.Controls.Shapes.Rectangle { Stroke = DashIdle, StrokeThickness = 1, StrokeDashArray = new Avalonia.Collections.AvaloniaList<double> { 3, 2.5 }, RadiusX = NotaRadius.ControlValue, RadiusY = NotaRadius.ControlValue };
         var box = new Panel { Width = 52, Cursor = new Cursor(StandardCursorType.Hand), Background = Brushes.Transparent,
             Children = { dash, new StackPanel { VerticalAlignment = VerticalAlignment.Center, HorizontalAlignment = HorizontalAlignment.Center, Spacing = 2, Children = { plus, lbl } } } };
 
