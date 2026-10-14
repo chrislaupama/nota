@@ -6,73 +6,57 @@ This is what a user (and the smoke test) can observe on the Instruments, Audio e
 MIDI effects tabs. The Files, Presets, Projects, Map and History tabs are out of scope
 (FR-010).
 
-## C1: Category view on (the default)
-
-Row sequence on a device tab, with no search:
+## C1: Layout
 
 ```text
-[▾] <Category A>  ─────────────  <n>
-    <device>                    <type tag>
-    <device>  (▸ presets when expanded, as today)
-[▸] <Category B>  ─────────────  <n>        ← folded: no device rows follow
-[▾] Other         ─────────────  <n>        ← only if a plug-in maps nowhere; always last
+[ Search ……………………… 26 ] [⋮]
+(EQ & filter) (Dynamics) (Reverb & delay) (Modulation)      ← category chips, wrapping
+(Distortion) (Pitch & time) (Utility) (Racks) (Other?)
+(Favorites) (tag) (tag) … +N                                ← existing row, unchanged
+Built-in ───────────────────────── 26
+  Auto Filter                         envelope / LFO
+  …
 ```
 
-- **Category order**: categories appear in the tab's fixed order (data-model). A category
-  with no visible device is not shown.
-- **Count**: `<n>` is the number of matching devices in the category, folded or not.
-- **Order inside a category**:
-  - built-ins before plug-ins when "Group by source" is on;
-  - favourites first within that run when "Favorites first" is on;
-  - otherwise by short name (case-insensitive).
-- **No source headers**: there are no Built-in / Plug-ins headers in this view. A
-  plug-in row keeps its `VST3 · Vendor` tag.
-- **Device rows**: they are the same objects as in the flat view. Double-click, drag,
-  preview, preset expansion, favourite and tag behave identically (FR-007).
+- **Chip order**: the tab's category order. "Other" comes last and only appears when a
+  device on the tab maps there.
+- **Look**: chips reuse `MakeChip`, so they are 20 tall pills, sentence case, with the
+  engaged state in the accent wash (FR-008).
+- **Narrow browser**: the row wraps; no chip goes behind an overflow menu.
+- **Where the row shows**: only on the three device tabs, and only while "Category chips"
+  is on.
 
-## C2: Category header row
+## C2: Picking
 
-- **Look**: `GroupLabel` caption (sentence case, through `NotaText.Label`) · hairline
-  `Brush.Rule` · mono count `Brush.TextDisabled` · 22 px high. That is today's group row,
-  plus a leading 12 px caret (`Glyph` CaretDown when open, CaretRight when folded,
-  `Brush.TextTertiary`). It adds no new colour, radius or icon style (FR-008).
-- **Click**: a click anywhere on the row toggles the fold, and the hand cursor shows it's
-  clickable. The row never becomes the selection.
-- **While searching**: no caret is drawn and clicks do nothing.
-- **Accessible name**: `"<Category>, <n> devices, open"` or `"…, folded"`.
-- **Narrow browser**: the caption truncates; the count and caret stay visible.
+- **Picking a chip** narrows the list to that category's devices (and their presets as
+  usual). Clicking the picked chip clears it; clicking another switches to it.
+- **Per tab**: each tab holds its own pick through tab switches. A restart clears all picks.
+- **Device rows** are the same objects as in the full list: double-click, drag, preview,
+  preset expansion, favourite and tag behave identically (FR-007).
 
-## C3: Search (FR-006)
+## C3: Combining (FR-006)
 
-- **Matching**: the rules are as today (name or type-tag substring; preset hits open their
-  folders).
-- **Grouping**: matches stay under their category headers. Categories without matches
-  are hidden, and the count shows the matches.
-- **Folds**: saved folds are ignored while a query is active, and every shown category is
-  open. Clearing the query restores the saved fold state exactly (US3/AC2).
+- **Filters stack**: a device shows only if it passes the chip, the search, and the
+  Favorites or tag chip.
+- **Ordering**: "Group by source" (Built-in / Plug-ins headers) and "Favorites first" order
+  the narrowed list as they do the full list.
+- **Counts**: the search-box count and the status line count the narrowed list.
+- **Empty result**: "No matches".
 
 ## C4: View options (⋮)
 
 The order is:
 
 1. Show type tags
-2. **Group by category** (new; checked by default)
+2. **Category chips** (new; checked by default)
 3. Group by source
 4. Favorites first
 
-The Files tab's sample options and "Edit tags…" follow, as today.
+- **Turning it off** hides the row and clears every tab's pick, so the full list returns,
+  exactly as before 009 (SC-003).
+- **Persistence**: the toggle is saved as `BrowserCategoryChips`.
 
-- **Turning it off**: today's flat list returns, row for row (`Built-in` / `Plug-ins`
-  headers per "Group by source"). That's SC-003.
-- **Persistence**: the toggle is saved to `settings.json` (`BrowserCategoryView`), and
-  folds are saved as they change (`BrowserFoldedCategories`). Both survive restart.
-
-## C5: Status line
-
-`"<n> audio effects · <b> built-in · <p> plug-ins"` counts the matching devices,
-including the ones inside folded categories (R6).
-
-## C6: Design check (FR-009)
+## C5: Design check (FR-009)
 
 `DesignTokenCheck.RunBrowser` fails when:
 

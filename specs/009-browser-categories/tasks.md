@@ -269,7 +269,7 @@ The Xvfb harness and capture scripts from 008 live in `/tmp/claude-0/`, outside 
   - **T034**: the three device tabs, captured in all four themes plus Studio Light with folds, read correctly. Headers match the Built-in header style, and the caret sits in the device caret column. Contact sheets were sent in the session.
   - **T035**: SPDX headers are on the three new files. No dependency, native or project-format change.
 
-- [ ] T036 Final gate: a full `scripts/build-linux.sh`. Only the known "Consort stress" failure is allowed (it also fails on the base). Then run `/speckit-converge`.
+- [ ] T036 *(moved to T049, after the chips rework)* Final gate: a full `scripts/build-linux.sh`. Only the known "Consort stress" failure is allowed (it also fails on the base). Then run `/speckit-converge`.
 
 ---
 
@@ -306,3 +306,72 @@ T003 DeviceCategories.cs
 - **The flat path is frozen.** T010 must not change today's branch of `RebuildVisible`, and T017(a) proves it.
 - **Device rows are shared objects** between the two views. Never copy a `BrowserItem` device to place it under a header, or drag, favourite and expand state would split.
 - **Header names come from `DeviceCategories` only.** Never retype a category string in the view or tests: use `DeviceCategories.Order` and `For`.
+
+---
+
+## Phase 8: Rework — category chips instead of headers (research R9)
+
+**Why**: after seeing the headers build (US1 and US3 above), the user chose Ableton-style
+chips. Spec FR-002–FR-006, US1–US3, the plan summary, the data model and the contract are
+revised. The category data, `RunBrowser`, the plug-in mapping and the test fakes stay.
+The header branch, folding and their checks are removed.
+
+**Independent test**: each device tab shows its chips. A chip lists exactly its category,
+and with no chip the list is today's.
+
+- [ ] T037 In `VM`, remove the headers build:
+  - `CategoryView`, the `RebuildCategoryView` branch and its call;
+  - the fold state (`_folded`, `SetFoldedCategories`, `FoldedCategories`, `CategoryFoldsChanged`, `ToggleCategoryFold`, `FoldedDeviceCount`, `_foldedDevices`) and the folded counts in `VisibleDeviceCounts`, which goes back to as before;
+  - `BrowserItem.IsFoldable` / `IsFolded`.
+
+  Keep `DeviceCategory`, `TabKey` and `TypeOf`.
+- [ ] T038 In `VM`, add the category filter (data-model § Category filter):
+  - `string[] _categoryFilter = { "", "", "" }`;
+  - `CategoryFilter(int tab)`;
+  - `SetCategoryFilter(int tab, string name)`, which rebuilds that tab;
+  - `CategoriesOn(int tab)`: `Order(TypeOf(tab))`, plus `Other` when any tree node's shelf is `Other`;
+  - in `RebuildVisible`'s device loop, `if (!PassesCategoryFilter(tab, node)) continue;` beside `PassesLibraryFilter`. The shelf is `DeviceCategory`, normalised to `Other` when the tab doesn't list it.
+- [ ] T039 [P] In `Application/Settings.cs`, replace `BrowserCategoryView` and `BrowserFoldedCategories` with `public bool BrowserCategoryChips { get; set; } = true;` (doc: "Show the category chips above the device lists (Synths, Dynamics…)").
+- [ ] T040 In `App/BrowserView.cs`, remove the headers build:
+  - restore `GroupRow` (no caret, no click, the original margins and columns);
+  - restore `VisibleCount` without folded devices;
+  - remove the fold load/save wiring, `CategoryView` application, and the "Group by category" ⋮ item.
+- [ ] T041 In `App/BrowserView.cs`, add the chip row:
+  - a `WrapPanel _categoryChips` in a host `Border` (same margins as `_chipsHost`), placed in `topStack` between `headerRow` and `_chipsHost`;
+  - `RebuildCategoryChips()` makes one `MakeChip(name, null, active, …)` per `_vm.CategoriesOn(_active)`; a click toggles `_vm.SetCategoryFilter(_active, active ? "" : name)`, then rebuilds the chips and calls `RefreshCounts()`;
+  - shown only on tabs 0–2 while `BrowserCategoryChips` is on; rebuilt on tab change and on `DevicesRebuilt`;
+  - a tooltip "<n> devices" per chip if cheap, else none.
+
+  The chip spacing matches the Files tab's `_sampleChips`.
+- [ ] T042 In `App/BrowserView.cs`, add `CheckItem("Category chips", …)` in ⋮ after "Show type tags". It saves `BrowserCategoryChips`; turning it off calls `SetCategoryFilter(t, "")` for tabs 0–2, then updates the row's visibility and `RefreshCounts()`. Apply the setting in `SetSettings` / `SetViewModel`. `EmptyMessage`'s `filtering` also counts a picked category.
+- [ ] T043 Rewrite `Smoke/BrowserCategoryTests.cs` for chips:
+  - **(a)** No pick: each tab equals today's list (`BUILT-IN` plus built-ins by `Name`).
+  - **(b)** `CategoriesOn` equals `Order` on each tab (no plug-ins means no Other).
+  - **(c)** For every category, picking it lists exactly its built-ins (`DeviceCategories.Of(type)`), and the union over the chips covers every device once.
+  - **(d)** Clearing the pick restores (a).
+  - **(e)** Picks are per tab.
+  - **(f)** Dynamics plus the search "Prism" gives only Prism; Dynamics plus Favorites with Compressor favourited gives only Compressor.
+  - **(g)** Expanding a device while picked shows its presets beneath it.
+  - **(h)** The `ForPlugin` table.
+  - **(i)** With `FakePluginCatalog`: Reverb & delay gives `BUILT-IN`, Chamber, Delay, Reverb, `PLUG-INS`, Ambience; `CategoriesOn(1)` ends with Other, which lists Mystery; Synths includes Ana; the MIDI tab has no Other.
+  - **(j)** `Deserialize<Settings>("{}").BrowserCategoryChips == true`.
+
+  Restore the `Program.cs` Glacier assertion to `BUILT-IN, Nota Aurora, Pads, Glacier Pad`.
+- [ ] T044 Build. Run `--browser` and the design checks (`check.sh`): all pass, `RunLabels` included (the new chip and ⋮ strings).
+- [ ] T045 Under Xvfb, run quickstart § 2 steps 1–6:
+  - pick and clear a chip;
+  - switch chips;
+  - a chip plus search and Favorites;
+  - the pick is kept per tab;
+  - ⋮ off clears and hides it and survives a relaunch;
+  - the minimum width wraps.
+
+  Compare the no-pick list with the T002 baseline (it must be pixel-identical below the chip row).
+- [ ] T046 Capture the three tabs in all four themes, with and without a chip picked, and make before/after contact sheets for the PR (quickstart § 2 step 7).
+- [ ] T047 [P] Docs:
+  - `DESIGN.md`: replace the "Browser categories" bullet with the chip row (its own wrapping row above Favorites/tags, `MakeChip`, one pick per tab, Other last when used);
+  - `FEATURES.md`: replace the "Device categories" bullet and the View options wording ("category chips");
+  - `CHANGELOG.md`: rewrite the Added entry for chips.
+- [ ] T048 [P] Re-check `.claude/skills/nota-instrument/SKILL.md`. The category step stays as written: it names `DeviceCategories.cs` and the browser check, not headers.
+- [ ] T049 Final gate: a full `scripts/build-linux.sh`. Only the known "Consort stress" failure is allowed. Then run `/speckit-converge`.
+

@@ -4,58 +4,53 @@
 
 ## Prerequisites
 
-- A Linux build environment as for 008: .NET 10 SDK, CMake toolchain and Xvfb for
-  screenshots.
+- A Linux build environment as for 008: .NET 10 SDK, CMake toolchain, and Xvfb plus a
+  PulseAudio null sink for screenshots.
 - `scripts/build-linux.sh` (or `scripts/build.sh` on macOS) builds native and managed
   code and runs the smoke test.
 
 ## 1. Automated checks
 
 ```bash
-scripts/build-linux.sh            # full gate: native + managed + smoke test
+scripts/build-linux.sh                                                  # full gate
+dotnet tests/Nota.SmokeTest/bin/Release/net10.0/Nota.SmokeTest.dll --browser   # categories alone
 ```
 
 Expect these to pass:
 
-- **`DesignTokenCheck.RunBrowser`**:
+- **`-- design: browser --`**:
   - every built-in is categorised;
   - no stale names;
   - 18 / 26 / 6;
-  - sentence-case names.
-- **The browser block in `Program.cs`**:
-  - the category order per tab;
-  - folding hides rows but not counts;
-  - a search inside a folded category shows the hit, and clearing it restores the fold;
-  - favourites float within a category;
-  - with a fake plug-in catalogue: a VST3 `Fx/Reverb` lands in Reverb & delay after the
-    built-ins (Group by source on) or interleaved by short name (off), and an `Effect`
-    (AU) or empty category lands in Other, last;
-  - `CategoryView = false` gives today's exact sequence (Built-in header first).
-- **The existing browser search assertion**, updated so its first header is `Synths`
-  instead of `BUILT-IN`.
+  - sentence case.
+- **`-- browser: device categories --`**:
+  - with no chip picked, each tab is today's list exactly;
+  - each category's chip lists exactly its devices, and every device is in one;
+  - clearing a chip restores the full list;
+  - picks are per tab;
+  - the chip stacks with search and with the Favorites chip;
+  - with fake plug-ins, Reverb & delay lists the built-ins and then the VST3 reverb under
+    Plug-ins;
+  - an AU `Effect` makes an Other chip appear and lists under it;
+  - the MIDI tab has no Other chip;
+  - an existing `settings.json` has the chips on.
 
 ## 2. Manual / screenshot checks (Xvfb, all four themes)
 
-1. Start with a fresh `HOME` and open the Audio effects tab. Expect the headers EQ &
-   filter … Racks, each with a count and an open caret, and every device under exactly
-   one of them.
-2. Fold Dynamics and Modulation. Their rows disappear, and the headers keep their counts.
-   Switch to Instruments and back: they're still folded. Quit and relaunch: still folded.
-3. Type "comp" in the search. Compressor shows under an open Dynamics header with no caret.
-   Clear the search: Dynamics is folded again.
-4. Open ⋮ → untick "Group by category". The flat list shows the Built-in header and the
-   alphabetical devices, exactly as before 009. Relaunch: it's still off. Tick it again.
-5. Instruments tab: Synths, Keys & physical, Drums, Samplers, Racks. MIDI effects tab:
-   Generate, Shape.
-6. Double-click, drag onto a track, expand presets, favourite and tag a device inside a
-   category. Each behaves as in the flat view.
-7. Narrow the browser to its minimum width. The header captions truncate without
-   overlapping.
-8. Capture the device tabs in Studio Dark, Studio Light and the two other themes. The
-   headers match the Built-in header style.
+1. Fresh `HOME`, Audio effects tab: the 8 chips appear above Favorites, none picked, and
+   the full list shows.
+2. Pick Reverb & delay: only Chamber, Delay and Reverb show, and the chip is engaged.
+   Click it again to get the full list back. Pick Dynamics, then Modulation: the list
+   switches.
+3. With Dynamics picked, type "Prism": only Prism. Clear the search, favourite Compressor
+   and turn on Favorites: only Compressor.
+4. Switch to Instruments (unfiltered) and back: Dynamics is still picked.
+5. ⋮ → untick "Category chips": the row hides and the full list returns. Relaunch: still
+   off. Tick it again.
+6. Narrow the browser to its minimum: the chips wrap onto more lines and nothing overlaps.
+7. Capture the three tabs in all four themes, with and without a chip picked.
 
 ## 3. Plug-ins (macOS, optional)
 
-With at least one VST3 effect installed, scan the plug-ins (Settings → Plug-ins). The
-effect appears in its category with its `VST3 · Vendor` tag. An AU-only effect appears
-under Other, last (a known limitation, research R2).
+Scan plug-ins (Settings → Plug-ins). A VST3 reverb appears under Reverb & delay. An
+AU-only effect sits under the Other chip (a known limitation, research R2).

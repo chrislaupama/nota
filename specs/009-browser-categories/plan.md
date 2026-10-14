@@ -6,35 +6,35 @@
 
 ## Summary
 
-The Instruments, Audio effects and MIDI effects tabs become lists grouped by category, and
-this is on by default. Each category is a foldable section header in today's group-header
-style. The work splits five ways:
+> **Revised (R9):** the first build used foldable category headers. After seeing it, the
+> user chose Ableton-style **category chips** instead. This summary describes the chips
+> design; R3–R6 in research.md are kept for history.
 
-1. **Categories (US1)**: a new pure `DeviceCategories` class in `Nota.Application` holds:
-   - the confirmed category lists (Instruments 5, Audio effects 8, MIDI effects 2) with
-     their built-in members;
-   - a fallback, `Other`;
-   - a plug-in mapping from the category a plug-in reports (VST3 sub-categories; AU type
-     names map to Other) (R1, R2).
+The Instruments, Audio effects and MIDI effects tabs get a row of category chips above the
+list. Picking a chip narrows the list to that category; it is on by default. The work
+splits five ways:
 
-   `BrowserViewModel.RebuildVisible` gains a category branch. It orders devices by
-   category, then source, then favourite, then short name, and emits one header per
-   non-empty category. Today's flat branch stays untouched (R3).
-2. **Off switch (US2)**: "Group by category" in the ⋮ menu, persisted as
-   `Settings.BrowserCategoryView` (default true, which also covers existing users) (R5).
-3. **Folding (US3)**:
-   - headers get a caret and toggle on click;
-   - folds are kept per tab in `Settings.BrowserFoldedCategories`;
-   - while a search is active, folds are ignored and left untouched (R4);
-   - the status-line counts include folded devices (R6).
-4. **Plug-ins (US4)**: each plug-in row gets its category at rebuild. Inside a category,
-   built-ins come before plug-ins when "Group by source" is on; otherwise they interleave
-   by short name (R2, R3).
+1. **Categories** (unchanged from the first build): a pure `DeviceCategories` class in
+   `Nota.Application` holds:
+   - the confirmed lists (Instruments 5, Audio effects 8, MIDI effects 2) with their
+     built-in members;
+   - the `Other` fallback;
+   - the plug-in mapping (VST3 sub-categories; AU type names map to Other) (R1, R2).
+
+   Each device row carries its category.
+2. **Chips (US1)**: `BrowserViewModel` gains a per-tab category filter applied in the
+   existing device loop, next to the favourite/tag filter, plus `CategoriesOn(tab)`.
+   `BrowserView` gains a wrapping chip row between the search row and the Favorites/tags
+   row, built with the existing `MakeChip`. One pick per tab: click again to clear (R9).
+3. **Off switch (US2)**: "Category chips" in ⋮, persisted as
+   `Settings.BrowserCategoryChips` (default true). Turning it off clears the picks.
+4. **Combining (US3) and plug-ins (US4)**: the chip stacks with search, Favorites and tags
+   for free (all of them filter the same loop). Plug-ins carry their mapped category, and
+   the Other chip appears only when something maps there.
 5. **Guard and docs**:
-   - a new `DesignTokenCheck.RunBrowser` (every built-in categorised, no stale names,
-     18 / 26 / 6);
-   - behavioural smoke checks with a fake plug-in catalogue (R7);
-   - CHANGELOG, FEATURES.md, DESIGN.md and the nota-instrument skill (R8).
+   - `DesignTokenCheck.RunBrowser` (unchanged);
+   - behavioural checks in `BrowserCategoryTests` (`--browser`);
+   - CHANGELOG, FEATURES.md, DESIGN.md and the nota-instrument skill.
 
 It is UI and settings only: no engine, C ABI, project-format or shortcut change.
 
@@ -54,18 +54,17 @@ It is UI and settings only: no engine, C ABI, project-format or shortcut change.
 
 **Primary Dependencies**: Avalonia 12.0.3 (existing). No new dependency.
 
-**Storage**: `settings.json` gains `BrowserCategoryView` (bool, default true) and
-`BrowserFoldedCategories` (list of `tab:name` keys). No project-format change.
+**Storage**: `settings.json` gains `BrowserCategoryChips` (bool, default true). The picked
+chip is not saved. No project-format change.
 
 **Audio-Thread Impact**: None. This is a UI-thread list projection; nothing crosses the
 C ABI.
 
 **Testing**: `tests/Nota.SmokeTest`:
 - **New**: `DesignTokenCheck.Browser.cs` (`RunBrowser`, wired into `Program.cs`).
-- **Behavioural checks** in the existing browser block of `Program.cs`, with a new
-  `FakePluginCatalog` in `BrowserTestSupport.cs`.
-- **Updated**: the one existing assertion whose first header changes from `BUILT-IN` to
-  `Synths`.
+- **Behavioural checks** in `BrowserCategoryTests.cs`, run in sequence and alone with
+  `--browser`. They use `FakePluginCatalog` and `FakeBrowserLibrary` from
+  `BrowserTestSupport.cs`.
 - **Screenshots**: the device tabs under Xvfb in all four themes.
 
 **Target Platform**: macOS 13+, Windows 10+, Linux, as today.
@@ -77,7 +76,7 @@ with a multi-key sort is negligible next to today's rebuild. The palette is unaf
 because it reads the unchanged trees.
 
 **Constraints**:
-- The flat view must reproduce today's sequence exactly (SC-003).
+- With no chip picked, the list must be today's sequence exactly (SC-003).
 - No new colour, radius or icon style (FR-008).
 - Device rows, preset expansion, drag, preview, favourites and tags are unchanged
   (FR-007, FR-010).
@@ -101,8 +100,8 @@ because it reads the unchanged trees.
 | VII. Spec-first | ✅ | Spec plus 5 clarifications; plan now, tasks next. |
 | VIII. Safety rules not weakened | ✅ | Checks only get stricter (a new guard). |
 
-**Post-design re-check**: unchanged. The design adds no state beyond two settings keys
-and keeps the flat path byte-for-byte.
+**Post-design re-check**: unchanged. The chips design adds one settings key and one
+in-memory filter, and leaves the list code path as it was when no chip is picked.
 
 ## Project Structure
 
@@ -128,17 +127,17 @@ src/managed/
 │   ├── Palette/DeviceCategories.cs        # NEW: category lists, For(), ForPlugin(), Order() (R1, R2)
 │   └── Settings.cs                        # + BrowserCategoryView, BrowserFoldedCategories (R5)
 ├── Nota.Presentation/ViewModels/
-│   └── BrowserViewModel.cs                # BrowserItem.DeviceCategory/IsFoldable/IsFolded;
-│                                          # CategoryView, folds, category branch in RebuildVisible,
-│                                          # pre-fold device counts (R3, R4, R6)
+│   └── BrowserViewModel.cs                # BrowserItem.DeviceCategory; per-tab category filter,
+│                                          # CategoriesOn (R9)
 └── Nota.App/
-    └── BrowserView.cs                     # GroupRow caret + click-to-fold + accessible name;
-                                           # ⋮ "Group by category"; settings load/save (R4, R5)
+    └── BrowserView.cs                     # category chip row (WrapPanel, MakeChip);
+                                           # ⋮ "Category chips"; settings load/save (R9)
 
 tests/Nota.SmokeTest/
 ├── DesignTokenCheck.Browser.cs            # NEW: RunBrowser (R7)
-├── BrowserTestSupport.cs                  # + FakePluginCatalog
-└── Program.cs                             # wire RunBrowser; category behaviour checks; update BUILT-IN expectation
+├── BrowserCategoryTests.cs                # NEW: chip filter behaviour (--browser)
+├── BrowserTestSupport.cs                  # + FakePluginCatalog, FakeBrowserLibrary
+└── Program.cs                             # wire RunBrowser and BrowserCategoryTests
 
 DESIGN.md · CHANGELOG.md · FEATURES.md · .claude/skills/nota-instrument/SKILL.md
 ```

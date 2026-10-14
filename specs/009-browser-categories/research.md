@@ -108,7 +108,7 @@ A plug-in whose tokens are all skipped lands in `Other`.
 - Guessing a category from the plug-in's name is out of scope (FR-005 says "mapped from
   the category they report").
 
-## R3: Ordering inside the category view
+## R3: Ordering inside the category view *(superseded by R9)*
 
 **Decision**: the category view is a new branch in `RebuildVisible`. Today's flat path stays
 as it is, so SC-003 ("restores today's flat list exactly") holds by construction. In the
@@ -132,7 +132,7 @@ Each category with at least one visible device gets a header carrying that count
 **Alternative rejected**: favourites first across sources within a category. That breaks
 the FR-005 rule that built-ins come before plug-ins.
 
-## R4: Category headers and folding
+## R4: Category headers and folding *(superseded by R9)*
 
 **Decision**:
 
@@ -165,7 +165,7 @@ the FR-005 rule that built-ins come before plug-ins.
 - Foldable `Folder` items: device rows would gain a depth and indent, which changes every
   row's look.
 
-## R5: Settings and defaults
+## R5: Settings and defaults *(revised by R9)*
 
 **Decision**: two properties are added to `Settings`:
 
@@ -182,7 +182,7 @@ How they behave:
 - `BrowserViewModel.CategoryView` defaults to `true` as well, so a view model built without
   settings (the smoke test) matches a fresh profile.
 
-## R6: Status-line counts
+## R6: Status-line counts *(superseded by R9)*
 
 **Decision**: `VisibleDeviceCounts` counts the devices that passed search and filter
 *before* folding, so folding a category doesn't change "26 audio effects · 26 built-in".
@@ -230,3 +230,48 @@ Behavioural checks go in `Program.cs` next to the existing browser block:
 - The `.claude/skills/nota-instrument/SKILL.md` registration checklist: "add the device to
   its category in `DeviceCategories`" (the check fails otherwise).
 - No shortcut changes, so `nota-shortcuts` is not needed.
+
+## R9: Category chips instead of headers (revision)
+
+The headers version (R3–R6) was built and shown. The user then chose Ableton-style chips
+instead: a chip narrows the list to one category, and there are no headers or folding.
+
+**Decision**:
+
+- **Filter, not a layout**: the category is one more filter in `RebuildVisible`'s existing
+  device loop, next to `PassesLibraryFilter`. The view model holds `_categoryFilter[3]`
+  (one category name per device tab, `""` = none) and exposes:
+  - `CategoryFilter(tab)` and `SetCategoryFilter(tab, name)`;
+  - `CategoriesOn(tab)`: the tab's fixed order, plus `Other` when any device on the tab
+    maps there.
+
+  `BrowserItem.DeviceCategory` (R1/R2) stays. A device's shelf is its `DeviceCategory`,
+  normalised to `Other` when its tab doesn't list that name. With no chip picked, the
+  loop is exactly today's, so SC-003 holds by construction. "Group by source" and
+  "Favorites first" order the narrowed list as before, so no ordering code is needed.
+- **Chips get their own row**: today's Favorites/tags row is a single-line `ChipStrip`
+  whose extra chips go into a "+N" menu, which would hide most of the 8 effect categories
+  at the default width. The category chips therefore get their own `WrapPanel` row (like
+  the Files tab's sample chips), between the search row and the Favorites/tags row. They
+  are shown on the three device tabs while "Category chips" is on, and use the same
+  `MakeChip` (20 tall pill, accent wash when engaged).
+- **Pick behaviour**: one chip at a time per tab. A click picks it, a click on the picked
+  chip clears it, and a click on another switches. The pick survives tab switches but not
+  a restart, so the list never opens mysteriously narrowed.
+- **Settings**:
+  - `BrowserCategoryView` and `BrowserFoldedCategories` (both unreleased) are replaced by
+    `BrowserCategoryChips` (bool, default `true`);
+  - ⋮ gains "Category chips" where "Group by category" sat;
+  - turning it off clears all three tabs' picks.
+- **Empty state**: a picked chip counts as filtering, so an empty result says "No
+  matches", not "No audio effects yet".
+- **Removed with the headers**: the category branch, folds, folded counts, the header
+  caret and click, and their tests.
+
+**Alternatives rejected**:
+
+- Category chips in the existing single-line strip: most would sit behind "+N".
+- Several chips at once (OR): fine later; one-at-a-time matches the Favorites/tag chips
+  and keeps the narrowed list's meaning obvious.
+- Remembering the pick across restarts: a hidden narrowing on launch reads as missing
+  devices.

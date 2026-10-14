@@ -1,6 +1,6 @@
 # Data model: Device categories in the browser
 
-**Feature**: [spec.md](spec.md) · **Research**: [research.md](research.md)
+**Feature**: [spec.md](spec.md) · **Research**: [research.md](research.md) (R1, R2, R9)
 
 These are in-memory and settings-level entities only. Nothing changes in the project
 format, the C ABI or the engine.
@@ -9,83 +9,57 @@ format, the C ABI or the engine.
 
 | Field | Type | Rule |
 |---|---|---|
-| `Name` | string | Sentence case, unique within its tab. `NotaText.Label(Name) == Name`. |
-| `Type` | `BuiltinDeviceType` | The tab it belongs to: Instrument, AudioEffect or MidiEffect. |
-| `Position` | int | Its order on the tab. `Other` is always last (`int.MaxValue`). |
+| `Name` | string | Sentence case, unique within its tab. |
 | `Builtins` | string[] | The catalogue names (`"Nota Reverb"`) of its built-in members. Must not be empty. |
 
-The fixed contents come from the spec's Assumptions, in this order:
+Tab order (the chip order):
 
 - **Instrument**: Synths · Keys & physical · Drums · Samplers · Racks
 - **AudioEffect**: EQ & filter · Dynamics · Reverb & delay · Modulation · Distortion ·
   Pitch & time · Utility · Racks
 - **MidiEffect**: Generate · Shape
 
-`Other` is not a declared category. It is the fallback name a plug-in (or an unmapped
-built-in) gets, and it sorts last.
-
-**Invariants** (checked by `DesignTokenCheck.RunBrowser`, FR-009 / SC-001):
-
-- Every `BuiltinDeviceCatalog.All` entry appears in exactly one category of its own
-  `Type`.
-- Every name listed in `Builtins` exists in the catalogue with that `Type` (no stale
-  entries).
-- Members per tab add up to 18 / 26 / 6.
+`Other` is the fallback for a plug-in (or an unmapped built-in). Its chip comes last and
+only exists when it has devices.
 
 **Operations**:
 
-- `For(BuiltinDevice d) → string`: the device's category, or `Other`.
-- `ForPlugin(bool instrument, string reported) → string`: maps the reported category using
-  the R2 token table, or returns `Other`.
-- `Order(BuiltinDeviceType t) → IReadOnlyList<string>`: the category names in tab order.
-- `Position(BuiltinDeviceType t, string name) → int`: the index in `Order(t)`, or
-  `int.MaxValue` for `Other` or an unknown name.
+- `Of(type)` and `Order(type)`: the tab's categories in order.
+- `Position(type, name)`: the index, or `int.MaxValue`.
+- `For(BuiltinDevice)`: the device's category, or `Other`.
+- `ForPlugin(instrument, reported)`: the R2 token table, or `Other`.
 
-## BrowserItem (existing, `Nota.Presentation/ViewModels/BrowserViewModel.cs`)
+**Invariants** (checked by `DesignTokenCheck.RunBrowser`, FR-009 / SC-001):
 
-New members:
+- every built-in device is in exactly one category of its own type;
+- no stale names;
+- no empty category;
+- sentence-case names;
+- 18 / 26 / 6.
+
+## BrowserItem (existing)
 
 | Member | Type | Rule |
 |---|---|---|
-| `DeviceCategory` | string (init) | Set on top-level device rows in `Rebuild()`. Built-ins use `DeviceCategories.For`; plug-ins use `ForPlugin(isInstrument, Category)`. Empty on presets, folders and groups. |
-| `IsFoldable` | bool (init) | True only on category header rows (`Kind == Group`), and false on them while a search is active (no caret, clicks ignored). |
-| `IsFolded` | bool (init) | For a category header: whether it is drawn folded. Always false while a search is active. |
+| `DeviceCategory` | string (init) | Set on top-level device rows in `Rebuild()`: built-ins use `DeviceCategories.For`, plug-ins use `ForPlugin(isInstrument, Category)`. |
 
-How a category header row is set up:
+## Category filter (`BrowserViewModel`)
 
-- `Kind = Group`;
-- `Name` = the category name;
-- `GroupCount` = the number of matching devices in that category, folded or not;
-- `Path = "cat:<tabKey>:<name>"`, where `tabKey` is `instr`, `fx` or `midi`.
+| Member | Type | Notes |
+|---|---|---|
+| `_categoryFilter` | `string[3]` | Per device tab (0 Instruments, 1 Audio effects, 2 MIDI effects); `""` means no chip. In memory only. |
+| `CategoryFilter(int tab)` | string | The picked category, or `""`. |
+| `SetCategoryFilter(int tab, string name)` | method | Sets or clears (`""`) the tab's pick and rebuilds that tab. |
+| `CategoriesOn(int tab)` | `IReadOnlyList<string>` | The tab's order, plus `Other` when a device on the tab maps there. |
 
-The existing `Category` (the raw string the plug-in reports) is unchanged and still
-feeds the mapping.
+A device passes when the tab's filter is `""` or its shelf equals the filter. The shelf
+is `DeviceCategory`, or `Other` when the tab doesn't list it.
 
-## Category view state (`BrowserViewModel`)
-
-| Member | Type | Default | Notes |
-|---|---|---|---|
-| `CategoryView` | bool | `true` | The setter rebuilds the device tabs. It mirrors `Settings.BrowserCategoryView`. |
-| `_folded` | `HashSet<string>` | empty | Keys are `<tabKey>:<name>`. `SetFoldedCategories(IEnumerable<string>)` loads them, and `FoldedCategories` exposes them for saving. |
-| `ToggleCategoryFold(BrowserItem header)` | method | — | Does nothing unless `IsFoldable` is set and the tab's query is empty. It flips the key, rebuilds that tab and raises `CategoryFoldsChanged`. |
-| `_deviceCounts[3]` | `(int builtin, int plugins)` | — | Recorded before folding is applied. `VisibleDeviceCounts` returns them (R6). |
-
-**State transitions** (one tab):
-
-```text
-open ──click header──▶ folded ──click header──▶ open
-  │                       │
-  └──query typed──▶ searching (all matching categories open, caret hidden, clicks ignored)
-                          │
-              query cleared ──▶ back to the saved state (open/folded as before)
-```
-
-## Settings (existing, `Nota.Application/Settings.cs`)
+## Settings (`Nota.Application/Settings.cs`)
 
 | Property | Type | Default | Notes |
 |---|---|---|---|
-| `BrowserCategoryView` | bool | `true` | New. A missing key in an older `settings.json` resolves to `true` (FR-003). |
-| `BrowserFoldedCategories` | `List<string>` | empty | New. Keys are `instr:Synths`, `fx:Dynamics` and so on. Unknown keys are ignored when loaded. |
+| `BrowserCategoryChips` | bool | `true` | Shows the category chip row. A missing key in an older `settings.json` resolves to `true` (FR-003). |
 
-There are no migrations. The existing `BrowserGroupBySource` and `BrowserFavoritesFirst`
-keep their meaning: inside a category, the source run comes first, then favourites.
+The headers-version keys `BrowserCategoryView` and `BrowserFoldedCategories` are removed.
+They were never released.
