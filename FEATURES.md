@@ -811,16 +811,15 @@ and user presets, automation, persistence and cloning.
   category → device → preset), **Projects**, **Map** (MIDI Learn mappings) and **History**
   (the open project's versions). A hairline
   separates the device tabs from the library tabs, and the active one carries an orange edge.
-- **Device categories**: the device tabs are grouped by what a device does — Synths /
+- **Category chips**: above each device tab's list, one chip per kind of device — Synths /
   Keys & physical / Drums / Samplers / Racks; EQ & filter / Dynamics / Reverb & delay /
-  Modulation / Distortion / Pitch & time / Utility / Racks; Generate / Shape — each header
-  with a count. A click on a header folds it away (folds are remembered per tab); a search
-  shows matches inside folded categories. Installed plug-ins join the same categories from
-  the category they report, under **Other** when Nota doesn't recognise it; inside a
-  category Nota's own devices come first while "group by source" is on.
-- **A compact index**: single-line rows; with categories off, sectioned into **Built-in**
-  and **Plug-ins** with counts, so it is clear where Nota's own devices end and the scanned
-  plug-ins begin. Built-in devices show their short name ("Aurora" — search still matches
+  Modulation / Distortion / Pitch & time / Utility / Racks; Generate / Shape. A click
+  narrows the list to that category, and a second click shows everything again. Each tab
+  keeps its own pick, and it combines with search and the Favorites and tag chips.
+  Installed plug-ins join the same categories from the category they report, under an
+  **Other** chip when Nota doesn't recognise it.
+- **A compact index**: single-line rows, sectioned into **Built-in** and **Plug-ins** with
+  counts, so it is clear where Nota's own devices end and the scanned plug-ins begin. Built-in devices show their short name ("Aurora" — search still matches
   "Nota Aurora"), and the device type sits at the right edge as a quiet tag (a plug-in's
   tag names its format and vendor, which tells the AU and VST3 builds of one plug-in
   apart). The name always wins the room: the tag gives way rather than truncating it.
@@ -829,7 +828,7 @@ and user presets, automation, persistence and cloning.
   Ambient / Sidechain … for effects, Triads / Sevenths, Grooves / Ratchets … for MIDI
   effects — with its Init loose on top. Search opens the folders around the hits, and a
   folder name ("Mastering") lists that folder in every device.
-- **View options** (the ⋮ button beside the search box): show type tags, group by category,
+- **View options** (the ⋮ button beside the search box): show type tags, category chips,
   group by source, favourites first — each remembered across sessions — plus the tag editor.
 - A **status line** counts what the tab is showing (`13 built-in · 4 plug-ins`), and the
   search box counts the matches.

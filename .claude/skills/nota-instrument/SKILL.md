@@ -69,7 +69,7 @@ lighter path — see the end of this section.**
 (the one device list the browser and the command palette read: name, `Kind = N`, sub text **and
 a semantic descriptor** — role, aliases, character, sound/source, genre, a one-line
 description; the palette smoke test `--palette` fails without a role and aliases), and its
-browser category in `Nota.Application/Palette/DeviceCategories.cs` (the shelf it is listed
+browser category in `Nota.Application/Palette/DeviceCategories.cs` (the category chip it is listed
 under — Synths, Dynamics…; the `-- design: browser --` check fails until it has one);
 `DeviceInsertService.CreateInstrumentTrack` in Nota.Presentation (`N => Engine.Add…` — the
 one place drag & drop, the browser and the palette create the track);

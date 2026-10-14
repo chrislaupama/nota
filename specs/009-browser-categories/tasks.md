@@ -379,10 +379,10 @@ and with no chip the list is today's.
   - **Minimum width**: one chip per line, no overlap.
   - **Captures**: four themes, unpicked and picked. Contact sheets were sent in the session.
 
-- [ ] T047 [P] Docs:
+- [X] T047 [P] Docs:
   - `DESIGN.md`: replace the "Browser categories" bullet with the chip row (its own wrapping row above Favorites/tags, `MakeChip`, one pick per tab, Other last when used);
   - `FEATURES.md`: replace the "Device categories" bullet and the View options wording ("category chips");
   - `CHANGELOG.md`: rewrite the Added entry for chips.
-- [ ] T048 [P] Re-check `.claude/skills/nota-instrument/SKILL.md`. The category step stays as written: it names `DeviceCategories.cs` and the browser check, not headers.
+- [X] T048 [P] Re-check `.claude/skills/nota-instrument/SKILL.md`. The category step stays as written: it names `DeviceCategories.cs` and the browser check, not headers.
 - [ ] T049 Final gate: a full `scripts/build-linux.sh`. Only the known "Consort stress" failure is allowed. Then run `/speckit-converge`.
 

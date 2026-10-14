@@ -30,13 +30,13 @@ Entry categories: `Added`, `Changed`, `Fixed`, `Removed`.
   colours its own shades — your projects are untouched.
 - **Follow system, with a theme for each mode:** choose a theme for when your computer is
   in dark mode and one for light mode, and Nota switches between them with the OS.
-- **Device categories in the browser:** the Instruments, Audio effects and MIDI effects
-  tabs are now grouped by what a device does — Synths, Drums, Samplers…; EQ & filter,
-  Dynamics, Reverb & delay, Modulation…; Generate and Shape — instead of one long list.
-  Click a category's header to fold it away; folds are remembered. Installed plug-ins join
-  the same categories from the category they report (anything unrecognised under Other),
-  and a search shows matches inside folded categories too. "Group by category" in the ⋮
-  menu brings back the plain list.
+- **Category chips in the browser:** the Instruments, Audio effects and MIDI effects tabs
+  have a row of category chips above the list — Synths, Drums, Samplers…; EQ & filter,
+  Dynamics, Reverb & delay, Modulation…; Generate and Shape. Click one to see only that
+  kind of device, and click it again to see everything. Each tab remembers its pick while
+  you switch tabs, and the chips combine with search, Favorites and tags. Installed
+  plug-ins join the same categories from the category they report (anything unrecognised
+  under Other). "Category chips" in the ⋮ menu hides the row.
 
 ### Changed
 - **A new look, after Saine:** the whole app moves to a neutral grey studio with one orange

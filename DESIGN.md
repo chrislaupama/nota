@@ -650,13 +650,13 @@ Every region is **docked**: radius 0, no gutter, separated by 1 px seams (the wi
   hover raised hover, selected raised hover with a 2 px accent tick. A built-in device's
   browser row shows its short name ("Aurora", not "Nota Aurora" — search still matches the
   full name); the type tag on the right is `TextFaint` mono 10.
-- **Browser categories** — the Instruments, Audio effects and MIDI effects tabs group their
-  devices under category headers by default ("Group by category" in ⋮ turns it off). A
-  category header is the group header (`GroupLabel` · hairline · mono count) with a 12 px
-  disclosure caret in the device rows' caret column and the caption on their name column;
-  a click anywhere on it folds it, the count staying. Plug-ins join by the category they
-  report, `Other` last. A search shows every hit with folds ignored and carets hidden. The
-  categories live in `DeviceCategories.cs`, in sentence case.
+- **Category chips** — the Instruments, Audio effects and MIDI effects tabs carry a row of
+  category chips (the filter chip: 20 tall pill, sentence case) between the search row and
+  the Favorites / tags row. It wraps rather than overflowing into "+N", because every
+  category should stay in sight. One chip is picked per tab, and a picked chip narrows the
+  list, stacking with search and the Favorites / tag chip. `Other` comes last and appears
+  only when an unrecognised plug-in lands there. "Category chips" in ⋮ hides the row. The
+  categories live in `DeviceCategories.cs`.
 - **Mixer strips** are panel-tone columns on seams, each with a 3 px top bar in the track
   colour (muted grey for master).
 - **Arrangement** (geometry unchanged): track rows 64 (the header carries every control),
