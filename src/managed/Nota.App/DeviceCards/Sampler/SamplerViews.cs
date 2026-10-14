@@ -111,7 +111,7 @@ internal sealed class SamplerWaveView : Control
     protected override void OnPointerReleased(PointerReleasedEventArgs e)
     {
         if (_drag < 0) return;
-        int h = _drag; _drag = -1;
+        int h = _drag; _drag = -1; InvalidateVisual();
         e.Pointer.Capture(null);
         DragEnd?.Invoke(h);
     }
@@ -355,7 +355,7 @@ internal sealed class SamplerEnvView : Control
         if (_drag < 0) return;
         DragEnd?.Invoke(Ids[_drag]);
         if (_drag == 1) DragEnd?.Invoke("sustain");
-        _drag = -1;
+        _drag = -1; InvalidateVisual();
         e.Pointer.Capture(null);
     }
 
@@ -474,7 +474,7 @@ internal sealed class SamplerFilterView : Control
     protected override void OnPointerReleased(PointerReleasedEventArgs e)
     {
         if (!_drag) return;
-        _drag = false;
+        _drag = false; InvalidateVisual();
         e.Pointer.Capture(null);
         DragEnd?.Invoke();
     }

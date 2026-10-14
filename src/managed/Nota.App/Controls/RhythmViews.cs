@@ -90,7 +90,7 @@ internal sealed class RhythmHitView : Control
     protected override void OnPointerReleased(PointerReleasedEventArgs e)
     {
         if (!_dragging) return;
-        _dragging = false;
+        _dragging = false; InvalidateVisual();
         e.Pointer.Capture(null);
         DragEnd?.Invoke();
     }
@@ -227,7 +227,7 @@ internal sealed class RhythmSampleView : Control
     protected override void OnPointerReleased(PointerReleasedEventArgs e)
     {
         if (_drag < 0) return;
-        int d = _drag; _drag = -1;
+        int d = _drag; _drag = -1; InvalidateVisual();
         e.Pointer.Capture(null);
         DragEnd?.Invoke(d);
     }
