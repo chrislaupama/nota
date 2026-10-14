@@ -8,6 +8,13 @@
 
 **Input**: User description: "UI polish pass after the Studio restyle and colour themes, driven by a screenshot critique of 11 screens: (1) fix real layout defects — a newly added track overlapping the return tracks in the arrangement (to confirm), the Session toolbar overflowing and the inspector clipping track column headers, the Modular view showing an empty Tracks list while the project has tracks; (2) one treatment for in-window overlays (mixer, export dialog) with a header, edge and popover shadow, modelled on the command palette; (3) finish the sentence-case label rule — remove leftover all-caps and Title Case and extend the automated check; (4) one device-card header anatomy across all cards; (5) one icon set — inline icon paths moved into the shared Glyph set; (6) lighter arrangement chrome — fewer header rows above tracks, quieter browser rows, slimmer add-device target, en dash for ranges. Features and behaviour unchanged."
 
+## Clarifications
+
+### Session 2026-10-14
+
+- Q: Should this pass also settle the two open questions from 006 — device-card sections divided by rules instead of framed boxes, and soft menu shadows? → A: Sections divided by rules, yes; menu shadows no (later, separately).
+- User addition (same session): replace the Arrangement / Session / Modular word buttons with icons, as part of the icon-set work.
+
 ## Nota Context *(fill in — drives plan and tasks)*
 
 **Feature area** *(pick the main one)*:
@@ -110,10 +117,12 @@ caps or Title Case. The automated check fails if one is reintroduced.
 
 ---
 
-### User Story 4 - Every device card has the same header (Priority: P2)
+### User Story 4 - Every device card has the same header and calmer sections (Priority: P2)
 
 Whatever device a producer adds, its card header has the same parts in the same places:
-power, name, preset stepper, and any badges. Their eye and hand learn one layout.
+power, name, preset stepper, and any badges. Their eye and hand learn one layout. Inside
+the card, sections sit on the card's own surface, separated by thin rules rather than
+each framed in its own box, as in Saine.
 
 **Why this priority**: Cards are where producers spend most of their time, and three
 different header layouts in one chain look accidental (F7).
@@ -129,16 +138,23 @@ side.
    size on every card.
 2. **Given** a device that has no power state or no presets, **When** its card shows,
    **Then** the missing part's slot is empty, and the other parts do not shift.
+3. **Given** any built-in card with several sections, **When** it shows, **Then** its
+   sections are divided by 1 px rules on the card surface, with no framed box around each
+   section. Section titles, contents and positions are unchanged, and graph windows keep
+   their own frame.
 
 ---
 
-### User Story 5 - One icon set (Priority: P3)
+### User Story 5 - One icon set, including the view switcher (Priority: P2)
 
 Every icon in the app comes from one set, drawn on one grid with one stroke weight, so
-icons in the rail, browser, Settings, palette and cards look like siblings.
+icons in the rail, browser, Settings, palette and cards look like siblings. The
+Arrangement / Session / Modular switcher in the transport row becomes three icon keys,
+freeing room in the transport.
 
-**Why this priority**: The difference is subtle on its own but adds to the feeling of
-polish. One set also makes swapping or extending icons later easy (F8).
+**Why this priority**: The view switcher is on screen all the time, and icon keys give
+the crowded transport row room to breathe. One set also makes swapping or extending icons
+later easy (F8). Raised from P3 at the user's request.
 
 **Independent Test**: Visit the left rail, browser tabs, Settings sidebar, command
 palette, history view and preview player and compare icon weight and size. The automated
@@ -150,6 +166,12 @@ check fails if an icon is drawn outside the shared set.
    one grid, and each looks the same as before in shape and meaning.
 2. **Given** a view that draws an icon outside the shared set, **When** the automated
    check runs, **Then** it fails and names the file.
+3. **Given** the transport row, **When** it shows, **Then** Arrangement, Session and
+   Modular are three icon keys in the same place and order, with the current view marked
+   as selected (accent fill, as today). Hovering a key shows its name and shortcut, and
+   screen readers announce the view name.
+4. **Given** the view keys, **When** the user clicks one or uses the existing shortcut,
+   **Then** the same view opens as before.
 
 ---
 
@@ -240,6 +262,13 @@ rows at a 1200 × 800 window.
   stroke weight, with no change in shape or meaning (F8).
 - **FR-011**: The automated design check MUST fail when a view draws an icon outside the
   shared set.
+- **FR-019**: The Arrangement / Session / Modular switcher MUST be three icon keys from
+  the shared set, in the same order and place, with the selected-key treatment for the
+  current view. Each key MUST have a tooltip with the view name and shortcut, and an
+  accessible name. Shortcuts and menu commands for switching views are unchanged.
+- **FR-020**: Built-in device-card sections MUST be divided by 1 px rules on the card
+  surface instead of framed boxes. Section titles, contents, positions and the card frame
+  are unchanged, and graph windows keep their own frame (resolves 006 T066).
 
 **Chrome (US6)**
 
@@ -269,7 +298,8 @@ rows at a 1200 × 800 window.
 - **Device-card header**: the strip at the top of a card, with fixed slots for power,
   name, preset stepper and badges.
 - **Icon**: a named shape in the shared set. It has one grid, one stroke weight, and a
-  filled or stroked style.
+  filled or stroked style. New in this feature: icons for Arrangement, Session and
+  Modular.
 
 ## Success Criteria *(mandatory)*
 
@@ -288,13 +318,18 @@ rows at a 1200 × 800 window.
   "the same family" on header, edge, shadow and close.
 - **SC-006**: Every feature in FEATURES.md is still reachable by the same path and
   shortcut.
+- **SC-007**: The view switcher takes at least 100 px less width in the transport row at
+  a 1200 × 800 window, and every view is still one click and one shortcut away.
 
 ## Assumptions
 
-- **Scope is the critique.** New features, new device layouts and engine work are out of
-  scope. The two open decisions from 006 are revisited only if the clarify step pulls
-  them in: device sections divided by rules instead of framed boxes (T066), and soft
-  shadows on menus, which would need menus drawn inside the window (T067).
+- **Scope is the critique plus the clarified additions.** That means rule-divided card
+  sections (006 T066) and icon view keys. New features, new device layouts and engine
+  work are out of scope. Soft menu shadows (006 T067) stay out: they need menus drawn
+  inside the window, which is a separate piece of work.
+- **View-key icons** are new drawings in the shared set (arrangement: horizontal lanes;
+  session: a clip grid; modular: connected nodes), at Saine's 16 px, 1.5 px monoline
+  spec. The final drawings are a plan and design decision.
 - **Sentence case** follows the existing Studio rule and acronym list. Proper nouns and
   product names stay capitalised ("Nota Auto Filter" keeps its capitals as a name).
 - **The browser's "Nota" prefix** is branding, not data. Removing it from each row is
