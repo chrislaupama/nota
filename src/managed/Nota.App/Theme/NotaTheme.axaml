@@ -888,15 +888,12 @@
     <Setter Property="FontWeight" Value="Normal"/>
     <Setter Property="Foreground" Value="{DynamicResource Brush.TextSecondary}"/>
   </Style>
-  <Style Selector="TextBlock.RowPrefix">
-    <Setter Property="FontSize" Value="11"/>
-    <Setter Property="Foreground" Value="{DynamicResource Brush.TextTertiary}"/>
-  </Style>
-  <!-- Row metadata on the right: mono, like every other measurement-ish value. -->
+  <!-- Row metadata on the right: mono, like every other measurement-ish value, and one ink
+       step under the name's tertiary neighbours so the names lead (T3.3 still holds). -->
   <Style Selector="TextBlock.RowTag">
     <Setter Property="FontFamily" Value="{StaticResource Font.Mono}"/>
     <Setter Property="FontSize" Value="10"/>
-    <Setter Property="Foreground" Value="{DynamicResource Brush.TextTertiary}"/>
+    <Setter Property="Foreground" Value="{DynamicResource Brush.TextFaint}"/>
   </Style>
   <Style Selector="ListBoxItem:selected TextBlock.RowTag">
     <Setter Property="Foreground" Value="{DynamicResource Brush.TextSecondary}"/>

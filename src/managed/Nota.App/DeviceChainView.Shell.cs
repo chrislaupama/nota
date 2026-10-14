@@ -171,8 +171,12 @@ public sealed partial class DeviceChainView
 
         // A card with a set width gets a fixed name column (a share of the width); one that
         // sizes to its content lets the name take what it needs.
-        string nameCol = double.IsNaN(s.Width) ? "Auto" : Math.Round(Math.Clamp(s.Width * 0.22, 56, 160)).ToString(System.Globalization.CultureInfo.InvariantCulture);
-        var headerGrid = new Grid { ColumnDefinitions = new ColumnDefinitions($"{nameCol},Auto,*,Auto"), ColumnSpacing = 8 };
+        var nameCol = double.IsNaN(s.Width) ? GridLength.Auto : new GridLength(Math.Round(Math.Clamp(s.Width * 0.22, 56, 160)));
+        var headerGrid = new Grid { ColumnSpacing = 8 };
+        headerGrid.ColumnDefinitions.Add(new ColumnDefinition(nameCol));
+        headerGrid.ColumnDefinitions.Add(new ColumnDefinition(GridLength.Auto));
+        headerGrid.ColumnDefinitions.Add(new ColumnDefinition(GridLength.Star));
+        headerGrid.ColumnDefinitions.Add(new ColumnDefinition(GridLength.Auto));
         headerGrid.Children.Add(name);
         Grid.SetColumn(badges, 2); headerGrid.Children.Add(badges);
         Grid.SetColumn(power, 3); headerGrid.Children.Add(power);

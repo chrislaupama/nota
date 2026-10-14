@@ -8,5 +8,3 @@
 # does a line that no longer matches anything.
 #
 # Format: path (from src/managed) <TAB> the literal exactly as written <TAB> # reason
-Nota.App/MixerView.cs	-12	# pre-008, fix in US6 (mixer scale)
-Nota.App/MixerView.cs	-48	# pre-008, fix in US6 (mixer scale)

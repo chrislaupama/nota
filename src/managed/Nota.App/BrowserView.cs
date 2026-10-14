@@ -4,8 +4,8 @@
 // M4.1-C / M7-4 + Phase 3 + the "compact index" refresh (mockup 1a): the left
 // browser, an island panel with a 40px icon rail (Instr / FX / MIDI / Files /
 // Preset / Proj / Map) down its left edge. Each tab shows one list of single-line
-// 24px rows, sectioned into BUILT-IN and PLUG-INS with counts; the "Nota" prefix
-// drops to tertiary ink so names scan on their distinctive word, and the device
+// 24px rows, sectioned into Built-in and Plug-ins with counts; a built-in row shows
+// its distinctive word without the "Nota" family name, and the device
 // type sits at the right edge as a quiet tag. A search box filters the active list
 // live, a ⋮ button holds the view options, chips filter by favorite/tag, a status
 // line counts what is on screen, and a pinned preview footer auditions the selection — a
@@ -759,10 +759,8 @@ public sealed class BrowserView : UserControl
             icon = RailIcon(GlyphKind.Downloads, 13, "Brush.TextSecondary");
         }
 
-        // "Nota" drops to tertiary ink so the eye lands on the distinctive word.
-        var prefix = item.Prefix.Length > 0
-            ? new TextBlock { Text = item.Prefix, Classes = { "RowPrefix" } }
-            : null;
+        // A built-in row shows its distinctive word only ("Aurora", not "Nota Aurora"): the
+        // family name would repeat down the whole list. Search still matches the full name.
         var name = new TextBlock
         {
             Text = item.Prefix.Length > 0 ? item.ShortName : item.Name,
@@ -786,7 +784,6 @@ public sealed class BrowserView : UserControl
             Edge = edge,
             Disclosure = disclosure,
             Icon = icon,
-            Prefix = prefix,
             Name2 = name,
             Markers = BuildRowMarkers(item),   // brass ★ + tag colour dots
             Tag2 = tagText,
@@ -840,7 +837,6 @@ public sealed class BrowserView : UserControl
         public Border Edge { get; init; } = null!;
         public Control Disclosure { get; init; } = null!;
         public Control? Icon { get; init; }
-        public TextBlock? Prefix { get; init; }
         public TextBlock Name2 { get; init; } = null!;
         public Control? Markers { get; init; }
         public TextBlock? Tag2 { get; init; }
@@ -860,7 +856,6 @@ public sealed class BrowserView : UserControl
             Children.Add(Edge);
             Children.Add(Disclosure);
             if (Icon is not null) Children.Add(Icon);
-            if (Prefix is not null) Children.Add(Prefix);
             Children.Add(Name2);
             if (Markers is not null) Children.Add(Markers);
             if (Tag2 is not null) Children.Add(Tag2);
@@ -880,11 +875,6 @@ public sealed class BrowserView : UserControl
             {
                 Place(Icon, left, Icon.DesiredSize.Width);
                 left += Icon.DesiredSize.Width + Gap;
-            }
-            if (Prefix is not null)
-            {
-                Place(Prefix, left, Prefix.DesiredSize.Width);
-                left += Prefix.DesiredSize.Width + Gap;
             }
 
             double right = Math.Max(left, finalSize.Width - Gutter);

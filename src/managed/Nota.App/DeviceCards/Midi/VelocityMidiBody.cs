@@ -299,12 +299,12 @@ internal sealed class VelocityMidiBody : IMidiDeviceBody
             range.GestureBegin += h => Begin(h == 0 ? POutLo : POutHi);
             range.GestureEnd += h => End(h == 0 ? POutLo : POutHi);
             range.Changed += (h, n) => { if (h == 0) SetLo(1 + n * 126); else SetHi(1 + n * 126); Refresh(); };
-            ToolTip.SetTip(range, "Out range — drag a handle, double-click resets to 1 – 127");
+            ToolTip.SetTip(range, "Out range — drag a handle, double-click resets to 1–127");
             Learn(range, POutHi, "Out High");
             readouts.Add(() =>
             {
                 var (lo, hi) = VelocityModel.Range(G);
-                rangeTxt.Text = $"{lo} – {hi}";
+                rangeTxt.Text = $"{lo}–{hi}";
                 if (!range.Dragging) { range.Lo = (lo - 1) / 126.0; range.Hi = (hi - 1) / 126.0; }
             });
 
@@ -324,7 +324,7 @@ internal sealed class VelocityMidiBody : IMidiDeviceBody
             rndTrack.Changed += n => { S(PRandom, Math.Round(n * VelocityModel.RandomSpan) / VelocityModel.RandomSpan); Refresh(); };
             rndTrack.GestureBegin += () => Begin(PRandom);
             rndTrack.GestureEnd += () => End(PRandom);
-            ToolTip.SetTip(rndTrack, "Random amount, ±0 – 64 velocity — drag up / down, double-click resets");
+            ToolTip.SetTip(rndTrack, "Random amount, ±0–64 velocity — drag up / down, double-click resets");
             Learn(rndTrack, PRandom, "Random");
             var dirSeg = DeviceCardKit.Segments(Dirs, () => VelocityModel.Dir(G), i => { Set1(PRandomDir, i); Refresh(); }, out var dirSync,
                 fill: true, padX: 2, fontSize: 8);
@@ -443,7 +443,7 @@ internal sealed class VelocityMidiBody : IMidiDeviceBody
             {
                 statusL.Text = VelocityModel.RandomOn(G) ? $"random {Dirs[VelocityModel.Dir(G)].ToLowerInvariant()}" : "random off";
                 var (lo, hi) = VelocityModel.Range(G);
-                statusR.Text = Bypassed() ? "bypassed" : $"out {lo} – {hi}";
+                statusR.Text = Bypassed() ? "bypassed" : $"out {lo}–{hi}";
             });
             return Framed(island, statusL, statusR);
         }

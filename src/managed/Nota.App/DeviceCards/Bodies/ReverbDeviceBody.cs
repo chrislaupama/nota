@@ -225,12 +225,12 @@ internal sealed class ReverbDeviceBody : IDeviceBody
             dmpVal.Text = Pct(P(HFDamp));
             tailTitle.Foreground = On(Freeze) ? AccentBright : TextTertiary;
         });
-        var tailCol = new Border
+        // Freeze shows on the column's title (accent), not on a frame: sections have none.
+        var tailCol = new RuleSection
         {
-            Width = 64, Background = Card2, BorderBrush = BorderDef, BorderThickness = new Thickness(1), CornerRadius = NotaRadius.Tile, Padding = new Thickness(0, 5, 0, 4),
+            Width = 64, Padding = new Thickness(0, 5, 0, 4),
             Child = new DockPanel { Children = { Docked(tailTitle, Dock.Top), Docked(dmpVal, Dock.Bottom), Docked(decVal, Dock.Bottom), faders } },
         };
-        readouts.Add(() => tailCol.BorderBrush = On(Freeze) ? NotaPalette.BorderBrass : BorderDef);
         DockPanel.SetDock(tailCol, Dock.Left);
 
         // ======================================================================

@@ -375,7 +375,7 @@ public sealed class MixerView : UserControl
 
         meter = new MeterBar();   // the almanac stereo meter: 11 + 5 + 11
         var scaleGrid = new Grid { Width = 16, RowDefinitions = new RowDefinitions("*,*,*,*") };
-        string[] marks = { "+6", "0", "-12", "-48" };
+        string[] marks = { "+6", "0", "−12", "−48" };
         for (int i = 0; i < 4; i++)
         {
             var t = new TextBlock { Text = marks[i], FontSize = 7, Foreground = TextDisabled, HorizontalAlignment = HorizontalAlignment.Right, VerticalAlignment = i == 0 ? VerticalAlignment.Top : i == 3 ? VerticalAlignment.Bottom : VerticalAlignment.Center };

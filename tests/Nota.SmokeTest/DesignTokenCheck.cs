@@ -404,9 +404,11 @@ internal static partial class DesignTokenCheck
         yield return (Regex.IsMatch(kit, @"HeaderH = 22;"), "device card header is 22px");
 
         // Accepted exceptions (decided 2026-09-16): parameter stubs are narrow; the Bass and
-        // Physical instruments keep their wider layouts. (Plug-ins are S 260 / L 700.)
+        // Physical instruments keep their wider layouts. (Plug-ins are S 260 / L 700.) The
+        // generic instrument card is an "Open GUI" stub, 170 wide since before it joined the
+        // shared shell (spec 008).
         var exempt = new HashSet<string> { "GenericParamDeviceBody.cs", "GenericMidiBody.cs",
-            "BassInstrumentCard.cs", "PhysicalInstrumentCard.cs" };
+            "BassInstrumentCard.cs", "PhysicalInstrumentCard.cs", "GenericInstrumentCard.cs" };
         var off = Directory.EnumerateFiles(Path.Combine(app, "DeviceCards"), "*.cs", SearchOption.AllDirectories)
             .Where(f => !exempt.Contains(Path.GetFileName(f)))
             .SelectMany(f => Regex.Matches(File.ReadAllText(f), @"public double (?:Card)?Width => (?<w>[0-9]+);")

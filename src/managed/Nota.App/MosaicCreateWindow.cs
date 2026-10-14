@@ -238,7 +238,7 @@ public sealed class MosaicCreateWindow : NotaWindow
         var prog = MultisampleMapper.Build(inst, _opt);
         var (lo, hi) = inst.Span;
         _instTitle.Text = inst.Stem;
-        _instSub.Text = $"{MosaicNames.NoteName(lo)} – {MosaicNames.NoteName(hi)} · {prog.Zones.Count} zones";
+        _instSub.Text = $"{MosaicNames.NoteName(lo)}–{MosaicNames.NoteName(hi)} · {prog.Zones.Count} zones";
         foreach (var g in inst.Gaps) _map.Flagged.Add(g);
         _map.Set(prog.Zones, false, -1);
 

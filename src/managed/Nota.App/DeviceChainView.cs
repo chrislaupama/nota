@@ -243,26 +243,22 @@ public sealed partial class DeviceChainView : UserControl
         return BuildCardShell(spec, new Border { Padding = new Thickness(10), Child = body });
     }
 
+    // The end of the chain: a slim "+" key. Its dashed outline shows only while a browser
+    // drag is over the chain, so an empty dock stays quiet (spec 008).
+    private Rectangle? _addDash;
+
     private Control AddDeviceCard()
     {
-        var content = new StackPanel
-        {
-            Spacing = 4, HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center,
-            Children =
-            {
-                new Glyph(GlyphKind.Plus, 12) { Foreground = TextTertiary },
-                new TextBlock { Text = "Add device", FontSize = 9, Foreground = TextTertiary, HorizontalAlignment = HorizontalAlignment.Center },
-                new TextBlock { Text = "double-click in browser\nor drop here", FontSize = 8, Foreground = TextDisabled, TextAlignment = TextAlignment.Center },
-            },
-        };
         // Avalonia Border can't dash its own stroke; overlay a dashed rectangle.
-        var dash = new Rectangle
+        _addDash = new Rectangle
         {
-            Stroke = BorderStrong, StrokeThickness = 1,
-            StrokeDashArray = new AvaloniaList<double>(4, 3), RadiusX = 7, RadiusY = 7,
+            Stroke = BorderStrong, StrokeThickness = 1, IsVisible = false,
+            StrokeDashArray = new AvaloniaList<double>(4, 3), RadiusX = NotaRadius.ControlValue, RadiusY = NotaRadius.ControlValue,
         };
-        var host = new Grid { Children = { dash, content } };
-        return new Border { Width = 140, Height = CardH, Child = host };
+        var host = new Grid { Children = { _addDash, new Glyph(GlyphKind.Plus, 12) { Foreground = TextTertiary } } };
+        var card = new Border { Width = 28, Height = CardH, Background = Brushes.Transparent, Child = host };
+        ToolTip.SetTip(card, "Add device — double-click in the browser or drop here");
+        return card;
     }
 
 }

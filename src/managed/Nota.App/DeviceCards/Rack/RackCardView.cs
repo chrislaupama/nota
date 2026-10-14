@@ -1242,20 +1242,21 @@ internal sealed partial class RackCardView(DeviceCardContext ctx)
         return card;
     }
 
+    // The end of a chain: a slim "+" key (spec 008). Its dashed outline shows only while an
+    // effect is dragged over it.
     private Control ChainAddDeviceCard(IRackAccess a, int sc)
     {
-        var content = new StackPanel
+        var dash = new Rectangle
         {
-            Spacing = 4, HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center,
-            Children =
-            {
-                new Glyph(GlyphKind.Plus, 12) { Foreground = TextTertiary },
-                new TextBlock { Text = "Add device", FontSize = 9, Foreground = TextTertiary, HorizontalAlignment = HorizontalAlignment.Center },
-                new TextBlock { Text = "or drop a plug-in", FontSize = 8, Foreground = TextDisabled, HorizontalAlignment = HorizontalAlignment.Center },
-            },
+            Stroke = BorderStrong, StrokeThickness = 1, StrokeDashArray = new AvaloniaList<double>(4, 3),
+            RadiusX = NotaRadius.ControlValue, RadiusY = NotaRadius.ControlValue, IsVisible = false,
         };
-        var dash = new Rectangle { Stroke = BorderStrong, StrokeThickness = 1, StrokeDashArray = new AvaloniaList<double>(4, 3), RadiusX = 6, RadiusY = 6 };
-        var host = new Grid { Width = 116, Children = { dash, content }, Cursor = new Cursor(StandardCursorType.Hand) };
+        var host = new Grid
+        {
+            Width = 28, Background = Brushes.Transparent, Cursor = new Cursor(StandardCursorType.Hand),
+            Children = { dash, new Glyph(GlyphKind.Plus, 12) { Foreground = TextTertiary } },
+        };
+        ToolTip.SetTip(host, "Add device — click for the list, or drop an effect here");
         host.PointerPressed += (_, _) => ShowAddDeviceMenu(a, sc, host);
         // Also a drop target for effects (built-in / plug-in) → append to this chain.
         DragDrop.SetAllowDrop(host, true);
@@ -1263,12 +1264,12 @@ internal sealed partial class RackCardView(DeviceCardContext ctx)
         {
             if (!BrowserView.IsBrowserDrag || !IsEffect(BrowserView.CurrentDrag)) { e.DragEffects = DragDropEffects.None; return; }
             e.DragEffects = DragDropEffects.Copy; e.Handled = true; _ctx.HideDropGlow();
-            dash.Stroke = AccentBright;
+            dash.Stroke = AccentBright; dash.IsVisible = true;
         });
-        DragDrop.AddDragLeaveHandler(host, (_, _) => dash.Stroke = BorderStrong);
+        DragDrop.AddDragLeaveHandler(host, (_, _) => dash.IsVisible = false);
         DragDrop.AddDropHandler(host, (_, e) =>
         {
-            dash.Stroke = BorderStrong;
+            dash.IsVisible = false;
             if (BrowserView.CurrentDrag is { } it && IsEffect(it)) { DropEffectOnChain(a, sc, it); e.Handled = true; }
         });
         return host;

@@ -275,7 +275,7 @@ internal sealed class ChordMidiBody : IMidiDeviceBody
             {
                 noteText.Text = NoteList();
                 int start = KeyStart();
-                range.Text = $"{DeviceCardKit.NoteName(start)} – {DeviceCardKit.NoteName(start + 35)}";
+                range.Text = $"{DeviceCardKit.NoteName(start)}–{DeviceCardKit.NoteName(start + 35)}";
                 keys.Set(start, lit, RingPitch());
             });
 

@@ -151,7 +151,7 @@ internal sealed class Eq3DeviceBody : IDeviceBody
                     fader,
                 },
             };
-            var bar = new Border { Height = 2, Background = hue, CornerRadius = NotaRadius.Top(NotaRadius.TileValue) };
+            var bar = new Border { Height = 2, Background = hue };   // square: the section under it has no corners
             return new RuleSection
             {
                 Width = 62, Margin = new Thickness(0, 0, 5, 0),
