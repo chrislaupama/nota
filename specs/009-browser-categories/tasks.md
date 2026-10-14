@@ -269,7 +269,7 @@ The Xvfb harness and capture scripts from 008 live in `/tmp/claude-0/`, outside 
   - **T034**: the three device tabs, captured in all four themes plus Studio Light with folds, read correctly. Headers match the Built-in header style, and the caret sits in the device caret column. Contact sheets were sent in the session.
   - **T035**: SPDX headers are on the three new files. No dependency, native or project-format change.
 
-- [ ] T036 *(moved to T049, after the chips rework)* Final gate: a full `scripts/build-linux.sh`. Only the known "Consort stress" failure is allowed (it also fails on the base). Then run `/speckit-converge`.
+- [X] T036 *(moved to T049, after the chips rework)* Final gate: a full `scripts/build-linux.sh`. Only the known "Consort stress" failure is allowed (it also fails on the base). Then run `/speckit-converge`.
 
 ---
 
@@ -384,5 +384,15 @@ and with no chip the list is today's.
   - `FEATURES.md`: replace the "Device categories" bullet and the View options wording ("category chips");
   - `CHANGELOG.md`: rewrite the Added entry for chips.
 - [X] T048 [P] Re-check `.claude/skills/nota-instrument/SKILL.md`. The category step stays as written: it names `DeviceCategories.cs` and the browser check, not headers.
-- [ ] T049 Final gate: a full `scripts/build-linux.sh`. Only the known "Consort stress" failure is allowed. Then run `/speckit-converge`.
+- [X] T049 Final gate: a full `scripts/build-linux.sh`. Only the known "Consort stress" failure is allowed. Then run `/speckit-converge`.
 
+  *Result*: 3265 passed and 1 failed. The failure is "Consort stress" (2.23 ms against a 2.90 ms budget), which also fails on the base (T001). Results:
+  - `-- design: browser --` all pass;
+  - `-- browser: device categories --` 29/29;
+  - the restored search assertion passes (`BUILT-IN / Nota Aurora / Pads / Glacier Pad`).
+
+
+## Phase 9: Convergence
+
+- [ ] T050 Reword `specs/009-browser-categories/plan.md` § "Nota: Read Before Planning" (line 44): the chips reuse `MakeChip` (the filter-chip style), not `GroupLabel` and the disclosure caret, per plan: R9 chips decision (contradicts)
+- [ ] T051 Update the `DESIGN.md` Filter chips row (line 466): the Favorites / tags strip overflows into `+N`, and the device tabs' category row wraps so every category stays in sight, per FR-008 (partial)
