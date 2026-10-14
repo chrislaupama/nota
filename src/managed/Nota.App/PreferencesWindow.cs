@@ -60,19 +60,19 @@ public sealed partial class PreferencesWindow : NotaWindow
 
     private static readonly (string Group, Page[] Pages)[] Nav =
     {
-        ("DEVICES", new[]
+        ("Devices", new[]
         {
             new Page("Audio", "Device, sample rate and buffer", "M4 10 V14 M8 7 V17 M12 4 V20 M16 8 V16 M20 11 V13"),
             new Page("MIDI", "Controllers Nota listens to", "M4 5 H20 V19 H4 Z M8 5 V13 M12 5 V13 M16 5 V13"),
             new Page("Gamepads", "Play notes or drive mapped controls", "M7 8 H17 A4 4 0 0 1 21 12 V13 A4 4 0 0 1 14 16 H10 A4 4 0 0 1 3 13 V12 A4 4 0 0 1 7 8 Z M7 11 V13 M6 12 H8 M16 11.5 H16.01 M18 12.5 H18.01"),
             new Page("Remote", "Phones and tablets on this network", "M8 3 H16 A1.5 1.5 0 0 1 17.5 4.5 V19.5 A1.5 1.5 0 0 1 16 21 H8 A1.5 1.5 0 0 1 6.5 19.5 V4.5 A1.5 1.5 0 0 1 8 3 Z M11 18 H13"),
         }),
-        ("PLUG-INS", new[]
+        ("Plug-ins", new[]
         {
             new Page("Plug-ins", "Where Nota looks for VST3", "M9 3 V7 M15 3 V7 M6 7 H18 V11 A6 6 0 0 1 6 11 Z M12 17 V21"),
             new Page("Downloads", "Plug-ins, sample packs and AI models", "M12 4 V15 M7 10 L12 15 L17 10 M5 19 H19"),
         }),
-        ("GENERAL", new[]
+        ("General", new[]
         {
             new Page("Library", "Content folders and version history", "M3 7 A1 1 0 0 1 4 6 H9 L11 8 H20 A1 1 0 0 1 21 9 V18 A1 1 0 0 1 20 19 H4 A1 1 0 0 1 3 18 Z"),
             new Page("Appearance", "Theme, waveforms and AI control", "M12 4 A8 8 0 1 0 12 20 Z M12 4 A8 8 0 0 1 12 20"),
@@ -1047,7 +1047,7 @@ public sealed partial class PreferencesWindow : NotaWindow
     // keys (see IsKeyToken) is drawn as one key-cap per token; a gesture is plain text.
     private static readonly (string Title, (string Key, string Action)[] Rows)[] ShortcutGroups =
     {
-        ("FILE", new[]
+        ("File", new[]
         {
             ("⌘N   ⌘O", "New project / open a project"),
             ("⌘S   ⌘⇧S", "Save (records a version) / save as"),
@@ -1055,11 +1055,11 @@ public sealed partial class PreferencesWindow : NotaWindow
             ("⌘⇧E", "Export audio"),
             ("⌘,", "Settings"),
         }),
-        ("WINDOW", new[]
+        ("Window", new[]
         {
             ("F11", "Enter / leave full screen — the title bar hides in full screen"),
         }),
-        ("COMMAND PALETTE", new[]
+        ("Command palette", new[]
         {
             ("⌘⇧P", "Open / close the command palette — from any window, even while typing"),
             ("↑ ↓   PgUp PgDn", "Move through the results"),
@@ -1071,7 +1071,7 @@ public sealed partial class PreferencesWindow : NotaWindow
             ("> @ + # ~", "Type first to filter: actions, tracks, devices, presets, Modular nodes"),
             ("Esc", "Close and go back where you were"),
         }),
-        ("TRANSPORT", new[]
+        ("Transport", new[]
         {
             ("Space", "Play / Stop"),
             ("Return", "Stop (again → back to the start) · in the Session grid it launches the selection"),
@@ -1079,7 +1079,7 @@ public sealed partial class PreferencesWindow : NotaWindow
             ("⌘M", "Metronome"),
             ("⌘L", "Loop on / off · loop the selected clips or time range"),
         }),
-        ("ARRANGEMENT & EDITING", new[]
+        ("Arrangement & editing", new[]
         {
             ("⌘Z   ⌘⇧Z", "Undo / redo"),
             ("⌘A", "Select all clips"),
@@ -1099,7 +1099,7 @@ public sealed partial class PreferencesWindow : NotaWindow
             ("0", "Deactivate / activate the selected clip(s)"),
             ("Delete", "Delete the selected clip / range"),
         }),
-        ("GRID (ARRANGEMENT OR CLIP EDITOR — WHICHEVER YOU USED LAST)", new[]
+        ("Grid (Arrangement or clip editor — whichever you used last)", new[]
         {
             ("⌘1   ⌘2", "Narrow / widen the grid · in Auto, change the density"),
             ("⌘3", "Triplet grid on / off"),
@@ -1107,14 +1107,14 @@ public sealed partial class PreferencesWindow : NotaWindow
             ("⌘5", "Switch between the adaptive (Auto) and a fixed grid"),
             ("⌥ while dragging", "Move freely, ignoring the grid"),
         }),
-        ("TRACKS (AFTER A CLICK IN THE TRACK HEADERS)", new[]
+        ("Tracks (after a click in the track headers)", new[]
         {
             ("⌘A", "Select all tracks"),
             ("⌘C  ⌘X  ⌘V", "Copy / cut / paste the selected tracks · paste lands after the last one"),
             ("⌘D", "Duplicate the selected tracks"),
             ("Delete", "Delete the selected tracks · a group goes with its tracks"),
         }),
-        ("SESSION (AFTER A CLICK IN THE GRID)", new[]
+        ("Session (after a click in the grid)", new[]
         {
             ("← → ↑ ↓", "Move the selection between slots and scenes"),
             ("Return", "Launch the selected clip or scene"),
@@ -1130,7 +1130,7 @@ public sealed partial class PreferencesWindow : NotaWindow
             ("Double-click header", "Rename the track"),
             ("Right-click header or grid", "Add an instrument, audio or return track · rename or delete one"),
         }),
-        ("PIANO ROLL", new[]
+        ("Piano roll", new[]
         {
             ("← →", "Move notes by the grid"),
             ("↑ ↓", "Transpose by a semitone"),
@@ -1144,14 +1144,14 @@ public sealed partial class PreferencesWindow : NotaWindow
             ("Drag in the Bend / Pres / Slide lane", "Draw the selected note's MPE curve · ⌥ draws a straight line · drag a point to move it"),
             ("Double-click in an MPE lane", "Add a point · on a point, delete it · right-click to clear the curve"),
         }),
-        ("PLAY NOTES (COMPUTER KEYBOARD)", new[]
+        ("Play notes (computer keyboard)", new[]
         {
             ("A S D F G H J K", "White keys, from C4"),
             ("W E · T Y U", "Black keys (sharps)"),
             ("Z / X", "Shift octave down / up"),
             ("C / V", "Lower / raise velocity"),
         }),
-        ("BROWSER · PREVIEW", new[]
+        ("Browser · preview", new[]
         {
             ("↑ ↓", "Move through samples, presets and devices · with Auto on, each one plays as it is selected"),
             ("Click play button", "Play / stop the selected sample, preset or device"),
@@ -1160,7 +1160,7 @@ public sealed partial class PreferencesWindow : NotaWindow
             ("Scroll on the track button", "Step through the demo tracks an effect preset is heard through"),
             ("Double-click volume", "Reset the preview volume to 0\u2009dB"),
         }),
-        ("GAMEPAD (MACOS)", new[]
+        ("Gamepad (macOS)", new[]
         {
             ("Face buttons", "Play C4 D4 E4 F4"),
             ("Shoulder buttons", "Play G4 A4 B4 C5"),
@@ -1169,7 +1169,7 @@ public sealed partial class PreferencesWindow : NotaWindow
             ("Any button", "Mappable through MIDI Learn — a mapped button drives the control instead"),
             ("Sticks · triggers", "Mappable as continuous controls (a knob, a fader); they play no notes"),
         }),
-        ("MOUSE", new[]
+        ("Mouse", new[]
         {
             ("Double-click clip", "Open in the clip editor"),
             ("Right-click the metronome", "Count-in before Play / Record: off · 1 · 2 · 4 bars"),
@@ -1436,7 +1436,7 @@ public sealed partial class PreferencesWindow : NotaWindow
     private static void FillDeviceCombo(ComboBox combo, List<string> uids, IReadOnlyList<AudioDevice> devices, string savedUid)
     {
         uids.Clear();
-        combo.Items.Add("System Default");
+        combo.Items.Add("System default");
         uids.Add("");
         int selected = 0;
         for (int i = 0; i < devices.Count; i++)

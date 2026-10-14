@@ -545,7 +545,7 @@ public sealed partial class ArrangementView
                         (ScaleMidiBody.PFollowKey, "Follow Key"), (ScaleMidiBody.PLearn, "Learn"),
                     };
                     foreach (var (p, label) in ps) mMenu.Items.Add(MLeaf(m, p, label));
-                    var notes = new MenuItem { Header = "Custom Notes" };
+                    var notes = new MenuItem { Header = "Custom notes" };
                     string[] degrees = { "Root", "♭2", "2", "♭3", "3", "4", "♭5", "5", "♭6", "6", "♭7", "7" };
                     for (int d = 0; d < 12; d++) notes.Items.Add(MLeaf(m, ScaleMidiBody.PMask0 + d, degrees[d]));
                     mMenu.Items.Add(new Separator());

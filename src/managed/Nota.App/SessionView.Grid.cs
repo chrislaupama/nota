@@ -74,7 +74,7 @@ public sealed partial class SessionView
             Content = new StackPanel
             {
                 Orientation = Orientation.Horizontal, Spacing = 7,
-                Children = { new Glyph(GlyphKind.Stop, 7), new TextBlock { Text = "Stop All Clips", FontSize = 10, FontWeight = FontWeight.SemiBold } },
+                Children = { new Glyph(GlyphKind.Stop, 7), new TextBlock { Text = "Stop all clips", FontSize = 10, FontWeight = FontWeight.SemiBold } },
             },
         };
         ToolTip.SetTip(stopAll, "Stop every session clip");

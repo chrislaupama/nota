@@ -468,7 +468,7 @@ internal static partial class DesignTokenCheck
         var fonts = File.ReadAllText(Path.Combine(app, "Theme/NotaFonts.cs"));
         var trackConsts = Regex.Matches(fonts, @"(?<n>\w+Tracking)\s*=\s*(?<v>[0-9.]+)").Where(m => double.Parse(m.Groups["v"].Value, inv) != 0).Select(m => m.Groups["n"].Value).ToArray();
         yield return (trackConsts.Length == 0, trackConsts.Length == 0 ? "NotaType tracking constants are 0" : $"tracking left in NotaType: {string.Join(", ", trackConsts)}");
-        var shouters = new[] { "DeviceCardKit.cs", "Controls/NotaGraph.cs", "ClipEditorKit.cs", "DeviceChainView.Shell.cs" }
+        var shouters = new[] { "DeviceCardKit.cs", "Controls/NotaGraph.cs", "ClipEditorKit.cs", "DeviceChainView.Shell.cs", "../Nota.Application/Palette/PaletteSearch.cs" }
             .Where(f => File.ReadAllText(Path.Combine(app, f)).Contains("ToUpperInvariant()")).ToArray();
         yield return (shouters.Length == 0,
             shouters.Length == 0 ? "the shared label builders do not upper-case (NotaText.Label)" : $"upper-casing label builders: {string.Join(", ", shouters)}");

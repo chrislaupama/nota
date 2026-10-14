@@ -129,7 +129,7 @@ public sealed class MixerView : UserControl
         string io1 = isReturn ? "Return in" : ti.IsGroup ? "Group in" : ti.IsInstrument ? "MIDI in" : "In 1";
         string io2 = isReturn ? "→ Master"
                    : ti.IsGroup ? "→ " + (ti.GroupId >= 0 ? TrackNames.Of(_engine, ti.GroupId) : "Master")
-                   : ti.IsInstrument ? "Monitor Auto" : "Monitor In";
+                   : ti.IsInstrument ? "Monitor auto" : "Monitor in";
         // Instrument tracks get a live "MIDI To" selector in place of the static I/O text.
         var ioRow = ti.IsInstrument ? MidiIoRow(id) : IoRow(io1, io2);
         ioRow.IsVisible = _ioVisible;
@@ -340,7 +340,7 @@ public sealed class MixerView : UserControl
             knob.GestureEnd   += () => _engine.EndAutomationWrite(id, AutomationTarget.Pan, -1, -1, "");
             MidiLearn.Bind(knob, MidiTarget.TrackPan(id), "Track Pan");
         }
-        var row = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 8, HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center, Children = { knob, Mono("PAN", TextTertiary) } };
+        var row = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 8, HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center, Children = { knob, Mono("Pan", TextTertiary) } };
         return new Border { Height = 38, BorderBrush = BorderInner, BorderThickness = new Thickness(0, 0, 0, 1), Child = row };
     }
 

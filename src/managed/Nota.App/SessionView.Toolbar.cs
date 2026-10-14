@@ -43,7 +43,7 @@ public sealed partial class SessionView
     private Control BuildToolbar()
     {
         _recDot = new Glyph(GlyphKind.Record, 8);
-        _recText = new TextBlock { Text = "Session Rec", FontSize = 11, FontWeight = FontWeight.SemiBold };
+        _recText = new TextBlock { Text = "Session rec", FontSize = 11, FontWeight = FontWeight.SemiBold };
         _recBtn = new Button
         {
             Height = NotaSize.Shell, Padding = new Thickness(10, 0),
@@ -92,7 +92,7 @@ public sealed partial class SessionView
         ToolTip.SetTip(follow, "Follow actions on or off for every clip and scene");
         follow.Click += (_, _) => { _engine.SessionFollow = !_engine.SessionFollow; SyncToolbar(); RebuildInspector(); };
 
-        var capture = new Button { Content = "Capture Scene", Height = NotaSize.Shell, Padding = new Thickness(10, 0), FontSize = 11 };
+        var capture = new Button { Content = "Capture scene", Height = NotaSize.Shell, Padding = new Thickness(10, 0), FontSize = 11 };
         ToolTip.SetTip(capture, "Copy the clips playing now into a new scene");
         capture.Click += (_, _) => CaptureScene();
 
@@ -126,7 +126,7 @@ public sealed partial class SessionView
             Content = new StackPanel
             {
                 Orientation = Orientation.Horizontal, Spacing = 7,
-                Children = { new Glyph(GlyphKind.Stop, 7), new TextBlock { Text = "Stop All", FontSize = 11, FontWeight = FontWeight.SemiBold } },
+                Children = { new Glyph(GlyphKind.Stop, 7), new TextBlock { Text = "Stop all", FontSize = 11, FontWeight = FontWeight.SemiBold } },
             },
         };
         ToolTip.SetTip(stopAll, "Stop every session clip");
@@ -147,7 +147,7 @@ public sealed partial class SessionView
         {
             var f = new MenuFlyout();
             void Add(string header, Action act) { var mi = new MenuItem { Header = header }; mi.Click += (_, _) => act(); f.Items.Add(mi); }
-            if (!_backBtn!.IsVisible) Add("Back to arrangement", () => { _engine.BackToArrangement(); UpdateStates(); });
+            if (!_backBtn!.IsVisible) Add("Back to Arrangement", () => { _engine.BackToArrangement(); UpdateStates(); });
             if (!capture.IsVisible) Add("Capture scene", CaptureScene);
             if (!sectionsWell.IsVisible)
             {

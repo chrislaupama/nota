@@ -229,13 +229,13 @@ public sealed partial class SessionView
         int cur;
         if (c.IsInstrument)
         {
-            items.Add((-1, "All Ins"));
+            items.Add((-1, "All ins"));
             foreach (var n in names.Where(n => n.Instrument)) items.Add((n.Id, n.Name));
             cur = _engine.GetTrackMidiSource(c.TrackId);
         }
         else
         {
-            items.Add((0, "Ext In"));
+            items.Add((0, "Ext in"));
             items.Add((-1, "Master"));
             foreach (var n in names) items.Add((n.Id, n.Name));
             cur = _engine.GetTrackRecordInput(c.TrackId);

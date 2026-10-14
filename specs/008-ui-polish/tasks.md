@@ -110,29 +110,31 @@ workstream (plan § Complexity Tracking).
 
 **Independent Test**: `-- design: labels --` passes with only data exemptions left in `Smoke/LabelAllowList.txt`.
 
-- [ ] T024 [P] [US3] `Application/Palette/PaletteSearch.cs`: the group labels ("Actions", "Tracks", "Devices", "Presets", "Modular"), "Recent", and "Suggested · " + the origin label in sentence case, with no `ToUpperInvariant`. Update `Smoke/PaletteTests.cs:195-196` to expect "Recent" and "Suggested". Extend `RunStudio`'s upper-casing check to `PaletteSearch.cs`.
-- [ ] T025 [P] [US3] `Application/Palette/CommandCatalog.cs`: every command title in sentence case ("New project", "Show mixer", "Quantize notes"…), with product and view names kept. Update `Smoke/PaletteTests.cs:100` and any test that matches a title.
-- [ ] T026 [P] [US3] `App/MainWindow.axaml` native menu: every `Header` in sentence case ("Save as…", "Save version with note…", "Lock envelopes", "Paste bounced audio", "Copy clips to session / arrangement", "Narrow grid", "Widen grid", "Triplet grid", "Snap to grid", "Adaptive grid", "Command palette…", "Connect phone…", "Toggle full screen", "What's new", "Live freeze").
-- [ ] T027 [P] [US3] Session labels:
+- [X] T024 [P] [US3] `Application/Palette/PaletteSearch.cs`: the group labels ("Actions", "Tracks", "Devices", "Presets", "Modular"), "Recent", and "Suggested · " + the origin label in sentence case, with no `ToUpperInvariant`. Update `Smoke/PaletteTests.cs:195-196` to expect "Recent" and "Suggested". Extend `RunStudio`'s upper-casing check to `PaletteSearch.cs`.
+- [X] T025 [P] [US3] `Application/Palette/CommandCatalog.cs`: every command title in sentence case ("New project", "Show mixer", "Quantize notes"…), with product and view names kept. Update `Smoke/PaletteTests.cs:100` and any test that matches a title.
+- [X] T026 [P] [US3] `App/MainWindow.axaml` native menu: every `Header` in sentence case ("Save as…", "Save version with note…", "Lock envelopes", "Paste bounced audio", "Copy clips to session / arrangement", "Narrow grid", "Widen grid", "Triplet grid", "Snap to grid", "Adaptive grid", "Command palette…", "Connect phone…", "Toggle full screen", "What's new", "Live freeze").
+- [X] T027 [P] [US3] Session labels:
   - `App/SessionView.Toolbar.cs`: "Session rec", "Capture scene", "Stop all", "Back to arrangement".
   - `App/SessionView.Grid.cs`: "Stop all clips".
   - `App/SessionView.Mixer.cs`: "All ins", "Ext in".
   - `App/SessionView.Inspector.cs`: route `SectionHead`, `Field` and `Mono` through `NotaText.Label` ("Color", "Launch", "Follow action", "Length", "Loop", "Start", "Loop end", "Tempo", "Signature", "Off globally").
-- [ ] T028 [P] [US3] Mixer and detail labels: `App/MixerView.cs` `Mono` through `NotaText.Label` ("Pan"), and "Monitor in" / "Monitor auto". Same in `App/MainWindow.Detail.cs`.
-- [ ] T029 [P] [US3] `App/DeviceCards/Rack/RackCardView.Drum.cs`: the meta line becomes `$"{n} pad{s} · {g} choke group{s}"`. `App/DeviceChainView.Instruments.cs`: the Drum Rack subtitle "Drums · {n} pads".
-- [ ] T030 [P] [US3] Browser, arrangement and other menus:
+- [X] T028 [P] [US3] Mixer and detail labels: `App/MixerView.cs` `Mono` through `NotaText.Label` ("Pan"), and "Monitor in" / "Monitor auto". Same in `App/MainWindow.Detail.cs`.
+- [X] T029 [P] [US3] `App/DeviceCards/Rack/RackCardView.Drum.cs`: the meta line becomes `$"{n} pad{s} · {g} choke group{s}"`. `App/DeviceChainView.Instruments.cs`: the Drum Rack subtitle "Drums · {n} pads".
+- [X] T030 [P] [US3] Browser, arrangement and other menus:
   - `App/BrowserView.cs`: "Add to favorites" / "Remove from favorites".
   - `App/MainWindow.Freeze.cs`: "Live freeze".
   - `App/MainWindow.Stems.cs` and `App/ArrangementView.LaneControl.cs`: "Separate stems…", "Convert melody to new MIDI track", "Slice to new MIDI track", "Get the AI model for melody & harmony…", "Copy to scene".
   - `App/PianoRollView.Expression.cs`: "Clear all expression".
   - `App/MainWindow.PasteBounced.cs`: the dialog title.
-- [ ] T031 [P] [US3] Preferences and pickers:
+- [X] T031 [P] [US3] Preferences and pickers:
   - `App/PreferencesWindow.cs`: sidebar groups and shortcut group titles go through `NotaText.Label` ("Devices", "Plug-ins", "General", "File", "Window", "Command palette", "Transport", "Arrangement & editing", "Piano roll", "Browser · preview", "Mouse"); "System default".
   - `App/PreferencesWindow.Downloads.cs`: "Sample packs".
   - `App/Controls/KeyPicker.cs`: "Major" / "Minor".
   - `App/SaveChangesWindow.cs`: "Don't save".
   - `App/TagEditorWindow.cs`: "New tag".
-- [ ] T032 [US3] Shrink `Smoke/LabelAllowList.txt` to data-only exemptions (preset tables, engine parameter display names, MIDI-learn names, sample device names), each with a reason. Run the check (green), take a screenshot pass of the palette, session, mixer, Drum Rack, Preferences and menus, and commit "style(008): US3".
+
+  *Done as*: view names (Arrangement, Session, Modular, Mixer) keep their capital, so it is "Back to Arrangement", "Show Mixer" and "Copy clips to Session / Arrangement". Settings page names after a colon stay capitalised ("Settings: Audio"). LUFS, USB, OK and DAW joined `NotaText.Fixed`.
+- [X] T032 [US3] Shrink `Smoke/LabelAllowList.txt` to data-only exemptions (preset tables, engine parameter display names, MIDI-learn names, sample device names), each with a reason. Run the check (green), take a screenshot pass of the palette, session, mixer, Drum Rack, Preferences and menus, and commit "style(008): US3".
 
 ---
 

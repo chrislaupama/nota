@@ -76,7 +76,7 @@ public sealed class TagEditorWindow : NotaWindow
 
     private void CreateTag()
     {
-        var tag = _lib.CreateTag("New Tag", Palette[0]);
+        var tag = _lib.CreateTag("New tag", Palette[0]);
         if (_assignKey is not null) _lib.AssignTag(_assignKey, tag.Id, true);
     }
 

@@ -24,8 +24,8 @@
             <NativeMenuItem Header="New" app:Commands.Id="file.new"/>
             <NativeMenuItem Header="Open…" app:Commands.Id="file.open"/>
             <NativeMenuItem Header="Save" app:Commands.Id="file.save"/>
-            <NativeMenuItem Header="Save As…" app:Commands.Id="file.saveAs"/>
-            <NativeMenuItem Header="Save Version with Note…" app:Commands.Id="file.saveVersion"/>
+            <NativeMenuItem Header="Save as…" app:Commands.Id="file.saveAs"/>
+            <NativeMenuItem Header="Save version with note…" app:Commands.Id="file.saveVersion"/>
             <NativeMenuItemSeparator/>
             <NativeMenuItem Header="Import audio…" app:Commands.Id="file.import"/>
             <NativeMenuItem Header="Export audio…" app:Commands.Id="file.export"/>
@@ -47,23 +47,23 @@
             <NativeMenuItem Header="Duplicate time" app:Commands.Id="edit.duplicateTime"/>
             <NativeMenuItem Header="Insert silence" app:Commands.Id="edit.insertSilence"/>
             <NativeMenuItemSeparator/>
-            <NativeMenuItem Header="Lock Envelopes" app:Commands.Id="edit.lockEnvelopes" ToggleType="CheckBox"/>
+            <NativeMenuItem Header="Lock envelopes" app:Commands.Id="edit.lockEnvelopes" ToggleType="CheckBox"/>
             <NativeMenuItemSeparator/>
             <NativeMenuItem Header="Cut" app:Commands.Id="edit.cut"/>
             <NativeMenuItem Header="Copy" app:Commands.Id="edit.copy"/>
             <NativeMenuItem Header="Paste" app:Commands.Id="edit.paste"/>
-            <NativeMenuItem Header="Paste Bounced Audio" app:Commands.Id="edit.pasteBounced"/>
-            <NativeMenuItem Header="Copy Clips to Session / Arrangement" app:Commands.Id="edit.copyToOtherView"/>
+            <NativeMenuItem Header="Paste bounced audio" app:Commands.Id="edit.pasteBounced"/>
+            <NativeMenuItem Header="Copy clips to Session / Arrangement" app:Commands.Id="edit.copyToOtherView"/>
             <NativeMenuItem Header="Delete" app:Commands.Id="edit.delete"/>
             <NativeMenuItemSeparator/>
             <NativeMenuItem Header="Grid">
               <NativeMenuItem.Menu>
                 <NativeMenu>
-                  <NativeMenuItem Header="Narrow Grid" app:Commands.Id="grid.narrower"/>
-                  <NativeMenuItem Header="Widen Grid" app:Commands.Id="grid.wider"/>
-                  <NativeMenuItem Header="Triplet Grid" app:Commands.Id="grid.triplets"/>
-                  <NativeMenuItem Header="Snap to Grid" app:Commands.Id="grid.snap"/>
-                  <NativeMenuItem Header="Adaptive Grid" app:Commands.Id="grid.adaptive"/>
+                  <NativeMenuItem Header="Narrow grid" app:Commands.Id="grid.narrower"/>
+                  <NativeMenuItem Header="Widen grid" app:Commands.Id="grid.wider"/>
+                  <NativeMenuItem Header="Triplet grid" app:Commands.Id="grid.triplets"/>
+                  <NativeMenuItem Header="Snap to grid" app:Commands.Id="grid.snap"/>
+                  <NativeMenuItem Header="Adaptive grid" app:Commands.Id="grid.adaptive"/>
                 </NativeMenu>
               </NativeMenuItem.Menu>
             </NativeMenuItem>
@@ -73,16 +73,16 @@
       <NativeMenuItem Header="View">
         <NativeMenuItem.Menu>
           <NativeMenu>
-            <NativeMenuItem Header="Command Palette…" app:Commands.Id="view.palette"/>
+            <NativeMenuItem Header="Command palette…" app:Commands.Id="view.palette"/>
             <NativeMenuItemSeparator/>
             <NativeMenuItem Header="Mixer" app:Commands.Id="view.mixer"/>
-            <NativeMenuItem Header="Connect Phone…" app:Commands.Id="view.connectPhone"/>
+            <NativeMenuItem Header="Connect phone…" app:Commands.Id="view.connectPhone"/>
             <NativeMenuItemSeparator/>
             <NativeMenuItem Header="Toggle browser" app:Commands.Id="view.toggleBrowser"/>
             <NativeMenuItem Header="Toggle detail panel" app:Commands.Id="view.toggleDetail"/>
             <NativeMenuItem Header="Toggle overview" app:Commands.Id="view.toggleOverview"/>
             <NativeMenuItem Header="Toggle sections" app:Commands.Id="view.toggleSections"/>
-            <NativeMenuItem Header="Toggle Full Screen" app:Commands.Id="view.fullscreen"/>
+            <NativeMenuItem Header="Toggle full screen" app:Commands.Id="view.fullscreen"/>
             <NativeMenuItemSeparator/>
             <!-- Header text is matched from code to keep this checkmark in step with the
                  transport bar's Follow button — see MainWindow.SetFollowPlayhead. -->
@@ -95,7 +95,7 @@
       <NativeMenuItem Header="Transport">
         <NativeMenuItem.Menu>
           <NativeMenu>
-            <NativeMenuItem Header="Play / Stop" app:Commands.Id="transport.playStop"/>
+            <NativeMenuItem Header="Play / stop" app:Commands.Id="transport.playStop"/>
             <NativeMenuItem Header="Record" app:Commands.Id="transport.record"/>
             <NativeMenuItem Header="Loop" app:Commands.Id="transport.loop"/>
             <NativeMenuItem Header="Metronome" app:Commands.Id="transport.metronome"/>
@@ -106,7 +106,7 @@
         <NativeMenuItem.Menu>
           <NativeMenu>
             <NativeMenuItem Header="Documentation" app:Commands.Id="help.docs"/>
-            <NativeMenuItem Header="What's New" app:Commands.Id="help.whatsNew"/>
+            <NativeMenuItem Header="What's new" app:Commands.Id="help.whatsNew"/>
             <NativeMenuItemSeparator/>
             <NativeMenuItem Header="About Nota" app:Commands.Id="help.about"/>
           </NativeMenu>
@@ -507,7 +507,7 @@
                   <Path Width="14" Height="14" Stretch="None" StrokeThickness="1.4"
                         Stroke="{DynamicResource Brush.TextSecondary}" VerticalAlignment="Center"
                         Data="{x:Static app:NotaIcons.ChainLink}"/>
-                  <TextBlock Text="Live Freeze" FontSize="12" VerticalAlignment="Center"
+                  <TextBlock Text="Live freeze" FontSize="12" VerticalAlignment="Center"
                              Foreground="{DynamicResource Brush.TextSecondary}"/>
                 </StackPanel>
               </Button>

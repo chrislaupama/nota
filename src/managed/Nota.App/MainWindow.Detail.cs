@@ -110,7 +110,7 @@ public partial class MainWindow
                 int src = Engine.GetTrackRecordInput(trackId);
                 parts.Add("In " + (src == 0 ? "Ext" : src == -1 ? "Master" : ChipTrackName(src)));
                 // A Master source stays silent while monitored (it would feed back).
-                if (src != -1 && Engine.GetTrackMonitor(trackId)) parts.Add("Monitor In");
+                if (src != -1 && Engine.GetTrackMonitor(trackId)) parts.Add("Monitor in");
             }
         }
         double ms = Engine.SampleRate > 0 ? Engine.TrackLatencySamples(trackId) / Engine.SampleRate * 1000.0 : 0;

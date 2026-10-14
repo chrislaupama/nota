@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 // Copyright (c) 2026 Egor Khindikaynen (Nota). See LICENSES/ for license terms.
 //
-// "What's New" — shown once after the first launch on a newer app version (see
+// "What's new" — shown once after the first launch on a newer app version (see
 // MainWindow.OnOpenedWhatsNew). Lists the changelog entries the user hasn't seen
 // yet, newest first. Reachable any time from the Help menu too.
 
@@ -51,7 +51,7 @@ public sealed class WhatsNewWindow : NotaWindow
         var header = new StackPanel { Margin = new Thickness(28, 24, 28, 4), Spacing = 2 };
         header.Children.Add(new TextBlock
         {
-            Text = "What's New",
+            Text = "What's new",
             FontSize = 24,
             FontWeight = FontWeight.SemiBold,
             Foreground = Brush("Brush.TextPrimary"),

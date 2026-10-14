@@ -284,7 +284,7 @@ internal sealed class ScaleMidiBody : IMidiDeviceBody
             {
                 Height = 24, Background = Well, BorderBrush = Rule, BorderThickness = new Thickness(1), CornerRadius = NotaRadius.Badge, Padding = new Thickness(8, 0),
                 Child = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 8, Children =
-                    { Mono("IN → OUT", Cap, 7), ioIn, new TextBlock { Text = "→", FontSize = 9, Foreground = Cap, VerticalAlignment = VerticalAlignment.Center }, ioOut } },
+                    { Mono("In → out", Cap, 7), ioIn, new TextBlock { Text = "→", FontSize = 9, Foreground = Cap, VerticalAlignment = VerticalAlignment.Center }, ioOut } },
             };
             readouts.Add(() => { ioIn.Text = li >= 0 ? DeviceCardKit.NoteName(li) : "—"; ioOut.Text = lo >= 0 ? DeviceCardKit.NoteName(lo) : "—"; });
 

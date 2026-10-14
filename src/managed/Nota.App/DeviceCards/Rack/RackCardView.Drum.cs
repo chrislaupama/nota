@@ -624,7 +624,7 @@ internal sealed partial class RackCardView
         _irTick.Add(chokeSync);
         ToolTip.SetTip(chokeSeg, "Pads in the same group cut each other off");
         var chokeRow = new Grid { ColumnDefinitions = new ColumnDefinitions("Auto,*"), ColumnSpacing = 6 };
-        chokeRow.Children.Add(DrumCap("CHOKE"));
+        chokeRow.Children.Add(DrumCap("Choke"));
         Grid.SetColumn(chokeSeg, 1); chokeRow.Children.Add(chokeSeg);
 
         Border inst = null!;
@@ -657,7 +657,7 @@ internal sealed partial class RackCardView
         var status = new TextBlock { FontSize = 8, Foreground = TextSecondary, VerticalAlignment = VerticalAlignment.Center, TextTrimming = TextTrimming.CharacterEllipsis };
         var meta = DrumMono("", TextSecondary, 8);
         int groups = pads.Select(c => E.RackChainChoke(T, c)).Where(g => g > 0).Distinct().Count();
-        meta.Text = $"{pads.Count} PAD{(pads.Count == 1 ? "" : "S")} · {groups} CHOKE GROUP{(groups == 1 ? "" : "S")}"
+        meta.Text = $"{pads.Count} pad{(pads.Count == 1 ? "" : "s")} · {groups} choke group{(groups == 1 ? "" : "s")}"
             + (E.SampleRate > 0 ? " · " + NotaNum.Unit(E.SampleRate / 1000.0, "0.#", "kHz") : "");
 
         string Timing() => $"swing {NotaNum.Pct(E.RackSwing(T))} · humanize {NotaNum.Pct(E.RackHumanize(T))}";

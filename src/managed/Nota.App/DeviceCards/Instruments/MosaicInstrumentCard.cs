@@ -447,7 +447,7 @@ internal sealed class MosaicInstrumentCard : IInstrumentCard
                 ? $"This preset uses {prog.Files.Count} samples from the pack. Zone settings are kept, no sound until installed."
                 : $"None of its {prog.Files.Count} samples were found. Zone settings are kept — point Mosaic at the folder that holds them.";
             var buttons = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 6, HorizontalAlignment = HorizontalAlignment.Center };
-            if (pack) buttons.Children.Add(Button("Install pack", () => InstallPackRequested?.Invoke(prog.PackId), "Settings → Downloads → Sample Packs", primary: true));
+            if (pack) buttons.Children.Add(Button("Install pack", () => InstallPackRequested?.Invoke(prog.PackId), "Settings → Downloads → Sample packs", primary: true));
             buttons.Children.Add(Button("Locate folder…", () => _ = LocateAsync(), "Pick the folder that holds the samples — Mosaic finds each file in it by its path or its name"));
             return new Border
             {

@@ -1190,7 +1190,7 @@ public sealed partial class ArrangementView
             // Audio clip → stems (AI model) and → MIDI: Convert / Slice to New MIDI Track.
             if (!clip.IsMidi)
             {
-                var stems = new MenuItem { Header = "Separate Stems…", Icon = MenuKit.Icon(GlyphKind.Stems) };
+                var stems = new MenuItem { Header = "Separate stems…", Icon = MenuKit.Icon(GlyphKind.Stems) };
                 stems.Click += (_, _) => _o.SeparateStemsRequested?.Invoke(trackId, idx);
 
                 var convert = new MenuItem { Header = "Convert", Icon = MenuKit.Icon(GlyphKind.Arrow) };
@@ -1200,13 +1200,13 @@ public sealed partial class ArrangementView
                     if (enabled) mi.Click += (_, _) => _o.ConvertClipRequested?.Invoke(trackId, idx, mode);
                     return mi;
                 }
-                convert.Items.Add(ConvItem("Convert Melody to New MIDI Track", ClipConvertMode.Melody, true));
+                convert.Items.Add(ConvItem("Convert melody to new MIDI track", ClipConvertMode.Melody, true));
                 convert.Items.Add(ConvItem("Convert Harmony to New MIDI Track", ClipConvertMode.Harmony, true));
                 convert.Items.Add(ConvItem("Convert Drums to New MIDI Track", ClipConvertMode.Drums, true));
-                convert.Items.Add(ConvItem("Slice to New MIDI Track", ClipConvertMode.Slice, true));
+                convert.Items.Add(ConvItem("Slice to new MIDI track", ClipConvertMode.Slice, true));
                 if (_o.CanTranscribe?.Invoke() == false)
                 {
-                    var better = new MenuItem { Header = "Get the AI Model for Melody & Harmony…" };
+                    var better = new MenuItem { Header = "Get the AI model for melody & harmony…" };
                     better.Click += (_, _) => _o.TranscriptionModelRequested?.Invoke();
                     convert.Items.Add(new Separator());
                     convert.Items.Add(better);
@@ -1222,7 +1222,7 @@ public sealed partial class ArrangementView
             {
                 var toSession = new MenuItem { Header = inGroup ? "Copy selection to Session" : "Copy to Session", Icon = MenuKit.Icon(GlyphKind.Grid), InputGesture = MenuKit.CopyToOtherViewKey };
                 toSession.Click += (_, _) => { EnsureSelected(); _o.CopySelectionToSession(); };
-                var toScene = new MenuItem { Header = "Copy to Scene", Icon = MenuKit.Icon(GlyphKind.Grid) };
+                var toScene = new MenuItem { Header = "Copy to scene", Icon = MenuKit.Icon(GlyphKind.Grid) };
                 for (int s = 0; s < eng.SceneCount; s++)
                 {
                     int sc = s;

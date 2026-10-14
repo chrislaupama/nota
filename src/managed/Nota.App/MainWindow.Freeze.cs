@@ -180,7 +180,7 @@ public partial class MainWindow
         {
             items.Add(FreezeMenuItem("Freeze track", SnowflakeIcon(),
                 async () => { Timeline.Select(trackId, -1); await FreezeTrackAsync(trackId); }));
-            items.Add(FreezeMenuItem("Live Freeze", ChainLinkIcon(),
+            items.Add(FreezeMenuItem("Live freeze", ChainLinkIcon(),
                 async () => { Timeline.Select(trackId, -1); await LiveFreezeAsync(trackId); }));
         }
         return items;
