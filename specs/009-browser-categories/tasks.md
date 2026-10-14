@@ -394,5 +394,5 @@ and with no chip the list is today's.
 
 ## Phase 9: Convergence
 
-- [ ] T050 Reword `specs/009-browser-categories/plan.md` § "Nota: Read Before Planning" (line 44): the chips reuse `MakeChip` (the filter-chip style), not `GroupLabel` and the disclosure caret, per plan: R9 chips decision (contradicts)
-- [ ] T051 Update the `DESIGN.md` Filter chips row (line 466): the Favorites / tags strip overflows into `+N`, and the device tabs' category row wraps so every category stays in sight, per FR-008 (partial)
+- [X] T050 Reword `specs/009-browser-categories/plan.md` § "Nota: Read Before Planning" (line 44): the chips reuse `MakeChip` (the filter-chip style), not `GroupLabel` and the disclosure caret, per plan: R9 chips decision (contradicts)
+- [X] T051 Update the `DESIGN.md` Filter chips row (line 466): the Favorites / tags strip overflows into `+N`, and the device tabs' category row wraps so every category stays in sight, per FR-008 (partial)

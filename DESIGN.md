@@ -463,7 +463,7 @@ Builders live in `DeviceCardKit`; controls in `Controls/`. Reuse before writing 
 | `DragNumber` | Mono field: drag, or double-click to type. |
 | Buttons (`Button`, `.primary`, `.ghost`, `.cell`, `.chip`, `.tp-icon`, `.tp-play`) | 26 tall, radius 3, raised with a seam border and the bevel at rest. A context's primary action is set apart by weight (600) and one tone step (raised hover), **not by colour**. A toggled-on key is solid accent with derived ink. A destructive action is an ordinary raised key; its label says what it does. |
 | Readouts and fields (`Border.well`, `.cell`, `TextBox.field`, `ComboBox`, `.search`) | 26, well fill, 1 px rule edge, radius 3; a mono value with its muted unit on one line. Focus = the edge turns accent, no ring. |
-| Filter chips | 20, radius 3, 9 side pad, raised with a seam border; a category-colour dot instead of an icon; active = solid accent with derived ink; one line, overflow folds into `+N`. |
+| Filter chips | 20, radius 3, 9 side pad, raised with a seam border; a category-colour dot instead of an icon; active = solid accent with derived ink. The Favorites / tags strip is one line and overflows into `+N`; the device tabs' category row wraps instead, so every category stays in sight. |
 | Track toggles (M / S / arm) | Raised keys at rest; on = solid `Mute` / `Solo` / `Record` with `InkOn` text. |
 | `Glyph` | The one icon set (§ Icons): geometry on a 16-unit grid, a round-capped 1.5 px stroke at 16 px (scaled, min 1.2) or a solid fill. No icon font, no unicode glyphs. |
 | `MeterBar`, `StereoMeter`, `GrMeter` | 11 wide, 5 apart, radius 2 on Well; green → −6 dB amber → 0 red; −60…+6; peak hold stays until clicked. |

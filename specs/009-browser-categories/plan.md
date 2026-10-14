@@ -41,8 +41,8 @@ It is UI and settings only: no engine, C ABI, project-format or shortcut change.
 ## Nota: Read Before Planning
 
 - **UI work** → [`DESIGN.md`](../../DESIGN.md) (Studio) and the `nota-design` skill.
-  Headers reuse `GroupLabel` and the group row. The caret reuses the device-row disclosure
-  glyph.
+  The chips reuse `MakeChip`, the filter-chip style of the Favorites / tags and the Files
+  sample chips; there are no new controls.
 - **A built-in device** → the `nota-instrument` skill. Its registration checklist gains
   "add the device to `DeviceCategories`".
 - **Anything** → [`CONTRIBUTING.md`](../../CONTRIBUTING.md): SPDX headers on new files,
