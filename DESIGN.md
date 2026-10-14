@@ -258,13 +258,14 @@ Fluent's `SystemAccentColor` ramps are retinted to the orange, so stock controls
 | Key | Role | Dark | Light | Use |
 |---|---|---|---|---|
 | `Brush.Record` | error | `#F06A6E` | `#B3262C` | Record and arm — solid when on |
-| `Brush.RecordInk` | — | `#FFFFFF` | `#FFFFFF` | The disc on an engaged record key |
+| `Brush.RecordInk` | — | `#17181A` | `#FFFFFF` | The disc on an engaged record key: dark on Dark's light red |
 | `Brush.Danger` | error | `#F06A6E` | `#B3262C` | Overload, clipping, error text |
 | `Brush.DangerBright` | — | `#F58F92` | `#9C1F24` | Overload readout text |
 | `Brush.Mute` | warning amber | `#F2B53C` | `#7A4F00` | Mute on |
 | `Brush.Warning` | warning amber | `#F2B53C` | `#7A4F00` | Meter −6…0 dB |
 | `Brush.Solo` | track blue | `#6A9FD8` | `#3F78B8` | Solo on |
 | `Brush.Success` | green | `#6CC673` | `#22692B` | Meter safe range, positive status; Play in Session |
+| `Brush.SuccessInk` | — | `#17181A` | `#FFFFFF` | The glyph on a green key (Session play) |
 | `Brush.SuccessDim` | green-dim | `#3F8A45` | `#79B880` | Transport input, metronome |
 
 `DangerHover` and `DangerSubtle` complete the error family; `NotaPalette` adds `DangerDeep`
