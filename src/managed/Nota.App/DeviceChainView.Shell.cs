@@ -3,10 +3,10 @@
 //
 // Detail · Devices — the ONE shared card shell (mockup 2f header) used by every
 // built-in instrument and effect editor, so the chain reads as one family. It draws
-// the 26px chrome bar over a body host: power dot (bypass / status), name, subtitle,
-// preset picker, A/B compare (full param snapshots), a small stereo meter with a
-// pinned dB readout, per-instrument voice count, reorder ◀▶, remove ✕ and a drag
-// handle — each shown only where it applies. Card bodies (IInstrumentCard / IDeviceBody)
+// the 22px chrome bar over a body host. The header has fixed slots, left to right:
+// name · preset picker · badges (type, live voice count, the card's own accessories) ·
+// power (bypass). The power slot is reserved on every card, so right edges line up down a
+// chain. A/B compare, move and delete live in the header's context menu. Card bodies (IInstrumentCard / IDeviceBody)
 // return content only; this wraps them.
 
 using System;
@@ -96,7 +96,8 @@ public sealed partial class DeviceChainView
         string Name, string Subtitle, int DeviceIndex, int Count, bool Bypassed, bool Bypassable,
         bool CanMove, bool CanDelete, int PresetKind, bool IsInstrument, double Width, ChainKind Kind,
         Func<Nota.Application.IAudioEngine, int, int, string?>? VoiceLabel = null,
-        CardPresets? Presets = null, Control? HeaderExtra = null, bool Compact = false);   // Compact: a mini card — no type badge, a narrower preset picker
+        CardPresets? Presets = null, Control? HeaderExtra = null, bool Compact = false,   // Compact: a mini card — no type badge, a narrower preset picker
+        bool Utility = false);   // Utility: not a device (Sends) — the same header, without the device menu, selection or presets
 
     /// <summary>A card's own preset list, in place of the factory presets for its kind — the
     /// Drum Rack's kits, which load pads rather than set parameters. <paramref name="Current"/>
@@ -112,12 +113,14 @@ public sealed partial class DeviceChainView
     private Border BuildCardShell(ShellSpec s, Control body)
     {
         int di = s.DeviceIndex;
-        var extra = Extra(s.Kind, di);
+        var extra = s.Utility ? new CardExtra() : Extra(s.Kind, di);
 
-        // ---- header (22): name on the left; on the right the preset picker, the processing
-        // type as a mono badge and the bypass switch. A/B, move and delete live in the
-        // header's context menu (with the presets again); the whole header drags the card to
-        // a new slot; Delete removes the selected card.
+        // ---- header (22), in fixed slots: name · preset · badges · power. The name column has
+        // a fixed width for a given card width, so the preset picker starts at the same x on
+        // every card of that width; the badges sit right-aligned before the power slot, which
+        // is reserved (empty) on a card that can't be bypassed. A/B, move and delete live in
+        // the header's context menu (with the presets again); the whole header drags the card
+        // to a new slot; Delete removes the selected card.
         var name = new TextBlock
         {
             // A compact card drops the family prefix ("Nota Arp" → "Arp") to leave room for the presets.
@@ -125,7 +128,7 @@ public sealed partial class DeviceChainView
             VerticalAlignment = VerticalAlignment.Center, TextTrimming = TextTrimming.CharacterEllipsis,
         };
 
-        var right = new StackPanel { Orientation = Orientation.Horizontal, Spacing = s.Compact ? 6 : 8, HorizontalAlignment = HorizontalAlignment.Right, VerticalAlignment = VerticalAlignment.Center };
+        var badges = new StackPanel { Orientation = Orientation.Horizontal, Spacing = s.Compact ? 6 : 8, HorizontalAlignment = HorizontalAlignment.Right, VerticalAlignment = VerticalAlignment.Center };
 
         // Type badge (mono, muted, sentence case). An instrument that reports its voices shows
         // them here, live, as the badge's value — e.g. "Synth · 3/16".
@@ -145,8 +148,11 @@ public sealed partial class DeviceChainView
                 badge.Text = type.Length > 0 ? $"{type} · {voices}" : voices;
             });
         }
-        if ((badge.Text.Length > 0 || s.IsInstrument) && !s.Compact) right.Children.Add(badge);
-        if (s.HeaderExtra is { } headerExtra) right.Children.Add(headerExtra);
+        if ((badge.Text.Length > 0 || s.IsInstrument) && !s.Compact) badges.Children.Add(badge);
+        if (s.HeaderExtra is { } headerExtra) badges.Children.Add(headerExtra);
+
+        // The power slot: the bypass switch, or the same width left empty.
+        var power = new Border { Width = SwitchTrack.W, VerticalAlignment = VerticalAlignment.Center };
 
         if (s.Bypassable)
         {
@@ -160,12 +166,16 @@ public sealed partial class DeviceChainView
                 else _engine.SetDeviceBypassed(_trackId, di, !s.Bypassed);
                 Rebuild(); Changed?.Invoke();
             };
-            right.Children.Add(bypass);
+            power.Child = bypass;
         }
 
-        var headerGrid = new Grid { ColumnDefinitions = new ColumnDefinitions("*,Auto"), ColumnSpacing = 8 };
+        // A card with a set width gets a fixed name column (a share of the width); one that
+        // sizes to its content lets the name take what it needs.
+        string nameCol = double.IsNaN(s.Width) ? "Auto" : Math.Round(Math.Clamp(s.Width * 0.22, 56, 160)).ToString(System.Globalization.CultureInfo.InvariantCulture);
+        var headerGrid = new Grid { ColumnDefinitions = new ColumnDefinitions($"{nameCol},Auto,*,Auto"), ColumnSpacing = 8 };
         headerGrid.Children.Add(name);
-        Grid.SetColumn(right, 1); headerGrid.Children.Add(right);
+        Grid.SetColumn(badges, 2); headerGrid.Children.Add(badges);
+        Grid.SetColumn(power, 3); headerGrid.Children.Add(power);
         var headerBar = new Border
         {
             Height = DeviceCardKit.HeaderH, Background = ShellHdr, BorderBrush = BorderDef, BorderThickness = new Thickness(0, 0, 0, 1),
@@ -173,7 +183,7 @@ public sealed partial class DeviceChainView
             Cursor = s.CanMove && SelectableKind(s.Kind) ? new Cursor(StandardCursorType.SizeAll) : null,
         };
         headerBar.BindResource(Border.BoxShadowProperty, "Shadow.Raised");   // the raised strip's top bevel
-        ToolTip.SetTip(headerBar, s.CanMove ? "Drag to reorder · right-click for A/B, move and delete" : "Right-click for more");
+        if (!s.Utility) ToolTip.SetTip(headerBar, s.CanMove ? "Drag to reorder · right-click for A/B, move and delete" : "Right-click for more");
 
         // Factory presets for this device (or the card's own list), and applying one in place.
         List<(string Id, string Name)> presets;
@@ -194,7 +204,7 @@ public sealed partial class DeviceChainView
         }
         else
         {
-            presets = s.PresetKind >= 0 || s.IsInstrument || s.Kind == ChainKind.Midi
+            presets = !s.Utility && (s.PresetKind >= 0 || s.IsInstrument || s.Kind == ChainKind.Midi)
                 ? _factory.All().Where(p => p.BuiltinKind == s.PresetKind
                     && (s.Kind == ChainKind.Midi ? p.IsMidiEffect : (p.IsInstrument == s.IsInstrument && !p.IsMidiEffect)))
                     .Select(p => (p.Id, p.DisplayName)).ToList()
@@ -210,10 +220,14 @@ public sealed partial class DeviceChainView
         }
         // A compact (mini) card keeps the same picker — same list, same current preset — only narrower:
         // the preset belongs to the device, not to the card size.
-        // The picker sits right of the type badge: the badge's live voice count changes width
-        // (Consort's "DUO 1/2" → "POLY 12/16"), and on the left it would push the picker around.
-        if (presets.Count > 0) right.Children.Insert(right.Children.IndexOf(badge) + 1, PresetPicker(presets.Select(p => p.Name).ToList(), curPreset, extra.Preset, ApplyPreset, StepPreset,
-            nameWidth: s.Compact ? 74 : 132));
+        // The picker has its own slot after the name: the badges' live voice count changes
+        // width (Consort's "Duo 1/2" → "Poly 12/16") without moving it.
+        if (presets.Count > 0)
+        {
+            var picker = PresetPicker(presets.Select(p => p.Name).ToList(), curPreset, extra.Preset, ApplyPreset, StepPreset,
+                nameWidth: s.Compact ? 74 : 132);
+            Grid.SetColumn(picker, 1); headerGrid.Children.Add(picker);
+        }
 
         void Move(int to) { if (s.Kind == ChainKind.Midi) _engine.MoveMidiEffect(_trackId, di, to); else _engine.MoveDevice(_trackId, di, to); ExtrasMoved(s.Kind, di, to); Rebuild(); Changed?.Invoke(); }
 
@@ -276,7 +290,7 @@ public sealed partial class DeviceChainView
         }
 
         // Click selects the device (accent ring + keyboard target); right-click opens the menu.
-        headerBar.PointerPressed += (_, e) =>
+        if (!s.Utility) headerBar.PointerPressed += (_, e) =>
         {
             var pt = e.GetCurrentPoint(headerBar).Properties;
             if (pt.IsRightButtonPressed) { ShowDeviceContextMenu(headerBar, s.Kind, di, HeaderMenu); return; }
@@ -286,7 +300,7 @@ public sealed partial class DeviceChainView
         DockPanel.SetDock(headerBar, Dock.Top);
         var bodyHost = new Border { Child = body };
         var root = new DockPanel { LastChildFill = true, Children = { headerBar, bodyHost } };
-        bool sel = IsSelected(s.Kind, di);
+        bool sel = !s.Utility && IsSelected(s.Kind, di);
         // Selection is drawn as a focus ring outside the card, with a small gap (not by
         // thickening the card's own edge border, nor as an inset overlay): drawn on or inside
         // the edge it crowds the header — the title and the preset picker read as touching it.

@@ -171,13 +171,15 @@ workstream (plan § Complexity Tracking).
 
 **Independent Test**: `cards.sh` after the change, then `edgediff.sh` per card. The header slots align, and section content moves by at most 1 px.
 
-- [ ] T041 [US4] `App/DeviceChainView.Shell.cs` `BuildCardShell`:
+- [X] T041 [US4] `App/DeviceChainView.Shell.cs` `BuildCardShell`:
   - Header order: name · preset · badges (subtitle, voice count, `HeaderAccessory`/`HeaderExtra`) · power.
   - The power slot has a fixed width on every card, empty when the device isn't bypassable.
   - Fix the "26px chrome bar" comment to say 22.
-- [ ] T042 [US4] Move `App/DeviceCards/Rack/RackCardView.cs` (Instrument Rack and Audio Effect Rack) onto `BuildCardShell` via `ShellSpec`, keeping "Rack · N chains" as a badge. Delete `RackHeader` and the dead `RackShell`.
-- [ ] T043 [US4] Move `DeviceCardKit.SimpleCard` users (`App/DeviceCards/**/GenericInstrumentCard.cs`, the Sends card in `App/DeviceChainView.cs:239`) onto `BuildCardShell`. Remove `SimpleCard` if it ends up unused.
-- [ ] T044 [US4] Verify the headers with `cards.sh` in Studio Dark: the preset picker's left edge and the power key's right edge align across cards of equal width (P4.1). Plugin card check: load the built-in test plugin, if the smoke test ships one, or skip with a note.
+- [X] T042 [US4] Move `App/DeviceCards/Rack/RackCardView.cs` (Instrument Rack and Audio Effect Rack) onto `BuildCardShell` via `ShellSpec`, keeping "Rack · N chains" as a badge. Delete `RackHeader` and the dead `RackShell`.
+- [X] T043 [US4] Move `DeviceCardKit.SimpleCard` users (`App/DeviceCards/**/GenericInstrumentCard.cs`, the Sends card in `App/DeviceChainView.cs:239`) onto `BuildCardShell`. Remove `SimpleCard` if it ends up unused.
+- [X] T044 [US4] Verify the headers with `cards.sh` in Studio Dark: the preset picker's left edge and the power key's right edge align across cards of equal width (P4.1). Plugin card check: load the built-in test plugin, if the smoke test ships one, or skip with a note.
+
+  *Checked*: the preset picker starts 171 px into every 700-wide card (Auto Filter, Drum Rack, Instrument Rack). The plugin card uses the same shell; no test plugin ships, so it was not loaded. Sends uses the shell as a `Utility` card (no device menu, selection or presets).
 - [ ] T045 [US4] Add `DeviceCardKit.Section(Control body, SectionEdge edges)` in `App/DeviceCardKit.cs`, with `[Flags] enum SectionEdge { None, Top, Left }`. It has no fill or frame, draws only a 1 px `Brush.Rule` on the given edges, and keeps the same inner padding as today's boxes (data-model § Device-card section).
 - [ ] T046 [US4] Make every local helper a one-line delegate to `DeviceCardKit.Section`. This covers the 13 instrument `SectionBox`es, the effect-body `TabFrame` outer frame (not its tab bar), the 6 MIDI `IslandBox`es, `PluginCard.Section`, `RhythmInstrumentCard.Section`, Pendulum's `StripBox` and Drum Rack's `DrumBox`. The caller passes the edge it shares with the previous section.
 - [ ] T047 [P] [US4] Sweep the inline framed section boxes in `App/DeviceCards/Instruments/*.cs` (`SurfaceCard`/`Card2` background + `BorderDef` border) → `Section`. Leave graph windows and wells alone. Run `edgediff` on each instrument card.

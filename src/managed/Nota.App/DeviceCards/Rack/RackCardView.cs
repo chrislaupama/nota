@@ -69,16 +69,17 @@ internal sealed partial class RackCardView(DeviceCardContext ctx)
 
     // ---- entry points -----------------------------------------------------
 
-    // Instrument Rack card (the track's instrument), rebuilt to mockup 2p (700×260).
-    public Control BuildInstrumentRackCard()
+    // Instrument Rack body (the track's instrument, mockup 2p, 700×260). The shared device
+    // shell draws the header (name, presets, "Rack · N chains"); this is everything below it.
+    public Control BuildInstrumentRackBody(out int chains)
     {
         var a = new InstrumentRackAccess(E, T);
-        int chains = a.ChainCount();
+        chains = a.ChainCount();
         Sel = chains > 0 ? Math.Clamp(Sel, 0, chains - 1) : 0;
         _irTick.Clear();
         Control content = _macroMapMode ? InstrumentRackMacroMap(a) : InstrumentRackMain(a);
         if (_irTick.Count > 0) _ctx.AddDeviceRefresher(() => { for (int i = 0; i < _irTick.Count; i++) _irTick[i](); });
-        return new Border { Width = 700, Height = 260, Background = NotaPalette.BgApp, BorderBrush = IrBorder, BorderThickness = new Thickness(1), CornerRadius = NotaRadius.Body, ClipToBounds = true, Child = content };
+        return new Border { Background = NotaPalette.BgApp, Child = content };
     }
 
     private Control InstrumentRackMain(IRackAccess a)
@@ -88,26 +89,8 @@ internal sealed partial class RackCardView(DeviceCardContext ctx)
         var rail = IrRackRail(a);
         DockPanel.SetDock(chainList, Dock.Left); DockPanel.SetDock(rail, Dock.Right);
         var body = new DockPanel { LastChildFill = true, Children = { chainList, rail, IrDeviceArea(a) } };
-        var header = IrHeader(a, "MAIN");
-        DockPanel.SetDock(header, Dock.Top); DockPanel.SetDock(strip, Dock.Top);
-        return new DockPanel { LastChildFill = true, Children = { header, strip, body } };
-    }
-
-    // ---- header (22) ----
-    // The almanac device header (22): name left; a mono badge right. Nothing else — the
-    // rack's level is on the track meter, and its view switches live in its LIVE strip.
-    private static Control RackHeader(string name, string badge)
-    {
-        var nameTb = new TextBlock { Text = name, FontSize = NotaType.DeviceName, FontWeight = FontWeight.SemiBold, Foreground = IrTxt, VerticalAlignment = VerticalAlignment.Center };
-        var badgeTb = new TextBlock { Text = badge, FontFamily = NotaFonts.MonoFamily, FontSize = NotaType.Eyebrow, FontWeight = FontWeight.Medium, Foreground = IrMuted, VerticalAlignment = VerticalAlignment.Center, [DockPanel.DockProperty] = Dock.Right };
-        var dp = new DockPanel { LastChildFill = false, Margin = new Thickness(NotaSpace.DeviceInsetWide, 0), Children = { badgeTb, nameTb } };
-        return new Border { Height = DeviceCardKit.HeaderH, Background = IrHdr, BorderBrush = IrBorder, BorderThickness = new Thickness(0, 0, 0, 1), Child = dp };
-    }
-
-    private Control IrHeader(IRackAccess a, string mode)
-    {
-        int chains = a.ChainCount();
-        return RackHeader("Nota Instrument Rack", $"Rack · {chains} chain{(chains == 1 ? "" : "s")}");
+        DockPanel.SetDock(strip, Dock.Top);
+        return new DockPanel { LastChildFill = true, Children = { strip, body } };
     }
 
     // ---- macro strip (34): 8 named horizontal macro sliders ----
@@ -663,11 +646,10 @@ internal sealed partial class RackCardView(DeviceCardContext ctx)
 
     // ---- second view: Macro map (mockup 2p card 2) ----
     private static int _mapMacro;
-    // withHeader=false + a custom onDone lets the Audio Effect Rack reuse this view
-    // inside the shared device shell (no duplicate instrument header).
-    private Control InstrumentRackMacroMap(IRackAccess a, bool withHeader = true, Action? onDone = null)
+    // Both racks show this view inside the shared device shell; a custom onDone lets the
+    // Audio Effect Rack leave it its own way.
+    private Control InstrumentRackMacroMap(IRackAccess a, Action? onDone = null)
     {
-        var header = withHeader ? IrHeader(a, "MAP") : null;
         // MAPPING strip.
         var done = new Border { BorderBrush = IrTeal, BorderThickness = new Thickness(1), CornerRadius = NotaRadius.Control, Padding = new Thickness(10, 2), Cursor = new Cursor(StandardCursorType.Hand),
             Child = new TextBlock { Text = "Done", FontSize = 9, Foreground = IrTeal, HorizontalAlignment = HorizontalAlignment.Center, TextAlignment = TextAlignment.Center }, [DockPanel.DockProperty] = Dock.Right };
@@ -722,7 +704,6 @@ internal sealed partial class RackCardView(DeviceCardContext ctx)
         var body = new DockPanel { LastChildFill = true, Children = { macCol, targets } };
         DockPanel.SetDock(strip, Dock.Top);
         var root = new DockPanel { LastChildFill = true };
-        if (header != null) { DockPanel.SetDock(header, Dock.Top); root.Children.Add(header); }
         root.Children.Add(strip); root.Children.Add(body);
         return root;
     }
@@ -772,7 +753,7 @@ internal sealed partial class RackCardView(DeviceCardContext ctx)
         Control root;
         if (_aeMacroMap)
         {
-            root = InstrumentRackMacroMap(a, false, () => { _aeMacroMap = false; DeferRebuild(); });
+            root = InstrumentRackMacroMap(a, () => { _aeMacroMap = false; DeferRebuild(); });
         }
         else
         {
@@ -1632,25 +1613,6 @@ internal sealed partial class RackCardView(DeviceCardContext ctx)
         };
         b.PointerPressed += (_, e) => { e.Handled = true; onClick(); };
         return b;
-    }
-
-    private static Border RackShell(string title, double width, Control body)
-    {
-        var headerBar = new Border
-        {
-            Height = DeviceCardKit.HeaderH, BorderBrush = BorderDef, BorderThickness = new Thickness(0, 0, 0, 1), Padding = new Thickness(8, 0),
-            Child = new TextBlock { Text = title, FontSize = NotaType.DeviceName, FontWeight = FontWeight.SemiBold, Foreground = TextPrimary, VerticalAlignment = VerticalAlignment.Center },
-        };
-        var stack = new Grid { RowDefinitions = new RowDefinitions("Auto,*") };
-        stack.Children.Add(headerBar);
-        var bodyHost = new Border { Padding = new Thickness(10), Child = body };
-        Grid.SetRow(bodyHost, 1);
-        stack.Children.Add(bodyHost);
-        return new Border
-        {
-            Width = width, Height = CardH, Background = Raised, BorderBrush = BorderDef,
-            BorderThickness = new Thickness(1), CornerRadius = NotaRadius.Body, ClipToBounds = true, Child = stack,
-        };
     }
 }
 

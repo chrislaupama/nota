@@ -236,7 +236,11 @@ public sealed partial class DeviceChainView : UserControl
             shown++;
         }
         Control body = shown > 0 ? knobs : new TextBlock { Text = "No return tracks", FontSize = 9, Foreground = TextTertiary, VerticalAlignment = VerticalAlignment.Center };
-        return SimpleCard("Sends", shown > 2 ? 200 : 140, body);
+        var spec = new ShellSpec(
+            Name: "Sends", Subtitle: "", DeviceIndex: -2, Count: 0, Bypassed: false, Bypassable: false,
+            CanMove: false, CanDelete: false, PresetKind: -1, IsInstrument: false, Width: shown > 2 ? 200 : 140,
+            Kind: ChainKind.Effect, Compact: true, Utility: true);
+        return BuildCardShell(spec, new Border { Padding = new Thickness(10), Child = body });
     }
 
     private Control AddDeviceCard()

@@ -250,25 +250,6 @@ internal static class DeviceCardKit
         return g;
     }
 
-    internal static Border SimpleCard(string title, double width, Control body)
-    {
-        var headerBar = new Border
-        {
-            Height = HeaderH, Background = Raised, BorderBrush = BorderDef, BorderThickness = new Thickness(0, 0, 0, 1), Padding = new Thickness(8, 0),
-            Child = new TextBlock { Text = title, FontSize = NotaType.DeviceName, FontWeight = FontWeight.SemiBold, Foreground = TextPrimary, VerticalAlignment = VerticalAlignment.Center },
-        };
-        var stack = new Grid { RowDefinitions = new RowDefinitions("Auto,*") };
-        stack.Children.Add(headerBar);
-        var bodyHost = new Border { Padding = new Thickness(10), Child = body };
-        Grid.SetRow(bodyHost, 1);
-        stack.Children.Add(bodyHost);
-        return new Border
-        {
-            Width = width, Height = CardH, Background = Card2, BorderBrush = BorderDef,
-            BorderThickness = new Thickness(1), CornerRadius = NotaRadius.Body, ClipToBounds = true, Child = stack,
-        };
-    }
-
     internal static Control Hint(string text) => new TextBlock
     {
         Text = text, FontSize = 9, Foreground = TextTertiary,
