@@ -54,10 +54,10 @@ internal static partial class DesignTokenCheck
         // Nothing else names a theme: the built-in list, the palette's seed and the
         // appearance defaults are the only places a theme id may appear in code.
         var allowed = new[] { "Theme/NotaColourTheme.cs", "Theme/NotaPalette.cs" };
-        var naming = Directory.EnumerateFiles(app, "*.cs", SearchOption.AllDirectories)
+        var naming = Files(app, "*.cs", SearchOption.AllDirectories)
             .Where(f => !f.Contains("/obj/") && !f.Contains("/bin/") && !allowed.Any(a => f.EndsWith(a)))
             .Where(f => fileIds.Any(id => File.ReadAllText(f).Contains($"\"{id}\"")))
-            .Select(f => Path.GetRelativePath(app, f)).ToArray();
+            .Select(f => Rel(app, f)).ToArray();
         yield return (naming.Length == 0,
             naming.Length == 0 ? "no view or control names a theme id (adding a theme is its file + BuiltInOrder)"
                                : $"theme ids named in: {string.Join(", ", naming)}");
