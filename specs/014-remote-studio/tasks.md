@@ -86,7 +86,7 @@ against DESIGN.md § The rules.
 - [X] T032 Run `scripts/build.sh` (smoke test included); rerun timing-budget checks on an idle machine before calling one real
 - [X] T033 "After" screenshots of every screen at 390 × 844 in Studio Dark and Studio Light (plus one each in Ember Graphite / Ember Paper and a Follow-phone flip) with the mock; review against DESIGN.md § The rules and fix
 - [X] T034 [P] `CHANGELOG.md` [Unreleased] entry; `FEATURES.md` via nota-features; `DESIGN.md` § Shell note on Nota Remote; user manual's Remote page via nota-docs if the sibling repo is present (it is not checked out here — follow-up)
-- [ ] T035 Commit, push `feat/remote-studio`, open a draft PR on chrislaupama/nota into `feat/studio-ui` with before/after screenshots
+- [X] T035 Commit, push `feat/remote-studio`, open a draft PR on chrislaupama/nota into `feat/studio-ui` with before/after screenshots
 
 ## Dependencies
 
