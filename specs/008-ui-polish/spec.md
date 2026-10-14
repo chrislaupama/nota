@@ -16,6 +16,7 @@
 - User addition (same session): replace the Arrangement / Session / Modular word buttons with icons, as part of the icon-set work.
 - Q: To reach two header rows above the first track, should the Sections row or the Overview strip give way? → A: Neither. Keep the Overview, Sections and Zoom/ruler rows exactly as they are, with no removal, merge, move or restyle. Critique F9 is out of scope.
 - Q: Should the "Nota" prefix on built-in browser rows go, dim, or stay? → A: Go, in the browser rows only. Rows read "Aurora", "Bass"…, and full names ("Nota Aurora") stay everywhere else: card headers, device chain, menus and search.
+- Q: Where does the power key sit on every device-card header? → A: At the far right. The order is name, preset stepper, badges, power, as on Auto Filter today.
 
 ## Nota Context *(fill in — drives plan and tasks)*
 
@@ -122,7 +123,7 @@ caps or Title Case. The automated check fails if one is reintroduced.
 ### User Story 4 - Every device card has the same header and calmer sections (Priority: P2)
 
 Whatever device a producer adds, its card header has the same parts in the same places:
-power, name, preset stepper, and any badges. Their eye and hand learn one layout. Inside
+name, preset stepper, any badges, and the power key at the far right. Their eye and hand learn one layout. Inside
 the card, sections sit on the card's own surface, separated by thin rules rather than
 each framed in its own box, as in Saine.
 
@@ -135,8 +136,8 @@ side.
 **Acceptance Scenarios**:
 
 1. **Given** every built-in instrument, audio effect and MIDI effect, **When** its card
-   shows, **Then** its header has, from left to right: the power key, the name, the
-   preset stepper, then device-specific badges. Each part is in the same position and
+   shows, **Then** its header has, from left to right: the name, the preset stepper,
+   device-specific badges, then the power key at the far right. Each part is in the same position and
    size on every card.
 2. **Given** a device that has no power state or no presets, **When** its card shows,
    **Then** the missing part's slot is empty, and the other parts do not shift.
@@ -215,7 +216,7 @@ the critique screenshots. Confirm the arrangement header rows are unchanged.
 - **Every theme**: overlays, headers and icons look right in all four built-in themes, and
   every theme still passes the readability bar.
 - **Third-party plugin cards** (VST3 / AU) use the same header anatomy for the parts Nota
-  draws: power, name and preset where available.
+  draws: name, preset where available, and power at the far right.
 - **Devices with unusual widths** (the documented card-width exceptions) keep the same
   header order. The parts do not stretch or reflow.
 - **Labels from data** (user track names, preset names, plugin names, tags) are shown as
@@ -255,8 +256,9 @@ the critique screenshots. Confirm the arrangement header rows are unchanged.
 
 **Device cards (US4)**
 
-- **FR-008**: Every built-in device card's header MUST follow one anatomy: power key,
-  name, preset stepper, then device-specific badges, at fixed positions and sizes. A part
+- **FR-008**: Every built-in device card's header MUST follow one anatomy, left to right:
+  name, preset stepper, device-specific badges, then the power key at the far right, at
+  fixed positions and sizes (clarified). A part
   a device lacks leaves its slot empty (F7).
 - **FR-009**: Plugin device cards MUST use the same anatomy for the parts Nota draws.
 
@@ -300,8 +302,8 @@ the critique screenshots. Confirm the arrangement header rows are unchanged.
 
 - **Overlay**: an in-window floating layer (mixer, export, command palette). It has a
   name, a header, an edge, a shadow and a close behaviour.
-- **Device-card header**: the strip at the top of a card, with fixed slots for power,
-  name, preset stepper and badges.
+- **Device-card header**: the strip at the top of a card, with fixed slots, left to
+  right: name, preset stepper, badges, power.
 - **Icon**: a named shape in the shared set. It has one grid, one stroke weight, and a
   filled or stroked style. New in this feature: icons for Arrangement, Session and
   Modular.
