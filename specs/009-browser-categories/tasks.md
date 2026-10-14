@@ -35,8 +35,8 @@ The Xvfb harness and capture scripts from 008 live in `/tmp/claude-0/`, outside 
 
 **Purpose**: a known-good build and a visual baseline of the three device tabs.
 
-- [ ] T001 Build `009-browser-categories` with `scripts/build-linux.sh` (Xvfb, PulseAudio null sink) and record the smoke-test result in `/tmp`, not committed. Only the known "Consort stress" failure is allowed; the palette keystroke budget may also fail under load and passes when re-run quietly.
-- [ ] T002 [P] Capture the **baseline** Instruments, Audio effects and MIDI effects tabs (browser at its default width, fresh `HOME`) in all four themes into `/tmp/claude-0/shots/browser-before/`. Use a small `/tmp/claude-0/scripts/browser-tabs.sh <theme> <outdir>` that clicks the three rail tabs. Also capture the Audio effects tab with ⋮ open.
+- [X] T001 Build `009-browser-categories` with `scripts/build-linux.sh` (Xvfb, PulseAudio null sink) and record the smoke-test result in `/tmp`, not committed. Only the known "Consort stress" failure is allowed; the palette keystroke budget may also fail under load and passes when re-run quietly.
+- [X] T002 [P] Capture the **baseline** Instruments, Audio effects and MIDI effects tabs (browser at its default width, fresh `HOME`) in all four themes into `/tmp/claude-0/shots/browser-before/`. Use a small `/tmp/claude-0/scripts/browser-tabs.sh <theme> <outdir>` that clicks the three rail tabs. Also capture the Audio effects tab with ⋮ open.
 
 ---
 
@@ -44,7 +44,7 @@ The Xvfb harness and capture scripts from 008 live in `/tmp/claude-0/`, outside 
 
 **Purpose**: category data, the guard, settings and row fields. Every story builds on these.
 
-- [ ] T003 Create `Application/Palette/DeviceCategories.cs`:
+- [X] T003 Create `Application/Palette/DeviceCategories.cs`:
   - the two-line SPDX header and a why-comment;
   - a `public const string Other = "Other"`;
   - per `BuiltinDeviceType`, an ordered list of `(string Name, string[] Builtins)` written exactly as the spec's Assumptions list them:
@@ -59,7 +59,7 @@ The Xvfb harness and capture scripts from 008 live in `/tmp/claude-0/`, outside 
   - `ForPlugin(bool instrument, string reported)` returns `Other` for now (US4 fills it in).
 
   See data-model.md § DeviceCategory.
-- [ ] T004 [P] Create `Smoke/DesignTokenCheck.Browser.cs`, a `partial class DesignTokenCheck` with the SPDX header and `RunBrowser()`. Per research R7 it yields:
+- [X] T004 [P] Create `Smoke/DesignTokenCheck.Browser.cs`, a `partial class DesignTokenCheck` with the SPDX header and `RunBrowser()`. Per research R7 it yields:
   - every `BuiltinDeviceCatalog.All` entry is in exactly one category of its own type (none `Other`);
   - every listed name exists in the catalogue with that type (a stale name fails, naming it);
   - no category has an empty `Builtins`;
@@ -67,19 +67,21 @@ The Xvfb harness and capture scripts from 008 live in `/tmp/claude-0/`, outside 
   - the per-tab totals are 18 / 26 / 6.
 
   Each failure names the device or category.
-- [ ] T005 Wire `RunBrowser()` into `Smoke/Program.cs` as a `-- design: browser --` section, next to the other `DesignTokenCheck.Run*` calls (around line 63–81).
-- [ ] T006 [P] In `Application/Settings.cs`, add these next to `BrowserGroupBySource`, each with an XML doc line:
+- [X] T005 Wire `RunBrowser()` into `Smoke/Program.cs` as a `-- design: browser --` section, next to the other `DesignTokenCheck.Run*` calls (around line 63–81).
+- [X] T006 [P] In `Application/Settings.cs`, add these next to `BrowserGroupBySource`, each with an XML doc line:
   - `public bool BrowserCategoryView { get; set; } = true;`
   - `public List<string> BrowserFoldedCategories { get; set; } = new();`
 
   See data-model.md § Settings.
-- [ ] T007 In `VM` `BrowserItem`, add:
+- [X] T007 In `VM` `BrowserItem`, add:
   - `public string DeviceCategory { get; init; } = "";`
   - `public bool IsFoldable { get; init; }`
   - `public bool IsFolded { get; init; }`
 
   In `Rebuild()`, set `DeviceCategory` on each built-in (look up the `BuiltinDevice` in `BuiltinDeviceCatalog.All` by `Type` and `Kind`, then `DeviceCategories.For`). Set it to `DeviceCategories.Other` on plug-ins for now.
-- [ ] T008 Build and run the smoke test. `-- design: browser --` must be green, and the rest unchanged from T001.
+- [X] T008 Build and run the smoke test. `-- design: browser --` must be green, and the rest unchanged from T001.
+
+  *Result*: T001 baseline — only "Consort stress" fails. Design checks 152/152 (134 + 18 new browser checks). `ForPlugin` was written in full with T003 and plug-in rows get it in T007, so T026–T027 land here.
 
 **Checkpoint**: categories exist and are guarded. Nothing visible has changed yet.
 

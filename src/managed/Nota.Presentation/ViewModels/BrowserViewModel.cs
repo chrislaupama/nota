@@ -55,6 +55,7 @@ public sealed class BrowserItem : INotifyPropertyChanged
     public string Format { get; init; } = "";     // plug-ins: "VST3" / "AU" (Sub carries the vendor)
     public string Vendor { get; init; } = "";     // plug-ins: the manufacturer
     public string Category { get; init; } = "";   // plug-ins: VST3 sub-categories ("Fx|Reverb") or the AU type
+    public string DeviceCategory { get; init; } = ""; // device rows: the browser shelf ("Reverb & delay"), see DeviceCategories
     public string Path { get; init; } = "";       // file/bundle path for samples/projects/presets
     /// <summary>Long-form description for the row's tooltip, where <see cref="Sub"/> (the
     /// narrow tag column) has no room for it. Falls back to Sub when empty.</summary>
@@ -64,6 +65,10 @@ public sealed class BrowserItem : INotifyPropertyChanged
     /// caption and <see cref="GroupCount"/> how many rows it heads.</summary>
     public bool IsGroup => Kind == BrowserItemKind.Group;
     public int GroupCount { get; init; }
+    /// <summary>A category header that folds on click (false while a search is showing it).</summary>
+    public bool IsFoldable { get; init; }
+    /// <summary>A category header drawn folded: its devices are hidden beneath it.</summary>
+    public bool IsFolded { get; init; }
 
     /// <summary>The brand prefix a built-in device name carries ("Nota"), or "" — the browser
     /// prints it in tertiary ink so names scan on their distinctive word.</summary>
@@ -256,6 +261,7 @@ public sealed partial class BrowserViewModel : ObservableObject
             },
             BuiltinKind = d.Kind,
             Sub = d.Sub,
+            DeviceCategory = DeviceCategories.For(d),
         }).OrderBy(x => x.Name).ToList();
         _instrTree.AddRange(builtins.Where(b => b.Kind == BrowserItemKind.BuiltinInstrument));
         _fxTree.AddRange(builtins.Where(b => b.Kind == BrowserItemKind.BuiltinEffect));
@@ -363,6 +369,7 @@ public sealed partial class BrowserViewModel : ObservableObject
                 Format = fmt,
                 Vendor = vendor,
                 Category = category,
+                DeviceCategory = DeviceCategories.ForPlugin(isInstrument, category),
                 Kind = isInstrument ? BrowserItemKind.PluginInstrument : BrowserItemKind.PluginEffect,
                 CatalogIndex = i,
             };
