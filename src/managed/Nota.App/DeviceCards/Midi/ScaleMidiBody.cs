@@ -41,7 +41,6 @@ internal sealed class ScaleMidiBody : IMidiDeviceBody
     private static readonly string[] Folds = { "Nearest", "Down", "Up" };
 
     private static readonly IBrush Ground = NotaPalette.SurfaceInset;
-    private static readonly IBrush Island = NotaPalette.SurfaceCard;
     private static readonly IBrush Bd = NotaPalette.BorderDefault;
     private static readonly IBrush Rule = NotaPalette.GraphBorder;
     private static readonly IBrush Well = NotaPalette.BgSunken;
@@ -292,8 +291,7 @@ internal sealed class ScaleMidiBody : IMidiDeviceBody
             {
                 WithDock(top, Dock.Top), WithDock(ioBar, Dock.Bottom), new Border { Margin = new Thickness(0, 6), Child = map },
             } };
-            var island = new Border { Background = Island, BorderBrush = Bd, BorderThickness = new Thickness(1), CornerRadius = NotaRadius.Tile,
-                Padding = new Thickness(6), Child = inner };
+            var island = new RuleSection { Padding = new Thickness(6), Child = inner };
 
             var statusL = new TextBlock { FontSize = 8, Foreground = Sub, VerticalAlignment = VerticalAlignment.Center, TextTrimming = TextTrimming.CharacterEllipsis };
             var statusR = Mono("", Sub);

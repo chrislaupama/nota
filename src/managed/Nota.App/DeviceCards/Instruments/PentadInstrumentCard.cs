@@ -28,7 +28,6 @@ namespace Nota.App;
 internal sealed class PentadInstrumentCard : IInstrumentCard
 {
     private static readonly IBrush RailBg = NotaPalette.SurfaceInset;
-    private static readonly IBrush Panel = NotaPalette.SurfaceCard;   // a section box on the panel tone
     private static readonly IBrush Border2 = NotaPalette.BorderDefault;
     private static readonly IBrush BorderIn = NotaPalette.GraphBorder;
     private static readonly IBrush Inset = NotaPalette.BgSunken;
@@ -247,7 +246,7 @@ internal sealed class PentadInstrumentCard : IInstrumentCard
         wheelsBody.Children.Add(new StackPanel { Orientation = Orientation.Horizontal, Spacing = 8, HorizontalAlignment = HorizontalAlignment.Center, Margin = new Thickness(0, 0, 0, 3), Children = {
             VWheel("bend", "PITCH", v => "", NotaPalette.VizInk, spring: true),
             VWheel("modwheel", "MOD", v => "", NotaPalette.VizInk, spring: false) } });
-        var wheels = new Border { Width = 56, Background = Panel, BorderBrush = Border2, BorderThickness = new Thickness(1), CornerRadius = NotaRadius.Tile, Padding = new Thickness(0, 5), Child = wheelsBody };
+        var wheels = new RuleSection { Width = 56, Padding = new Thickness(0, 5), Child = wheelsBody };
         DockPanel.SetDock(wheels, Avalonia.Controls.Dock.Left);
 
         // ======================================================================
@@ -491,9 +490,9 @@ internal sealed class PentadInstrumentCard : IInstrumentCard
         var statusLeft = new TextBlock { FontSize = 8, Foreground = Txt2, VerticalAlignment = VerticalAlignment.Center, TextTrimming = TextTrimming.CharacterEllipsis };
         var centre = TabFrame(new[] { "Oscillators", "Filter · Amp", "Poly Mod" }, centreHost, CentreBody, false, t => { centreTab = t; extrasHost.Content = extras[t]; Refresh(); }, extrasHost);
         var rightFrame = TabFrame(new[] { "Mixer", "Output" }, rightHost, RightBody, true, null, null);
-        var right = new Border { Width = 186, Background = Panel, BorderBrush = Border2, BorderThickness = new Thickness(1), CornerRadius = NotaRadius.Tile, Child = rightFrame };
+        var right = new RuleSection { Width = 186, Child = rightFrame };
         DockPanel.SetDock(right, Avalonia.Controls.Dock.Right);
-        var centreBox = new Border { Background = Panel, BorderBrush = Border2, BorderThickness = new Thickness(1), CornerRadius = NotaRadius.Tile, Margin = new Thickness(5, 0), Child = centre };
+        var centreBox = new RuleSection { Margin = new Thickness(5, 0), Child = centre };
 
         // ======================================================================
         // Status strip + Voice setup flyout

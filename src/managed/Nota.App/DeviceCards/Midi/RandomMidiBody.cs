@@ -37,7 +37,6 @@ internal sealed class RandomMidiBody : IMidiDeviceBody
     internal static readonly string[] Rates = { "Per note", "Per bar" };
 
     private static readonly IBrush Ground = NotaPalette.SurfaceInset;
-    private static readonly IBrush Island = NotaPalette.SurfaceCard;
     private static readonly IBrush Bd = NotaPalette.BorderDefault;
     private static readonly IBrush Well = NotaPalette.BgSunken;
     private static readonly IBrush Txt = NotaPalette.TextPrimary;
@@ -288,8 +287,7 @@ internal sealed class RandomMidiBody : IMidiDeviceBody
             {
                 WithDock(head, Dock.Top), WithDock(knobs, Dock.Bottom), new Border { Margin = new Thickness(0, 4), Child = viz },
             } };
-            var island = new Border { Background = Island, BorderBrush = Bd, BorderThickness = new Thickness(1), CornerRadius = NotaRadius.Tile,
-                Padding = new Thickness(6, 5, 6, 0), Child = inner };
+            var island = new RuleSection { Padding = new Thickness(6, 5, 6, 0), Child = inner };
             readouts.Add(() =>
             {
                 distTb.Text = Dists[Dist(G)];

@@ -26,7 +26,6 @@ internal sealed class MonolithInstrumentCard : IInstrumentCard
 {
     private static readonly IBrush CardBg = NotaPalette.BgApp;
     private static readonly IBrush RailBg = NotaPalette.SurfaceInset;
-    private static readonly IBrush Panel = NotaPalette.SurfaceCard;   // a section box on the panel tone
     private static readonly IBrush Border2 = NotaPalette.BorderDefault;
     private static readonly IBrush BorderIn = NotaPalette.GraphBorder;
     private static readonly IBrush Inset = NotaPalette.BgSunken;
@@ -189,7 +188,7 @@ internal sealed class MonolithInstrumentCard : IInstrumentCard
         // ======================================================================
         // LEFT — wheels column (always visible)
         // ======================================================================
-        var wheels = new Border { Width = 56, Background = Panel, BorderBrush = Border2, BorderThickness = new Thickness(1), CornerRadius = NotaRadius.Tile, Padding = new Thickness(0, 5),
+        var wheels = new RuleSection { Width = 56, Padding = new Thickness(0, 5),
             Child = new DockPanel { LastChildFill = true, Children = {
                 Head(Lbl("WHEELS", 7, MutedC)),
                 new StackPanel { Orientation = Orientation.Horizontal, Spacing = 6, HorizontalAlignment = HorizontalAlignment.Center, Margin = new Thickness(0, 4, 0, 0), Children = {
@@ -348,7 +347,7 @@ internal sealed class MonolithInstrumentCard : IInstrumentCard
         var drift = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 4, VerticalAlignment = VerticalAlignment.Center, Width = 96, Children = { new TextBlock { Text = "Drift", FontSize = 7, FontWeight = FontWeight.Medium, Foreground = MutedC, VerticalAlignment = VerticalAlignment.Center }, WithStretch(HSlider("drift", "", v => $"{v * 100:0}\u2009%", 0, 22)) } };
 
         var centre = TabPanel(new[] { "Controllers · Osc Bank", "Modifiers" }, drift, centreHost, CentreBody);
-        var right = new Border { Width = 186, Background = Panel, BorderBrush = Border2, BorderThickness = new Thickness(1), CornerRadius = NotaRadius.Tile, Child = TabInner(new[] { "Mixer", "Output" }, null, rightHost, RightBody, true) };
+        var right = new RuleSection { Width = 186, Child = TabInner(new[] { "Mixer", "Output" }, null, rightHost, RightBody, true) };
         DockPanel.SetDock(right, Dock.Right);
 
         // ---- assemble ---------------------------------------------------------
@@ -361,7 +360,7 @@ internal sealed class MonolithInstrumentCard : IInstrumentCard
 
         // local: build the centre tab panel (flex) with an extras control in the tab bar
         Control TabPanel(string[] tabs, Control? extras, ContentControl host, Func<int, Control> body)
-            => new Border { Background = Panel, BorderBrush = Border2, BorderThickness = new Thickness(1), CornerRadius = NotaRadius.Tile, Margin = new Thickness(5, 0), Child = TabInner(tabs, extras, host, body, false) };
+            => new RuleSection { Margin = new Thickness(5, 0), Child = TabInner(tabs, extras, host, body, false) };
         Control TabInner(string[] tabs, Control? extras, ContentControl host, Func<int, Control> body, bool centered)
         {
             int sel = 0; var btns = new Border[tabs.Length];

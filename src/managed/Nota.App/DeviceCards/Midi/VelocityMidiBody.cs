@@ -113,7 +113,6 @@ internal sealed class VelocityMidiBody : IMidiDeviceBody
     private static readonly string[] Dirs = VelocityModel.Dirs;
 
     private static readonly IBrush Ground = NotaPalette.SurfaceInset;
-    private static readonly IBrush Island = NotaPalette.SurfaceCard;
     private static readonly IBrush Bd = NotaPalette.BorderDefault;
     private static readonly IBrush Rule = NotaPalette.GraphBorder;
     private static readonly IBrush Well = NotaPalette.BgSunken;
@@ -414,8 +413,7 @@ internal sealed class VelocityMidiBody : IMidiDeviceBody
             for (int i = 0; i < cells.Length; i++) { Grid.SetColumn(cells[i], i); knobs.Children.Add(cells[i]); }
 
             var inner = new DockPanel { Children = { WithDock(head, Dock.Top), WithDock(knobs, Dock.Bottom), plot } };
-            var island = new Border { Background = Island, BorderBrush = Bd, BorderThickness = new Thickness(1), CornerRadius = NotaRadius.Tile,
-                Padding = new Thickness(6, 5, 6, 0), Child = inner };
+            var island = new RuleSection { Padding = new Thickness(6, 5, 6, 0), Child = inner };
             readouts.Add(() =>
             {
                 modeTb.Text = Modes[Mode()];

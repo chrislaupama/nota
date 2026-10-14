@@ -36,7 +36,6 @@ internal sealed class LengthMidiBody : IMidiDeviceBody
     internal static readonly string[] Divs = { "1/32", "1/16", "1/8", "1/4", "1/2", "1/1", "1/8.", "1/4T" };
 
     private static readonly IBrush Ground = NotaPalette.SurfaceInset;
-    private static readonly IBrush Island = NotaPalette.SurfaceCard;
     private static readonly IBrush Bd = NotaPalette.BorderDefault;
     private static readonly IBrush Rule = NotaPalette.GraphBorder;
     private static readonly IBrush Well = NotaPalette.BgSunken;
@@ -307,8 +306,7 @@ internal sealed class LengthMidiBody : IMidiDeviceBody
             {
                 WithDock(head, Dock.Top), WithDock(knobs, Dock.Bottom), new Border { Margin = new Thickness(0, 4), Child = gate },
             } };
-            var island = new Border { Background = Island, BorderBrush = Bd, BorderThickness = new Thickness(1), CornerRadius = NotaRadius.Tile,
-                Padding = new Thickness(6, 5, 6, 0), Child = inner };
+            var island = new RuleSection { Padding = new Thickness(6, 5, 6, 0), Child = inner };
             readouts.Add(() =>
             {
                 modeTb.Text = Modes[Mode(G)];
