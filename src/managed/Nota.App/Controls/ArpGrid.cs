@@ -197,6 +197,9 @@ internal sealed class ArpGrid : Control
     }
     protected override void OnPointerReleased(PointerReleasedEventArgs e) { if (_dragStep >= 0) { _dragStep = -1; InvalidateVisual(); e.Pointer.Capture(null); } }
 
+    // Capture taken away mid-drag (the window deactivates): end the drag.
+    protected override void OnPointerCaptureLost(PointerCaptureLostEventArgs e) { if (_dragStep >= 0) { _dragStep = -1; InvalidateVisual(); } base.OnPointerCaptureLost(e); }
+
     private int StepAt(double x) { var w = Well(); int n = StepCount; return Math.Clamp((int)((x - w.X) / w.Width * n), 0, n - 1); }
     private double DispAt(double y)
     {

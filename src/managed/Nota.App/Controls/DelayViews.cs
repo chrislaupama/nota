@@ -159,6 +159,13 @@ internal sealed class DelayFader : Control
         _drag = false; InvalidateVisual(); e.Pointer.Capture(null); GestureEnd?.Invoke();
     }
 
+    protected override void OnPointerCaptureLost(PointerCaptureLostEventArgs e)
+    {
+        // Capture taken away mid-drag (the window deactivates): end the gesture and drop the accent.
+        if (_drag) { _drag = false; InvalidateVisual(); GestureEnd?.Invoke(); }
+        base.OnPointerCaptureLost(e);
+    }
+
     public override void Render(DrawingContext ctx)
     {
         double w = Bounds.Width, h = Bounds.Height;
@@ -245,6 +252,12 @@ internal sealed class DelayFilterCurve : Control
         base.OnPointerReleased(e);
         if (_drag == 0) return;
         GestureEnd?.Invoke(_drag - 1); _drag = 0; e.Pointer.Capture(null);
+    }
+
+    protected override void OnPointerCaptureLost(PointerCaptureLostEventArgs e)
+    {
+        if (_drag != 0) { GestureEnd?.Invoke(_drag - 1); _drag = 0; InvalidateVisual(); }
+        base.OnPointerCaptureLost(e);
     }
 
     public override void Render(DrawingContext ctx)

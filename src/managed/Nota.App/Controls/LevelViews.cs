@@ -112,6 +112,13 @@ internal sealed class LvHistoryView : Control
         _dragging = false; InvalidateVisual(); e.Pointer.Capture(null); GestureEnd?.Invoke();
     }
 
+    protected override void OnPointerCaptureLost(PointerCaptureLostEventArgs e)
+    {
+        // Capture taken away mid-drag (the window deactivates): end the gesture and drop the accent.
+        if (_dragging) { _dragging = false; InvalidateVisual(); GestureEnd?.Invoke(); }
+        base.OnPointerCaptureLost(e);
+    }
+
     public override void Render(DrawingContext ctx)
     {
         double w = Bounds.Width, h = Bounds.Height;
@@ -226,6 +233,12 @@ internal sealed class LvGainFader : Control
         base.OnPointerReleased(e);
         if (!_drag) return;
         _drag = false; InvalidateVisual(); e.Pointer.Capture(null); GestureEnd?.Invoke();
+    }
+
+    protected override void OnPointerCaptureLost(PointerCaptureLostEventArgs e)
+    {
+        if (_drag) { _drag = false; InvalidateVisual(); GestureEnd?.Invoke(); }
+        base.OnPointerCaptureLost(e);
     }
 
     public override void Render(DrawingContext ctx)

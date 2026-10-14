@@ -87,6 +87,10 @@ internal sealed class ChamberFader : Control
     protected override void OnPointerReleased(PointerReleasedEventArgs e)
     { base.OnPointerReleased(e); if (_drag) { _drag = false; InvalidateVisual(); e.Pointer.Capture(null); DragEnded?.Invoke(); } }
 
+    // Capture taken away mid-drag (the window deactivates): end the gesture and drop the accent.
+    protected override void OnPointerCaptureLost(PointerCaptureLostEventArgs e)
+    { if (_drag) { _drag = false; InvalidateVisual(); DragEnded?.Invoke(); } base.OnPointerCaptureLost(e); }
+
     public override void Render(DrawingContext ctx)
     {
         double w = Bounds.Width, h = Bounds.Height;
@@ -186,6 +190,9 @@ internal sealed class ChamberIrView : Control
     protected override void OnPointerMoved(PointerEventArgs e) { base.OnPointerMoved(e); if (_drag != 0) Apply(e); }
     protected override void OnPointerReleased(PointerReleasedEventArgs e)
     { base.OnPointerReleased(e); if (_drag != 0) { int d = _drag; _drag = 0; e.Pointer.Capture(null); DragEnded?.Invoke(d); } }
+
+    protected override void OnPointerCaptureLost(PointerCaptureLostEventArgs e)
+    { if (_drag != 0) { int d = _drag; _drag = 0; InvalidateVisual(); DragEnded?.Invoke(d); } base.OnPointerCaptureLost(e); }
 
     private static string Sec(double s) => s >= 1 ? NotaNum.F($"{s:0.00}\u2009s") : NotaNum.F($"{s * 1000:0}\u2009ms");
 
@@ -374,6 +381,9 @@ internal sealed class ChamberDecayGraph : Control
     protected override void OnPointerReleased(PointerReleasedEventArgs e)
     { base.OnPointerReleased(e); if (_drag >= 0) { int b = _drag; _drag = -1; InvalidateVisual(); e.Pointer.Capture(null); DragEnded?.Invoke(b); } }
 
+    protected override void OnPointerCaptureLost(PointerCaptureLostEventArgs e)
+    { if (_drag >= 0) { int b = _drag; _drag = -1; InvalidateVisual(); DragEnded?.Invoke(b); } base.OnPointerCaptureLost(e); }
+
     private static string S(double s) => s >= 10 ? NotaNum.F($"{s:0}\u2009s") : NotaNum.F($"{s:0.0}\u2009s");
 
     public override void Render(DrawingContext ctx)
@@ -499,6 +509,9 @@ internal sealed class ChamberEqCurve : Control
     }
     protected override void OnPointerReleased(PointerReleasedEventArgs e)
     { base.OnPointerReleased(e); if (_drag >= 0) { int d = _drag; _drag = -1; InvalidateVisual(); e.Pointer.Capture(null); DragEnded?.Invoke(d); } }
+
+    protected override void OnPointerCaptureLost(PointerCaptureLostEventArgs e)
+    { if (_drag >= 0) { int d = _drag; _drag = -1; InvalidateVisual(); DragEnded?.Invoke(d); } base.OnPointerCaptureLost(e); }
 
     // |H| (dB) of the four stages at f.
     private double Db(double f)
