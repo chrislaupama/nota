@@ -274,9 +274,9 @@ internal sealed class DelayDeviceBody : IDeviceBody
         faders.Children.Add(Col(LoopFader(Spread, "SPREAD", NotaPalette.Rose, NotaPalette.RoseBright,
             () => NotaNum.F($"{P(Spread) * 50:0} ms"),
             "Spread — pushes the right channel later, up to 50 ms. Double-click resets."), 1));
-        var loopCol = new Border
+        var loopCol = new RuleSection
         {
-            Width = 96, Background = Card2, BorderBrush = BorderDef, BorderThickness = new Thickness(1), CornerRadius = NotaRadius.Tile, Padding = new Thickness(0, 5, 0, 4),
+            Width = 96, Padding = new Thickness(0, 5, 0, 4),
             Child = new DockPanel { Children = { Docked(loopTitle, Dock.Top), faders } },
         };
         DockPanel.SetDock(loopCol, Dock.Left);
@@ -500,9 +500,9 @@ internal sealed class DelayDeviceBody : IDeviceBody
 
         var centre = TabFrame(new[] { "Time", "Loop · Wow" }, centreHost, CentreBody, false, t => { centreTab = t; foreach (var a in readouts) a(); }, extras);
         var rightFrame = TabFrame(new[] { "Levels", "Output" }, rightHost, RightBody, true, _ => { foreach (var a in readouts) a(); }, null);
-        var right = new Border { Width = 186, Background = Card2, BorderBrush = BorderDef, BorderThickness = new Thickness(1), CornerRadius = NotaRadius.Tile, ClipToBounds = true, Child = rightFrame };
+        var right = new RuleSection { Width = 186, Child = rightFrame };
         DockPanel.SetDock(right, Dock.Right);
-        var centreBox = new Border { Background = Card2, BorderBrush = BorderDef, BorderThickness = new Thickness(1), CornerRadius = NotaRadius.Tile, Margin = new Thickness(5, 0), ClipToBounds = true, Child = centre };
+        var centreBox = new RuleSection { Margin = new Thickness(5, 0), Child = centre };
 
         // ======================================================================
         // Status strip

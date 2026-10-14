@@ -288,7 +288,7 @@ internal sealed class ChamberDeviceBody : IDeviceBody
         var blendTitle = Caps("BLEND"); blendTitle.HorizontalAlignment = HorizontalAlignment.Center;
         var faders = new Grid { ColumnDefinitions = new ColumnDefinitions("Auto,Auto"), ColumnSpacing = 9, HorizontalAlignment = HorizontalAlignment.Center, Margin = new Thickness(0, 4, 0, 3) };
         faders.Children.Add(Fader(Blend, true, "C/A")); faders.Children.Add(Col(Fader(DryWet, false, "WET"), 1));
-        var blendCol = new Border { Width = 56, Background = Panel, BorderBrush = Border2, BorderThickness = new Thickness(1), CornerRadius = NotaRadius.Tile, Padding = new Thickness(0, 5, 0, 4),
+        var blendCol = new RuleSection { Width = 56, Padding = new Thickness(0, 5, 0, 4),
             Child = new DockPanel { Children = { Docked(blendTitle, Dock.Top), Docked(wetTxt, Dock.Bottom), Docked(blendTxt, Dock.Bottom), faders } } };
         DockPanel.SetDock(blendCol, Dock.Left);
 
@@ -605,9 +605,9 @@ internal sealed class ChamberDeviceBody : IDeviceBody
         Control RightBody(int t) => rightBodies[t] ??= t == 1 ? OutputTab() : LevelsTab();
         var centre = TabFrame(new[] { "Convolution", "Algorithm", "EQ · Mod" }, centreHost, CentreBody, false, t => { centreTab = t; foreach (var a in readouts) a(); }, extras);
         var rightFrame = TabFrame(new[] { "Levels", "Output" }, rightHost, RightBody, true, _ => { foreach (var a in readouts) a(); }, null);
-        var right = new Border { Width = 186, Background = Panel, BorderBrush = Border2, BorderThickness = new Thickness(1), CornerRadius = NotaRadius.Tile, ClipToBounds = true, Child = rightFrame };
+        var right = new RuleSection { Width = 186, Child = rightFrame };
         DockPanel.SetDock(right, Dock.Right);
-        var centreBox = new Border { Background = Panel, BorderBrush = Border2, BorderThickness = new Thickness(1), CornerRadius = NotaRadius.Tile, Margin = new Thickness(5, 0), ClipToBounds = true, Child = centre };
+        var centreBox = new RuleSection { Margin = new Thickness(5, 0), Child = centre };
 
         // ======================================================================
         // Status strip

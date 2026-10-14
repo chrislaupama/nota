@@ -115,16 +115,15 @@ internal sealed class ChorusDeviceBody : IDeviceBody
             return g;
         }
 
-        Border Island(Control head, Control body, double width = double.NaN)
+        RuleSection Island(Control head, Control body, double width = double.NaN)
         {
             var headBar = new Border
             {
                 Height = 20, BorderBrush = BorderDef, BorderThickness = new Thickness(0, 0, 0, 1), Padding = new Thickness(8, 0, 3, 0), Child = head,
             };
-            return new Border
+            return new RuleSection
             {
-                Width = width, Background = Card2, BorderBrush = BorderDef, BorderThickness = new Thickness(1), CornerRadius = NotaRadius.Tile,
-                ClipToBounds = true, Child = new DockPanel { LastChildFill = true, Children = { Docked(headBar, Dock.Top), body } },
+                Width = width, Child = new DockPanel { LastChildFill = true, Children = { Docked(headBar, Dock.Top), body } },
             };
         }
         static Grid HeadRow(Control left, Control right)
