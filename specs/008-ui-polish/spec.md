@@ -14,6 +14,7 @@
 
 - Q: Should this pass also settle the two open questions from 006 — device-card sections divided by rules instead of framed boxes, and soft menu shadows? → A: Sections divided by rules, yes; menu shadows no (later, separately).
 - User addition (same session): replace the Arrangement / Session / Modular word buttons with icons, as part of the icon-set work.
+- Q: To reach two header rows above the first track, should the Sections row or the Overview strip give way? → A: Neither. Keep the Overview, Sections and Zoom/ruler rows exactly as they are, with no removal, merge, move or restyle. Critique F9 is out of scope.
 
 ## Nota Context *(fill in — drives plan and tasks)*
 
@@ -177,21 +178,21 @@ check fails if an icon is drawn outside the shared set.
 
 ### User Story 6 - Lighter chrome around the work (Priority: P3)
 
-The arrangement shows more tracks and less furniture. The browser list is quieter. An
-empty device chain doesn't fill the dock with a dashed box. Ranges read as ranges.
+The browser list is quieter. An empty device chain doesn't fill the dock with a dashed
+box. Ranges read as ranges. The arrangement's header rows (Overview, Sections,
+Zoom/ruler) stay exactly as they are.
 
-**Why this priority**: Each item is small, and together they give back space and calm to
-the main screen (F9–F12).
+**Why this priority**: Each item is small, and together they give calm to the main
+screen (F10–F12).
 
-**Independent Test**: Compare the arrangement, browser and empty dock against the
-critique screenshots. Count the header rows above the first track and the visible track
-rows at a 1200 × 800 window.
+**Independent Test**: Compare the browser, the empty dock and the range readouts against
+the critique screenshots. Confirm the arrangement header rows are unchanged.
 
 **Acceptance Scenarios**:
 
-1. **Given** the arrangement at a 1200 × 800 window, **When** it shows, **Then** at most
-   two header rows sit above the first track, the zoom controls live with the timeline
-   rather than the track-name column, and the space saved goes to tracks.
+1. **Given** the arrangement, **When** it shows, **Then** the Overview, Sections and
+   Zoom/ruler rows are exactly as before, with the same rows, positions, contents and
+   controls.
 2. **Given** the browser's built-in list, **When** it shows, **Then** the name leads each
    row. Product branding does not repeat on every row, and the type tag is visually
    quieter than the name.
@@ -272,8 +273,9 @@ rows at a 1200 × 800 window.
 
 **Chrome (US6)**
 
-- **FR-012**: The arrangement MUST show at most two header rows above the first track,
-  with the zoom controls in the timeline area (F9).
+- **FR-012**: The arrangement's header rows (Overview, Sections, Zoom/ruler) MUST NOT be
+  removed, merged, moved or restyled by this feature. Critique F9 is deferred
+  (clarified).
 - **FR-013**: Built-in browser rows MUST lead with the device name, without a repeated
   brand prefix. The type tag MUST be visually quieter than the name (F10).
 - **FR-014**: An empty device chain MUST show a slim add-device target at the end of the
@@ -284,8 +286,7 @@ rows at a 1200 × 800 window.
 **General**
 
 - **FR-016**: No feature, shortcut, menu item, gesture or saved format may change. Device
-  card frames and arrangement row heights stay as they are, except where FR-012 removes a
-  header row.
+  card frames, arrangement row heights and the arrangement header rows stay as they are.
 - **FR-017**: All changes MUST look right in all four built-in themes and keep every
   theme passing the readability bar.
 - **FR-018**: DESIGN.md MUST describe the overlay treatment, the device-card header
@@ -305,10 +306,12 @@ rows at a 1200 × 800 window.
 
 ### Measurable Outcomes
 
-- **SC-001**: A re-run of the critique's screenshot tour shows 0 of the 12 findings left.
-  F1 and F3 count as closed if they are fixed or shown not to reproduce.
-- **SC-002**: At a 1200 × 800 window, the arrangement shows at least one more track row
-  than before, and no control in any main view is cut off.
+- **SC-001**: A re-run of the critique's screenshot tour shows 0 of the in-scope findings
+  left (F1–F8 and F10–F12; F9 is deferred). F1 and F3 count as closed if they are fixed or
+  shown not to reproduce.
+- **SC-002**: At a 1200 × 800 window, no control in any main view is cut off, and the
+  arrangement header rows are pixel-identical to before, apart from colour from the
+  active theme.
 - **SC-003**: Every built-in device card has its power, name and preset parts
   at the same positions, within 1 px.
 - **SC-004**: The automated check finds 0 all-caps or Title Case label literals and 0
@@ -336,8 +339,8 @@ rows at a 1200 × 800 window.
   allowed; the product name can appear once, as the section heading.
 - **Overlay = in-window panel.** OS windows (Preferences, plugin windows) keep their own
   title bars and are out of scope.
-- **Arrangement header rows**: "Overview" and "Sections" may merge or become
-  collapsible. Which one is a design decision for the plan, within FR-012.
+- **Arrangement header rows** are out of scope (clarified): Overview, Sections and the
+  Zoom/ruler row stay as they are.
 - **Screenshots** come from the same Xvfb harness as 006 and 007, at 1200 × 800, in every
   theme.
 - **Depends on 007**, which in turn depends on 006, landing first or this branch carrying

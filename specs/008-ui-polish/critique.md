@@ -35,7 +35,7 @@ is leftovers and inconsistency rather than wrong direction:
 | F6 | Labels | Title case left over: "Add to Favorites", "Stop All Clips", "Capture Scene", "Session Rec" and "Live Freeze". | Minor |
 | F7 | Device cards | The header differs per card: Synth has S/L badges, Auto Filter a power key on the right, Drum Rack neither. The preset stepper sits in a different place on each. | Moderate |
 | F8 | Icons | `Glyph` shapes sit next to about 60 inline icon paths with their own stroke weights (left rail, browser, Preferences, command palette, history, preview player, Rhythm card). | Minor |
-| F9 | Arrangement | Three header rows (Overview, Sections, Zoom) come before the first track, and Zoom sits in the track-name column. | Minor |
+| F9 | Arrangement | Three header rows (Overview, Sections, Zoom) come before the first track, and Zoom sits in the track-name column. | Minor, deferred (keep as is, per clarify) |
 | F10 | Browser | A muted "Nota" prefix starts every built-in row, so the same word repeats down the whole list. | Minor |
 | F11 | Device dock | The "Add device" drop zone fills most of an empty dock, and it is the only dashed element in the app. | Minor |
 | F12 | Numbers | The loop range is shown as "1.1 - 5.1" with a hyphen. The mixer scale may use hyphens where it needs minus signs. | Minor |
