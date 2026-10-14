@@ -48,7 +48,11 @@ public sealed partial class DeviceChainView : UserControl
     private readonly DeviceCardFactory _cardFactory = new();
     private readonly InstrumentCardFactory _instrumentFactory = new();
     private readonly MidiDeviceCardFactory _midiFactory = new();
-    private readonly StackPanel _row = new() { Orientation = Orientation.Horizontal, Spacing = 8, Margin = new Thickness(10) };
+    // The chain sits close to the panel edges: a 6px inset all round and 6px between cards —
+    // just room for the selected card's focus ring (3px gap + 1.5px ring) — so the cards fill
+    // the Devices panel instead of floating in it.
+    internal const double ChainInset = 6;
+    private readonly StackPanel _row = new() { Orientation = Orientation.Horizontal, Spacing = ChainInset, Margin = new Thickness(ChainInset) };
     private int _trackId = -1;
 
     /// <summary>Raised after a change that affects track headers (remove/reorder).</summary>

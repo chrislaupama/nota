@@ -592,6 +592,10 @@ Every built-in device is a **700 × 260** card (`DeviceCardKit.CardH`, width fro
 - **Add device** — the end of a chain is a 28 px-wide key with a `Plus` glyph and a
   tooltip; its dashed outline (`BorderStrong`, radius 3) shows only while a drag is over
   the chain, so an empty dock stays quiet. A rack's chain ends the same way.
+- **The chain** sits tight in the Devices panel: a 6 px inset all round and 6 px between
+  cards (`DeviceChainView.ChainInset` — just room for the selection ring), and the panel
+  opens at exactly the cards' height (seam + 32 px toolbar + insets + 260), so nothing
+  floats above or below the cards.
 
 Width exceptions, by decision: **Bass 1060, Physical 720** (squeezing them would be a
 redesign) and the parameter-list stub (190). A hosted plug-in (VST3 / AU) is a two-size
