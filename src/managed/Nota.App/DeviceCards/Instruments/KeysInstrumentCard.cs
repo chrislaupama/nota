@@ -309,7 +309,7 @@ internal sealed class KeysInstrumentCard : IInstrumentCard
         for (int i = 0; i < soundCells.Length; i++) { Grid.SetColumn(soundCells[i], i); soundRow.Children.Add(soundCells[i]); }
 
         // ======================= FX tab =========================================
-        Border Island(string title, Control body, string? power = null, Control? accessory = null, double width = double.NaN)
+        Decorator Island(string title, Control body, string? power = null, Control? accessory = null, double width = double.NaN)
         {
             var head = new DockPanel { Height = 18, Margin = new Thickness(6, 0) };
             if (accessory is not null) { DockPanel.SetDock(accessory, Dock.Right); head.Children.Add(accessory); }
@@ -323,11 +323,7 @@ internal sealed class KeysInstrumentCard : IInstrumentCard
             grid.Children.Add(new Border { BorderBrush = NotaPalette.GraphBorder, BorderThickness = new Thickness(0, 0, 0, 1), Child = head });
             body.Margin = new Thickness(5, 5, 5, 5);
             Grid.SetRow(body, 1); grid.Children.Add(body);
-            var b = new Border
-            {
-                Background = NotaPalette.SurfaceCard, BorderBrush = BorderDef, BorderThickness = new Thickness(1),
-                CornerRadius = NotaRadius.Tile, ClipToBounds = true, Child = grid,
-            };
+            var b = DeviceCardKit.Section(grid);
             if (!double.IsNaN(width)) b.Width = width;
             return b;
         }

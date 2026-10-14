@@ -29,7 +29,6 @@ namespace Nota.App;
 internal sealed class ConsortInstrumentCard : IInstrumentCard
 {
     private static readonly IBrush RailBg = NotaPalette.SurfaceInset;
-    private static readonly IBrush Panel = NotaPalette.SurfaceCard;   // a section box on the panel tone
     private static readonly IBrush Border2 = NotaPalette.BorderDefault;
     private static readonly IBrush BorderIn = NotaPalette.GraphBorder;
     private static readonly IBrush Inset = NotaPalette.BgSunken;
@@ -348,7 +347,7 @@ internal sealed class ConsortInstrumentCard : IInstrumentCard
         wheelsBody.Children.Add(new StackPanel { Orientation = Orientation.Horizontal, Spacing = 6, HorizontalAlignment = HorizontalAlignment.Center, Margin = new Thickness(0, 0, 0, 3), Children = {
             VWheel("bend", "PITCH", NotaPalette.VizInk, spring: true),
             VWheel("modwheel", "MOD", NotaPalette.VizInk, spring: false) } });
-        var wheels = new Border { Width = 52, Background = Panel, BorderBrush = Border2, BorderThickness = new Thickness(1), CornerRadius = NotaRadius.Tile, Padding = new Thickness(0, 5), Child = wheelsBody };
+        var wheels = new RuleSection { Width = 52, Padding = new Thickness(0, 5), Child = wheelsBody };
         DockPanel.SetDock(wheels, Avalonia.Controls.Dock.Left);
 
         // ======================================================================
@@ -899,9 +898,9 @@ internal sealed class ConsortInstrumentCard : IInstrumentCard
         var (centre, selectCentre) = TabFrame(new[] { "Osc · Mix", "Filters · Env", "LFO · Delay", "Seq", "Patch" }, centreHost, CentreBody, false, vs.Centre,
             t => { vs.Centre = t; if (t != 4) vs.LastNonPatch = t; extrasHost.Content = extras[t]; Refresh(); }, extrasHost);
         var (rightFrame, _) = TabFrame(new[] { "Voices", "Output" }, rightHost, RightBody, true, vs.Right, t => { vs.Right = t; Refresh(); }, null);
-        var right = new Border { Width = 172, Background = Panel, BorderBrush = Border2, BorderThickness = new Thickness(1), CornerRadius = NotaRadius.Tile, Child = rightFrame };
+        var right = new RuleSection { Width = 172, Child = rightFrame };
         DockPanel.SetDock(right, Avalonia.Controls.Dock.Right);
-        var centreBox = new Border { Background = Panel, BorderBrush = Border2, BorderThickness = new Thickness(1), CornerRadius = NotaRadius.Tile, Margin = new Thickness(5, 0), Child = centre };
+        var centreBox = new RuleSection { Margin = new Thickness(5, 0), Child = centre };
 
         // ======================================================================
         // Patch-bay row (collapsed) + overlay
