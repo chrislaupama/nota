@@ -53,6 +53,11 @@ the shared icon set). Stacked on that branch.
 - Q: How should the 18 instruments be grouped? → A: Synths (Synth, Volt, Bass, Monolith,
   Pentad, Consort, Operator, Aurora, Flux, Pendulum) · Keys & physical (Keys, Physical) ·
   Drums (Rhythm, Drum Rack) · Samplers (Sampler, Mosaic, Grain) · Racks (Instrument Rack).
+- Q: How should the 26 built-in audio effects be grouped? → A: EQ & filter (EQ-3, EQ-8,
+  Dynamic EQ-8, Auto Filter) · Dynamics (Compressor, Prism, Ceiling, Shutter) · Reverb &
+  delay (Reverb, Chamber, Delay) · Modulation (Chorus, Flanger, Phaser, Orbit) · Distortion
+  (Valve, Vintage, Forge, Crush) · Pitch & time (Auto Shift, Beat Repeat, Strata) · Utility
+  (Utility, Level, Lens) · Racks (Audio Effect Rack).
 
 ## User Scenarios & Testing *(mandatory)*
 
@@ -60,10 +65,10 @@ the shared icon set). Stacked on that branch.
 
 A producer opens the Audio effects tab looking for "something for space". Instead of
 scanning 26 names in alphabetical order, they see the list arranged by category — EQ &
-filter, Dynamics, Reverb & delay, Modulation, Distortion & saturation, Pitch & time,
-Utility & analysis, Racks — and go straight to Reverb & delay, where Reverb, Chamber, Delay
-and the like sit together. The same holds on the Instruments tab (Synths, Drums, Keys,
-Samplers, Racks…) and the MIDI effects tab.
+filter, Dynamics, Reverb & delay, Modulation, Distortion, Pitch & time, Utility, Racks —
+and go straight to Reverb & delay, where Reverb, Chamber and Delay sit together. The same
+holds on the Instruments tab (Synths, Keys & physical, Drums, Samplers, Racks) and the MIDI
+effects tab.
 
 **Why this priority**: it is the whole point of the request. The list grows with every
 release, and a category is how musicians think about devices ("I need a compressor", not
@@ -238,11 +243,11 @@ category.
   - *Instruments* (confirmed): Synths (Synth, Volt, Bass, Monolith, Pentad, Consort,
     Operator, Aurora, Flux, Pendulum), Keys & physical (Keys, Physical), Drums (Rhythm, Drum
     Rack), Samplers (Sampler, Mosaic, Grain), Racks (Instrument Rack) — in that order.
-  - *Audio effects*: EQ & filter (EQ-3, EQ-8, Dynamic EQ-8, Auto Filter), Dynamics
-    (Compressor, Ceiling, Level, Auto Gain), Reverb & delay (Reverb, Chamber, Delay, Orbit),
-    Modulation (Chorus, Flanger, Phaser, Auto Pan, Shutter), Distortion & saturation (Valve,
-    Vintage, Forge, Crush, Prism), Pitch & time (Auto Shift, Beat Repeat, Strata), Utility &
-    analysis (Utility, Lens), Racks (Audio Effect Rack).
+  - *Audio effects* (confirmed): EQ & filter (EQ-3, EQ-8, Dynamic EQ-8, Auto Filter),
+    Dynamics (Compressor, Prism, Ceiling, Shutter), Reverb & delay (Reverb, Chamber, Delay),
+    Modulation (Chorus, Flanger, Phaser, Orbit), Distortion (Valve, Vintage, Forge, Crush),
+    Pitch & time (Auto Shift, Beat Repeat, Strata), Utility (Utility, Level, Lens), Racks
+    (Audio Effect Rack) — in that order.
   - *MIDI effects*: Generate (Arp, Chord, Random), Shape (Scale, Length, Velocity).
   - Exact membership is checked against each device's sound and documentation during
     planning.
