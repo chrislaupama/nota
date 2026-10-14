@@ -31,6 +31,9 @@ public sealed class Settings
     public string SystemDarkTheme { get; set; } = Appearance.StudioDark;
     /// <summary>Theme worn while following the OS and it is in light mode (a light theme).</summary>
     public string SystemLightTheme { get; set; } = Appearance.StudioLight;
+    /// <summary>Whether Session view shows its inspector column (toolbar toggle). On by default;
+    /// folding it gives the clip grid its width back on small windows.</summary>
+    public bool SessionInspectorOpen { get; set; } = true;
     /// <summary>Browser sample library folder ("" = default ~/Music/Nota Samples). M7-4.</summary>
     public string SamplesFolder { get; set; } = "";
     /// <summary>Browser projects folder ("" = default ~/Documents/Nota Projects). M7-4.</summary>

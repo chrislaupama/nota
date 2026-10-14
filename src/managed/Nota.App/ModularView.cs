@@ -85,6 +85,12 @@ public sealed class ModularView : UserControl
     private readonly EdgeLayer _edges;
     private readonly MiniMap _mini;
     private readonly Panel _viewport = new() { ClipToBounds = true, Background = CanvasBg };
+    // Shown on the canvas in Track view while no track is picked (an empty project).
+    private readonly TextBlock _emptyHint = new()
+    {
+        Text = "Pick a track to see its signal graph", Classes = { "Caption" }, IsVisible = false,
+        HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center,
+    };
 
     // view transform: screen = world * _scale + _pan
     private double _scale = 1.0;
@@ -115,6 +121,7 @@ public sealed class ModularView : UserControl
         _viewport.Children.Add(_grid);
         _viewport.Children.Add(_edges);
         _viewport.Children.Add(_world);
+        _viewport.Children.Add(_emptyHint);
 
         // hint + minimap overlays (screen-space, not transformed)
         var hint = new TextBlock
@@ -212,7 +219,17 @@ public sealed class ModularView : UserControl
         if (changed) FitToScreen();
     }
 
-    public void Refresh() { if (_global || _trackId > 0) { Rebuild(); RefreshSidebar(); } }
+    // The sidebar is the way in, so it refreshes even with no track picked yet (critique F3).
+    public void Refresh() { if (_global || _trackId > 0) Rebuild(); RefreshSidebar(); }
+
+    /// <summary>The track Modular opens on when nothing is selected: the first track that is
+    /// neither a group nor a return, or -1 for a project with none.</summary>
+    public int FirstPatchableTrack()
+    {
+        for (int i = 0; i < _engine.TrackCount; i++)
+            if (_engine.TryGetTrackInfo(i, out var ti) && !ti.IsGroup && !ti.IsReturn) return ti.Id;
+        return -1;
+    }
 
     /// <summary>Raised when an island is opened in the Global view, so the host can select
     /// the track in the arrangement.</summary>
@@ -249,6 +266,9 @@ public sealed class ModularView : UserControl
         for (int i = 0; i < n; i++)
             if (_engine.TryGetTrackInfo(i, out var ti) && !ti.IsGroup)
                 _sidebar.Children.Add(TrackRow(ti.Id, ti));
+        if (_sidebar.Children.Count == 0)
+            _sidebar.Children.Add(new TextBlock { Text = "No tracks yet", Classes = { "Caption" }, Margin = new Thickness(10, 8) });
+        _emptyHint.IsVisible = !_global && _trackId <= 0;
     }
 
     private Control TrackRow(int trackId, NotaTrackInfo ti)

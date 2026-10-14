@@ -134,6 +134,24 @@ public sealed partial class ArrangementView : UserControl
     /// <summary>Combined height of every visible row.</summary>
     internal double RowsHeight => _rowTops[_tracks.Count];
 
+    /// <summary>Scroll the track list so <paramref name="trackId"/>'s whole row is in view. Runs
+    /// after the next layout pass, so it also works straight after a Refresh that added the
+    /// row (the scroll extent isn't updated until then). A row already fully visible doesn't move.</summary>
+    public void RevealTrack(int trackId)
+    {
+        Dispatcher.UIThread.Post(() =>
+        {
+            int i = _tracks.FindIndex(t => t.Id == trackId);
+            if (i < 0) return;
+            double top = RowTop(i), bottom = RowTop(i + 1), view = _scroller.Viewport.Height;
+            double y = _scroller.Offset.Y;
+            if (top < y) y = top;
+            else if (bottom > y + view) y = bottom - view;
+            else return;
+            _scroller.Offset = new Vector(_scroller.Offset.X, Math.Max(0, y));
+        }, DispatcherPriority.Background);
+    }
+
     /// <summary>Row containing <paramref name="y"/>, or -1 when it falls outside the rows.</summary>
     internal int RowAtY(double y)
     {
@@ -398,17 +416,24 @@ public sealed partial class ArrangementView : UserControl
         bottom.BindResource(Border.BackgroundProperty, "Brush.BgSunken");
         bottom.BindResource(Border.BorderBrushProperty, "Brush.Hairline");
 
+        // The pinned return/master band meets the scrolling tracks on a seam, so a track
+        // scrolled to the bottom edge never reads as sitting on a return row (critique F1).
+        var footerSeam = new Border { Height = 1 };
+        footerSeam.BindResource(Border.BackgroundProperty, "Brush.Seam");
+
         var root = new DockPanel();
         DockPanel.SetDock(_overviewRow, Dock.Top);
         DockPanel.SetDock(_sectionsRow, Dock.Top);
         DockPanel.SetDock(top, Dock.Top);
         DockPanel.SetDock(bottom, Dock.Bottom);
         DockPanel.SetDock(_footer, Dock.Bottom);
+        DockPanel.SetDock(footerSeam, Dock.Bottom);
         root.Children.Add(_overviewRow);   // Overview sits above the ruler
         root.Children.Add(_sectionsRow);   // …then the named song sections
         root.Children.Add(top);
         root.Children.Add(bottom);
         root.Children.Add(_footer);
+        root.Children.Add(footerSeam);     // docked after the footer → sits on top of it
         root.Children.Add(centerArea);
 
         // A docked panel like the browser: square, no frame of its own — it meets its

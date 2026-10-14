@@ -569,7 +569,8 @@ public partial class MainWindow : Window
         if (modular)
         {
             int t = Timeline.SelectedTrackId > 0 ? Timeline.SelectedTrackId : LastInstrumentTrack();
-            if (t > 0) _modular.Show(t);
+            if (t <= 0) t = _modular.FirstPatchableTrack();   // after opening a project nothing is selected (F3)
+            _modular.Show(t);                                   // Show(-1) still builds the sidebar and its empty state
         }
         SyncClipTab();   // Clip tab availability is per-context (arrangement vs session)
     }

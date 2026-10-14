@@ -34,6 +34,7 @@ public sealed partial class SessionView
     private Border? _fixedSeg;
     private TextBlock? _posText, _tempoText;
     private Button? _backBtn;
+    private ToggleButton? _inspectorToggle;
     private readonly List<ToggleButton> _sectionToggles = new();
 
     /// <summary>Tempo and time signature for the toolbar readout.</summary>
@@ -131,11 +132,60 @@ public sealed partial class SessionView
         ToolTip.SetTip(stopAll, "Stop every session clip");
         stopAll.Click += (_, _) => { _engine.StopAllSession(); UpdateStates(); };
 
+        // The inspector column can be folded away to give the grid its width back (critique F2).
+        _inspectorToggle = new ToggleButton { Content = "Inspector", Height = NotaSize.Shell, FontSize = 11, Padding = new Thickness(10, 0), IsChecked = InspectorOpen };
+        ToolTip.SetTip(_inspectorToggle, "Show or hide the inspector");
+        _inspectorToggle.Click += (_, _) => SetInspectorOpen(_inspectorToggle.IsChecked == true);
+
+        // Overflow: when the bar is too narrow, the least-used controls fold into "⋯" one by one
+        // (readout first, then Back to arrangement, Capture scene, the section toggles, Follow).
+        // Every control stays reachable — the menu offers whatever is hidden.
+        const double MoreW = 32;
+        var more = new Button { Content = "⋯", Width = MoreW, Height = NotaSize.Shell, Padding = new Thickness(0), FontSize = 12, HorizontalContentAlignment = HorizontalAlignment.Center, IsVisible = false };
+        ToolTip.SetTip(more, "More session controls");
+        more.Click += (_, _) =>
+        {
+            var f = new MenuFlyout();
+            void Add(string header, Action act) { var mi = new MenuItem { Header = header }; mi.Click += (_, _) => act(); f.Items.Add(mi); }
+            if (!_backBtn!.IsVisible) Add("Back to arrangement", () => { _engine.BackToArrangement(); UpdateStates(); });
+            if (!capture.IsVisible) Add("Capture scene", CaptureScene);
+            if (!sectionsWell.IsVisible)
+            {
+                Add((_showIO ? "Hide" : "Show") + " I/O", () => { _showIO = !_showIO; Refresh(); });
+                Add((_showSends ? "Hide" : "Show") + " sends", () => { _showSends = !_showSends; Refresh(); });
+                Add((_showMixer ? "Hide" : "Show") + " mixer", () => { _showMixer = !_showMixer; Refresh(); });
+            }
+            if (!follow.IsVisible) Add(_engine.SessionFollow ? "Turn follow off" : "Turn follow on", () => { _engine.SessionFollow = !_engine.SessionFollow; SyncToolbar(); RebuildInspector(); });
+            f.ShowAt(more);
+        };
+
         var left = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 8, VerticalAlignment = VerticalAlignment.Center, Children = { _recBtn, fixedRow, quant, follow, capture } };
-        var right = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 8, VerticalAlignment = VerticalAlignment.Center, Children = { sectionsWell, readout, _backBtn, stopAll } };
+        var right = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 8, VerticalAlignment = VerticalAlignment.Center, Children = { sectionsWell, readout, _backBtn, stopAll, more, _inspectorToggle } };
         var grid = new Grid { ColumnDefinitions = new ColumnDefinitions("Auto,*,Auto"), Margin = new Thickness(10, 0) };
         grid.Children.Add(left);
         Grid.SetColumn(right, 2); grid.Children.Add(right);
+
+        Control[] foldOrder = { readout, _backBtn, capture, sectionsWell, follow };
+        var width = new Dictionary<Control, double>();
+        grid.SizeChanged += (_, _) =>
+        {
+            // Widths are learnt while a control is shown (a hidden one measures 0).
+            foreach (var c in foldOrder) if (c.IsVisible && c.Bounds.Width > 0) width[c] = c.Bounds.Width;
+            double need(IEnumerable<Control> shown) { double w = 0; foreach (var c in shown) w += c.Bounds.Width > 0 ? c.Bounds.Width + 8 : 0; return w; }
+            double fixedW = need(new Control[] { _recBtn, fixedRow, quant, stopAll, _inspectorToggle }) + 20 + 24;
+            double avail = grid.Bounds.Width;
+            int hide = 0;
+            double total = fixedW;
+            foreach (var c in foldOrder) total += width.TryGetValue(c, out var w) ? w + 8 : 0;
+            // Folding a second control brings in "⋯", which needs its own room.
+            while (hide < foldOrder.Length && total + (hide > 1 ? MoreW + 8 : 0) > avail)
+            {
+                total -= width.TryGetValue(foldOrder[hide], out var w) ? w + 8 : 0;
+                hide++;
+            }
+            for (int i = 0; i < foldOrder.Length; i++) foldOrder[i].IsVisible = i >= hide;
+            more.IsVisible = hide > 1;   // the readout alone is information, not a control
+        };
         return new Border
         {
             Height = 44, Background = NotaPalette.BgSunken, BorderBrush = NotaPalette.BorderDefault,
