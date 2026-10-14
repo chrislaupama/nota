@@ -205,7 +205,7 @@ The Xvfb harness and capture scripts from 008 live in `/tmp/claude-0/`, outside 
 
 **Independent test**: with fake plug-ins reporting `Fx/Reverb` and `Effect`, the first appears under Reverb & delay and the second under Other, last.
 
-- [ ] T026 [US4] Implement `DeviceCategories.ForPlugin(bool instrument, string reported)` in `Application/Palette/DeviceCategories.cs` per research R2:
+- [X] T026 [US4] Implement `DeviceCategories.ForPlugin(bool instrument, string reported)` in `Application/Palette/DeviceCategories.cs` per research R2:
   - split on `/` and `|`, then trim and lower-case each token;
   - the first token found in the tab's table wins;
   - skipped tokens are listed in a comment;
@@ -221,9 +221,9 @@ The Xvfb harness and capture scripts from 008 live in `/tmp/claude-0/`, outside 
     - `distortion` → Distortion;
     - `pitch shift` → Pitch & time;
     - `analyzer`, `tools`, `spatial`, `surround`, `restoration`, `up-downmix` → Utility.
-- [ ] T027 [US4] In `VM` `Rebuild()`, set plug-in rows' `DeviceCategory = DeviceCategories.ForPlugin(isInstrument, category)`, replacing the T007 placeholder.
-- [ ] T028 [P] [US4] Add `FakePluginCatalog(params string[] descriptions) : IPluginCatalog` to `Smoke/BrowserTestSupport.cs`. Descriptions use the `Name | Format | inst|fx | Vendor | Category` form that `Rebuild()` parses; `Id` is `"fake:" + index`.
-- [ ] T029 [US4] Add checks to `Smoke/Program.cs`:
+- [X] T027 [US4] In `VM` `Rebuild()`, set plug-in rows' `DeviceCategory = DeviceCategories.ForPlugin(isInstrument, category)`, replacing the T007 placeholder.
+- [X] T028 [P] [US4] Add `FakePluginCatalog(params string[] descriptions) : IPluginCatalog` to `Smoke/BrowserTestSupport.cs`. Descriptions use the `Name | Format | inst|fx | Vendor | Category` form that `Rebuild()` parses; `Id` is `"fake:" + index`.
+- [X] T029 [US4] Add checks to `Smoke/Program.cs`:
   - **(a)** `ForPlugin` table cases:
     - `Fx/Reverb` → Reverb & delay;
     - `Fx/Dynamics/EQ` → Dynamics (first recognised);
@@ -240,6 +240,8 @@ The Xvfb harness and capture scripts from 008 live in `/tmp/claude-0/`, outside 
     - Ana is under Synths after the built-ins;
     - the MIDI tab is unaffected.
   - **(c)** No separate `BUILT-IN` / `PLUG-INS` header appears in the category view (FR-005).
+
+  *Result*: T026–T028 landed with Phase 2–3 (`ForPlugin` in T003, plug-in rows in T007, `FakePluginCatalog` with T011). T029's checks pass: the mapping table; Reverb & delay with Group by source on (Chamber, Delay, Reverb, Ambience) and off (Ambience, Chamber, Delay, Reverb); Other last; a synth plug-in after the built-in synths; no source headers; the MIDI tab untouched; counts 26 + 2.
 
 ---
 

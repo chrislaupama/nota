@@ -128,6 +128,39 @@ internal static class BrowserCategoryTests
             "saved folds restore; unknown keys are dropped");
         vm.SetFoldedCategories(Array.Empty<string>());
 
+        // Plug-ins join the categories from the category they report (FR-005).
+        var mapping = new (bool Inst, string Reported, string Expected)[]
+        {
+            (false, "Fx/Reverb", "Reverb & delay"), (false, "Fx|Dynamics|EQ", "Dynamics"), (false, "Fx/Pitch Shift", "Pitch & time"),
+            (false, "Fx/Analyzer", "Utility"), (true, "Instrument/Synth/Sampler", "Synths"), (true, "Instrument/Drum", "Drums"),
+            (false, "Effect", DeviceCategories.Other), (false, "", DeviceCategories.Other), (false, "Fx", DeviceCategories.Other),
+        };
+        var wrong = mapping.Where(m => DeviceCategories.ForPlugin(m.Inst, m.Reported) != m.Expected)
+            .Select(m => $"{m.Reported} → {DeviceCategories.ForPlugin(m.Inst, m.Reported)}").ToList();
+        yield return (wrong.Count == 0, wrong.Count == 0 ? "plug-in categories map by their first recognised token" : $"plug-in mapping: {string.Join(", ", wrong)}");
+
+        var plugins = new FakePluginCatalog(
+            "Ambience | VST3 | fx | Smart | Fx/Reverb",
+            "Mystery | AU | fx | Acme | Effect",
+            "Ana | VST3 | inst | Sonic | Instrument/Synth");
+        var pvm = new BrowserViewModel(plugins, new EmptyPresetLibrary(), new FactoryPresetCatalog());
+        List<string> Shelf(IList<BrowserItem> rows, string name)
+            => rows.SkipWhile(r => !(r.IsGroup && r.Name == name)).Skip(1).TakeWhile(r => !r.IsGroup).Select(r => r.ShortName).ToList();
+        var reverbs = Shelf(pvm.Effects, "Reverb & delay");
+        yield return (reverbs.SequenceEqual(new[] { "Chamber", "Delay", "Reverb", "Ambience" }), $"Group by source on: built-ins, then plug-ins, in a category ({string.Join(", ", reverbs)})");
+        var fxHeaders = pvm.Effects.Where(r => r.IsGroup).Select(r => r.Name).ToList();
+        yield return (fxHeaders.Last() == DeviceCategories.Other && Shelf(pvm.Effects, DeviceCategories.Other).SequenceEqual(new[] { "Mystery" }),
+            "an unrecognised plug-in lands under Other, the last header");
+        yield return (Shelf(pvm.Instruments, "Synths").Last() == "Ana", "a synth plug-in joins Synths after the built-ins");
+        yield return (!pvm.Effects.Concat(pvm.Instruments).Any(r => r.IsGroup && r.Name is "BUILT-IN" or "PLUG-INS"),
+            "no Built-in / Plug-ins headers in the category view");
+        pvm.GroupBySource = false;
+        reverbs = Shelf(pvm.Effects, "Reverb & delay");
+        yield return (reverbs.SequenceEqual(new[] { "Ambience", "Chamber", "Delay", "Reverb" }), $"Group by source off: plug-ins interleave by name ({string.Join(", ", reverbs)})");
+        yield return (pvm.MidiEffects.Where(r => r.IsGroup).Select(r => r.Name).SequenceEqual(DeviceCategories.Order(BuiltinDeviceType.MidiEffect))
+                      && pvm.VisibleDeviceCounts(1) == (26, 2),
+            "plug-ins leave the MIDI tab alone; the status line counts them");
+
         // An existing settings file has neither key: the category view is on, nothing folded (FR-003).
         var old = JsonSerializer.Deserialize<Settings>("{}")!;
         yield return (old.BrowserCategoryView && old.BrowserFoldedCategories.Count == 0,
