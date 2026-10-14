@@ -385,9 +385,9 @@ internal sealed class CeilingDeviceBody : IDeviceBody
         pills.Children.Add(PillCol(inPill, "IN"));
         pills.Children.Add(Col(PillCol(grPill, "GR"), 1));
         pills.Children.Add(Col(PillCol(outPill, "OUT"), 2));
-        var leftCol = new Border
+        var leftCol = new RuleSection
         {
-            Width = 64, Background = Card2, BorderBrush = BorderDef, BorderThickness = new Thickness(1), CornerRadius = NotaRadius.Tile, Padding = new Thickness(0, 5, 0, 4),
+            Width = 64, Padding = new Thickness(0, 5, 0, 4),
             Child = new DockPanel { Children = { Docked(colTitle, Dock.Top), Docked(colOut, Dock.Bottom), Docked(colGr, Dock.Bottom), pills } },
         };
         DockPanel.SetDock(leftCol, Dock.Left);
@@ -575,9 +575,9 @@ internal sealed class CeilingDeviceBody : IDeviceBody
             Refresh();
         }, extras);
         var rightFrame = TabFrame(new[] { "Meters", "Detector" }, rightHost, RightBody, true, t => { rightTab = t; RefreshAll(); }, null);
-        var right = new Border { Width = 186, Background = Card2, BorderBrush = BorderDef, BorderThickness = new Thickness(1), CornerRadius = NotaRadius.Tile, ClipToBounds = true, Child = rightFrame };
+        var right = new RuleSection { Width = 186, Child = rightFrame };
         DockPanel.SetDock(right, Dock.Right);
-        var centreBox = new Border { Background = Card2, BorderBrush = BorderDef, BorderThickness = new Thickness(1), CornerRadius = NotaRadius.Tile, Margin = new Thickness(5, 0), ClipToBounds = true, Child = centre };
+        var centreBox = new RuleSection { Margin = new Thickness(5, 0), Child = centre };
 
         // ======================================================================
         // Status strip

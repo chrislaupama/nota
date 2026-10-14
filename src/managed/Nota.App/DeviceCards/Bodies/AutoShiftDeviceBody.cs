@@ -444,9 +444,9 @@ internal sealed class AutoShiftDeviceBody : IDeviceBody
         var pills = new Grid { ColumnDefinitions = new ColumnDefinitions("Auto,Auto"), ColumnSpacing = 9, HorizontalAlignment = HorizontalAlignment.Center, Margin = new Thickness(0, 4, 0, 4) };
         pills.Children.Add(PillCol(inPill, inLbl));
         pills.Children.Add(Col(PillCol(corrPill, corrLbl), 1));
-        var pitchCol = new Border
+        var pitchCol = new RuleSection
         {
-            Width = 56, Background = Card2, BorderBrush = BorderDef, BorderThickness = new Thickness(1), CornerRadius = NotaRadius.Tile, Padding = new Thickness(0, 5, 0, 4),
+            Width = 56, Padding = new Thickness(0, 5, 0, 4),
             Child = new DockPanel { Children = { Docked(pitchTitle, Dock.Top), Docked(pitchCents, Dock.Bottom), Docked(pitchNote, Dock.Bottom), pills } },
         };
         DockPanel.SetDock(pitchCol, Dock.Left);
@@ -691,9 +691,9 @@ internal sealed class AutoShiftDeviceBody : IDeviceBody
 
         var centre = TabFrame(new[] { "Trace", "Scale", "MIDI" }, centreHost, CentreBody, false, centreTab, t => { centreTab = t; Refresh(); }, extrasHost);
         var rightFrame = TabFrame(new[] { "Shift", "Detect" }, rightHost, RightBody, true, 0, _ => RefreshAll(), null);
-        var right = new Border { Width = 186, Background = Card2, BorderBrush = BorderDef, BorderThickness = new Thickness(1), CornerRadius = NotaRadius.Tile, ClipToBounds = true, Child = rightFrame };
+        var right = new RuleSection { Width = 186, Child = rightFrame };
         DockPanel.SetDock(right, Dock.Right);
-        var centreBox = new Border { Background = Card2, BorderBrush = BorderDef, BorderThickness = new Thickness(1), CornerRadius = NotaRadius.Tile, Margin = new Thickness(5, 0), ClipToBounds = true, Child = centre };
+        var centreBox = new RuleSection { Margin = new Thickness(5, 0), Child = centre };
 
         // ======================================================================
         // Status strip

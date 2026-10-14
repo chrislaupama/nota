@@ -281,9 +281,9 @@ internal sealed class AutoFilterDeviceBody : IDeviceBody
         var faders = new Grid { ColumnDefinitions = new ColumnDefinitions("Auto,Auto"), ColumnSpacing = 9, HorizontalAlignment = HorizontalAlignment.Center, Margin = new Thickness(0, 4, 0, 4) };
         faders.Children.Add(ShapeFader(Freq, "FRQ", NotaPalette.VizInk, S_Cut, "Cutoff — the base the modulation moves from; the dashed mark is where it is now. Double-click resets."));
         faders.Children.Add(Col(ShapeFader(Res, "RES", Teal, S_Res, "Resonance — the peak at the cutoff; the dashed mark is where it is now. Double-click resets."), 1));
-        var shapeCol = new Border
+        var shapeCol = new RuleSection
         {
-            Width = 56, Background = Card2, BorderBrush = BorderDef, BorderThickness = new Thickness(1), CornerRadius = NotaRadius.Tile, Padding = new Thickness(0, 5, 0, 4),
+            Width = 56, Padding = new Thickness(0, 5, 0, 4),
             Child = new DockPanel { Children = { Docked(shapeTitle, Dock.Top), Docked(shapeRes, Dock.Bottom), Docked(shapeFreq, Dock.Bottom), faders } },
         };
         DockPanel.SetDock(shapeCol, Dock.Left);
@@ -643,9 +643,9 @@ internal sealed class AutoFilterDeviceBody : IDeviceBody
 
         var centre = TabFrame(new[] { "Filter", "Envelope", "LFO" }, centreHost, CentreBody, false, t => { centreTab = t; Refresh(); }, extras);
         var rightFrame = TabFrame(new[] { "Mod", "Output" }, rightHost, RightBody, true, _ => RefreshAll(), null);
-        var right = new Border { Width = 186, Background = Card2, BorderBrush = BorderDef, BorderThickness = new Thickness(1), CornerRadius = NotaRadius.Tile, ClipToBounds = true, Child = rightFrame };
+        var right = new RuleSection { Width = 186, Child = rightFrame };
         DockPanel.SetDock(right, Dock.Right);
-        var centreBox = new Border { Background = Card2, BorderBrush = BorderDef, BorderThickness = new Thickness(1), CornerRadius = NotaRadius.Tile, Margin = new Thickness(5, 0), ClipToBounds = true, Child = centre };
+        var centreBox = new RuleSection { Margin = new Thickness(5, 0), Child = centre };
 
         // ======================================================================
         // Status strip

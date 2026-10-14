@@ -86,10 +86,9 @@ internal sealed class AutoGainDeviceBody : IDeviceBody
         static T Docked<T>(T c, Dock d) where T : Control { DockPanel.SetDock(c, d); return c; }
         static T Col<T>(T c, int col) where T : Control { Grid.SetColumn(c, col); return c; }
         static T GRow<T>(T c, int row) where T : Control { Grid.SetRow(c, row); return c; }
-        static Border Island(Control child, double width = double.NaN) => new()
+        static RuleSection Island(Control child, double width = double.NaN) => new()
         {
-            Width = width, Background = Card2, BorderBrush = BorderDef, BorderThickness = new Thickness(1), CornerRadius = NotaRadius.Tile,
-            ClipToBounds = true, Child = child,
+            Width = width, Child = child,
         };
         static Border Bar(Control child, Thickness pad) => new()
         { Height = 20, BorderBrush = BorderDef, BorderThickness = new Thickness(0, 0, 0, 1), Padding = pad, Child = child };
