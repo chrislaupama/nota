@@ -15,8 +15,10 @@ namespace Nota.App;
 internal static class NotaText
 {
     // Words that stay as written whatever their position. Upper-case acronyms, and the
-    // units whose case carries meaning (dB, Hz, kHz, ms).
-    private static readonly Dictionary<string, string> Fixed = new(StringComparer.Ordinal)
+    // units whose case carries meaning (dB, Hz, kHz, ms). Internal and kept as one
+    // ["KEY"] = "Value" table because the smoke test's label check (RunLabels) reads this
+    // file as text: a label made only of these words is not shouting.
+    internal static readonly Dictionary<string, string> Fixed = new(StringComparer.Ordinal)
     {
         ["DB"] = "dB", ["HZ"] = "Hz", ["KHZ"] = "kHz", ["MS"] = "ms", ["BPM"] = "BPM",
         ["LFO"] = "LFO", ["EQ"] = "EQ", ["ADSR"] = "ADSR", ["AHDSR"] = "AHDSR", ["MIDI"] = "MIDI",

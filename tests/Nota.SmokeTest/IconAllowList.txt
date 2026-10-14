@@ -1,0 +1,19 @@
+# SPDX-License-Identifier: AGPL-3.0-only
+# Copyright (c) 2026 Egor Khindikaynen (Nota). See LICENSES/ for license terms.
+#
+# Icon ratchet for DesignTokenCheck.RunIcons (spec 008 T007).
+#
+# Inline icon geometry outside Controls/Glyph.cs — Geometry.Parse / StreamGeometry.Parse /
+# PathGeometry.Parse calls, axaml Data="M…" attributes and SVG path strings — counted per
+# file on the day the check landed. A count may only go down: a file above its count fails,
+# and so does a file below it (lower the number, or drop the line at 0).
+#
+# Format: path (from src/managed) <TAB> sites <TAB> # reason
+Nota.App/BrowserView.cs	19	# pre-008, fix in US5 (rail, tree and list icons)
+Nota.App/CommandPaletteView.cs	8	# pre-008, fix in US5 (palette kind icons)
+Nota.App/DeviceCards/Instruments/RhythmInstrumentCard.cs	1	# pre-008, fix in US5 (folder icon)
+Nota.App/HistoryView.cs	3	# pre-008, fix in US5 (star, options)
+Nota.App/MainWindow.axaml	7	# pre-008, fix in US5 (transport toggles)
+Nota.App/PreferencesWindow.Store.cs	4	# pre-008, fix in US5 (store OS marks)
+Nota.App/PreferencesWindow.cs	12	# pre-008, fix in US5 (Settings page icons)
+Nota.App/PreviewPlayer.cs	9	# pre-008, fix in US5 (preview player)
