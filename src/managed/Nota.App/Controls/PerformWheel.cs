@@ -80,7 +80,7 @@ internal sealed class PerformWheel : Control
     protected override void OnPointerReleased(PointerReleasedEventArgs e)
     {
         if (!_drag) return;
-        _drag = false;
+        _drag = false; InvalidateVisual();
         e.Pointer.Capture(null);
         if (Spring) Write(Default);
         GestureEnd?.Invoke();

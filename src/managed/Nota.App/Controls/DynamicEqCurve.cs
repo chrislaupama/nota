@@ -262,7 +262,7 @@ public sealed class DynamicEqCurve : Control
             if (_gestFreq) _engine.EndAutomationWrite(_track, AutomationTarget.DeviceParam, _device, DynEq.P(_drag, DynEq.FreqF), "");
             if (_gestGain) _engine.EndAutomationWrite(_track, AutomationTarget.DeviceParam, _device, DynEq.P(_drag, DynEq.GainF), "");
         }
-        _drag = -1; _gestFreq = _gestGain = false;
+        _drag = -1; InvalidateVisual(); _gestFreq = _gestGain = false;
     }
 
     protected override void OnPointerWheelChanged(PointerWheelEventArgs e)

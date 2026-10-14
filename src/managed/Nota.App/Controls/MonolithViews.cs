@@ -99,7 +99,7 @@ internal sealed class MonolithFilterCurve : Control
     protected override void OnPointerMoved(PointerEventArgs e)
     { base.OnPointerMoved(e); if (_drag) Apply(e); }
     protected override void OnPointerReleased(PointerReleasedEventArgs e)
-    { base.OnPointerReleased(e); if (_drag) { _drag = false; DragEnded?.Invoke(); e.Pointer.Capture(null); } }
+    { base.OnPointerReleased(e); if (_drag) { _drag = false; InvalidateVisual(); DragEnded?.Invoke(); e.Pointer.Capture(null); } }
 
     private double Y(double x, double w, double h)
     {

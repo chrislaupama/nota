@@ -55,7 +55,7 @@ namespace Nota.App;
         { _drag = true; Gest(true); e.Pointer.Capture(this); Apply(e.GetPosition(this)); e.Handled = true; }
         protected override void OnPointerMoved(PointerEventArgs e) { if (_drag) Apply(e.GetPosition(this)); }
         protected override void OnPointerReleased(PointerReleasedEventArgs e)
-        { if (_drag) { _drag = false; Gest(false); e.Pointer.Capture(null); } }
+        { if (_drag) { _drag = false; InvalidateVisual(); Gest(false); e.Pointer.Capture(null); } }
 
         private void Gest(bool begin)
         {

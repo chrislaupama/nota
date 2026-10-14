@@ -130,7 +130,7 @@ internal sealed class SynthViz : Control, IMidiLearnRegions
     }
     protected override void OnPointerMoved(PointerEventArgs e) { if (_drag >= 0) Apply(e.GetPosition(this)); }
     protected override void OnPointerReleased(PointerReleasedEventArgs e)
-    { if (_drag >= 0) { Gesture(false); _drag = -1; e.Pointer.Capture(null); } }
+    { if (_drag >= 0) { Gesture(false); _drag = -1; InvalidateVisual(); e.Pointer.Capture(null); } }
 
     /// <summary>Raised after a drag writes a param, so the card's readouts follow.</summary>
     public event Action? Changed;
