@@ -18,6 +18,7 @@ using Avalonia.Collections;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
 using Avalonia.Controls.Shapes;
+using Avalonia.Controls.Templates;
 using Avalonia.Input;
 using Avalonia.Input.Platform;
 using Avalonia.Layout;
@@ -54,32 +55,31 @@ public sealed partial class PreferencesWindow : NotaWindow
 
     private const double LabelCol = 150;   // the label column every form row shares
 
-    // Sidebar: group heading, then its pages. Icons are 24×24 stroke paths drawn at 14px.
-    private sealed record Page(string Title, string Subtitle, string Icon);
+    // Sidebar: group heading, then its pages. Icons are Glyph kinds drawn at 14px.
+    private sealed record Page(string Title, string Subtitle, GlyphKind Icon);
 
     private static readonly (string Group, Page[] Pages)[] Nav =
     {
-        ("DEVICES", new[]
+        ("Devices", new[]
         {
-            new Page("Audio", "Device, sample rate and buffer", "M4 10 V14 M8 7 V17 M12 4 V20 M16 8 V16 M20 11 V13"),
-            new Page("MIDI", "Controllers Nota listens to", "M4 5 H20 V19 H4 Z M8 5 V13 M12 5 V13 M16 5 V13"),
-            new Page("Gamepads", "Play notes or drive mapped controls", "M7 8 H17 A4 4 0 0 1 21 12 V13 A4 4 0 0 1 14 16 H10 A4 4 0 0 1 3 13 V12 A4 4 0 0 1 7 8 Z M7 11 V13 M6 12 H8 M16 11.5 H16.01 M18 12.5 H18.01"),
-            new Page("Remote", "Phones and tablets on this network", "M8 3 H16 A1.5 1.5 0 0 1 17.5 4.5 V19.5 A1.5 1.5 0 0 1 16 21 H8 A1.5 1.5 0 0 1 6.5 19.5 V4.5 A1.5 1.5 0 0 1 8 3 Z M11 18 H13"),
+            new Page("Audio", "Device, sample rate and buffer", GlyphKind.Levels),
+            new Page("MIDI", "Controllers Nota listens to", GlyphKind.MidiPort),
+            new Page("Gamepads", "Play notes or drive mapped controls", GlyphKind.Gamepad),
+            new Page("Remote", "Phones and tablets on this network", GlyphKind.Phone),
         }),
-        ("PLUG-INS", new[]
+        ("Plug-ins", new[]
         {
-            new Page("Plug-ins", "Where Nota looks for VST3", "M9 3 V7 M15 3 V7 M6 7 H18 V11 A6 6 0 0 1 6 11 Z M12 17 V21"),
-            new Page("Downloads", "Plug-ins, sample packs and AI models", "M12 4 V15 M7 10 L12 15 L17 10 M5 19 H19"),
+            new Page("Plug-ins", "Where Nota looks for VST3", GlyphKind.Plug),
+            new Page("Downloads", "Plug-ins, sample packs and AI models", GlyphKind.Downloads),
         }),
-        ("GENERAL", new[]
+        ("General", new[]
         {
-            new Page("Library", "Content folders and version history", "M3 7 A1 1 0 0 1 4 6 H9 L11 8 H20 A1 1 0 0 1 21 9 V18 A1 1 0 0 1 20 19 H4 A1 1 0 0 1 3 18 Z"),
-            new Page("Appearance", "Theme, waveforms and AI control", "M12 4 A8 8 0 1 0 12 20 Z M12 4 A8 8 0 0 1 12 20"),
-            new Page("Shortcuts", "Keyboard reference", "M3 7 H21 V17 H3 Z M7 11 H7.01 M11 11 H11.01 M15 11 H15.01 M8 14 H16"),
+            new Page("Library", "Content folders and version history", GlyphKind.Library),
+            new Page("Appearance", "Theme, waveforms and AI control", GlyphKind.Appearance),
+            new Page("Shortcuts", "Keyboard reference", GlyphKind.Shortcuts),
         }),
     };
 
-    private const string SearchIcon = "M4 10.5 A6.5 6.5 0 1 0 17 10.5 A6.5 6.5 0 1 0 4 10.5 Z M15.5 15.5 L21 21";
 
     private readonly MainWindowViewModel? _main;
 
@@ -112,7 +112,7 @@ public sealed partial class PreferencesWindow : NotaWindow
     {
         public required Border Root;
         public required Border Edge;
-        public required Path Icon;
+        public required Glyph Icon;
         public required TextBlock Label;
         public required TextBlock Badge;
     }
@@ -132,7 +132,7 @@ public sealed partial class PreferencesWindow : NotaWindow
         {
             nav.Children.Add(new TextBlock
             {
-                Text = group, FontSize = 9, FontWeight = FontWeight.Bold, LetterSpacing = 1.1,
+                Text = group, FontSize = 9, FontWeight = FontWeight.Medium,
                 Foreground = TextDisabled, Margin = new Thickness(10, 12, 10, 5),
             });
             foreach (var page in pages) nav.Children.Add(BuildNavItem(page, index++));
@@ -189,7 +189,7 @@ public sealed partial class PreferencesWindow : NotaWindow
             Width = 2, CornerRadius = NotaRadius.Bar, Margin = new Thickness(0, 7),
             HorizontalAlignment = HorizontalAlignment.Left, Background = Brushes.Transparent,
         };
-        var icon = new Path { Data = Geometry.Parse(page.Icon), StrokeThickness = 1.6, StrokeLineCap = PenLineCap.Round, StrokeJoin = PenLineJoin.Round };
+        var icon = new Glyph(page.Icon, 14);
         var label = new TextBlock { Text = page.Title, FontSize = 12, VerticalAlignment = VerticalAlignment.Center };
         var badge = new TextBlock
         {
@@ -197,8 +197,7 @@ public sealed partial class PreferencesWindow : NotaWindow
             VerticalAlignment = VerticalAlignment.Center, IsVisible = false,
         };
         var row = new Grid { ColumnDefinitions = new ColumnDefinitions("Auto,*,Auto"), ColumnSpacing = 8, Margin = new Thickness(10, 0) };
-        var iconBox = IconBox(icon, 14);
-        row.Children.Add(iconBox);
+        row.Children.Add(icon);
         Grid.SetColumn(label, 1); row.Children.Add(label);
         Grid.SetColumn(badge, 2); row.Children.Add(badge);
 
@@ -215,10 +214,6 @@ public sealed partial class PreferencesWindow : NotaWindow
         return root;
     }
 
-    // A 24×24 stroke path scaled into a square box — the sidebar and search icons.
-    private static Control IconBox(Path path, double size)
-        => new Viewbox { Width = size, Height = size, VerticalAlignment = VerticalAlignment.Center, Child = new Canvas { Width = 24, Height = 24, Children = { path } } };
-
     private void Select(int index)
     {
         StopTests();   // the Audio pane is rebuilt on every visit — don't leave a tone / check orphaned
@@ -227,10 +222,10 @@ public sealed partial class PreferencesWindow : NotaWindow
         {
             bool on = i == index;
             var n = _navItems[i];
-            n.Root.Background = on ? AccentSubtle : Brushes.Transparent;
+            n.Root.Background = on ? NotaPalette.SurfaceHover : Brushes.Transparent;
             n.Edge.Background = on ? Brass : Brushes.Transparent;
-            n.Icon.Stroke = on ? Brass : TextTertiary;
-            n.Label.Foreground = on ? AccentHover : TextSecondary;
+            n.Icon.Foreground = on ? Brass : TextTertiary;
+            n.Label.Foreground = on ? TextPrimary : TextSecondary;
             n.Label.FontWeight = on ? FontWeight.SemiBold : FontWeight.Normal;
         }
 
@@ -328,8 +323,8 @@ public sealed partial class PreferencesWindow : NotaWindow
         device.Add(Row("Latency", latency));
 
         var body = Sections(
-            Section("AUDIO DEVICE", 6, device.ToArray()),
-            Section("TEST", 8, TestToneRow(), CpuCheckRow(engine)));
+            Section("Audio device", 6, device.ToArray()),
+            Section("Test", 8, TestToneRow(), CpuCheckRow(engine)));
         _loading = false;
         return body;
     }
@@ -460,7 +455,7 @@ public sealed partial class PreferencesWindow : NotaWindow
             {
                 string uid = dev.Uid;
                 bool on = engine.IsMidiInputEnabled(uid);
-                var dot = Dot(on ? Brass : BorderStrong);
+                var dot = Dot(on ? NotaPalette.Success : BorderStrong);   // enabled: positive status
                 var name = new TextBlock
                 {
                     Text = dev.Name, FontSize = 12, Foreground = on ? TextPrimary : TextTertiary,
@@ -469,7 +464,7 @@ public sealed partial class PreferencesWindow : NotaWindow
                 var sw = new ToggleSwitch(on, large: true) { VerticalAlignment = VerticalAlignment.Center };
                 sw.Changed += v =>
                 {
-                    dot.Fill = v ? Brass : BorderStrong;
+                    dot.Fill = v ? NotaPalette.Success : BorderStrong;
                     name.Foreground = v ? TextPrimary : TextTertiary;
                     engine.SetMidiInputEnabled(uid, v);
                     _main.ApplyMidiSettings();
@@ -482,7 +477,7 @@ public sealed partial class PreferencesWindow : NotaWindow
             items.Add(Table(rows));
         }
         items.Add(Caption("Switch a controller off to stop Nota listening to it. New devices are on by default."));
-        return Sections(Section("MIDI INPUTS", 8, items.ToArray()), MpeSection(engine));
+        return Sections(Section("MIDI inputs", 8, items.ToArray()), MpeSection(engine));
     }
 
     private static readonly int[] MpeBendRanges = [12, 24, 48, 96];
@@ -621,8 +616,8 @@ public sealed partial class PreferencesWindow : NotaWindow
         }
 
         return Sections(
-            Section("GAMEPAD INPUT", 10, enable, padHost),
-            Section("LAYOUT", 10,
+            Section("Gamepad input", 10, enable, padHost),
+            Section("Layout", 10,
                 Table(map),
                 Caption("Notes go to the armed (record-enabled) instrument track — enable Record to capture them, or use the audition track to just play.", muted: true),
                 Caption("Any button can be mapped to a control instead: click MIDI in the top-right, click the control, then press the button. A mapped button drives that control and stops playing its note; the rest of the pad keeps the layout above. The sticks and the trigger travel map the same way and are continuous, so they suit a knob or a fader — they play no notes, and do nothing until mapped. Mappings are listed in the browser's MIDI Map tab and travel with the project.")));
@@ -713,11 +708,11 @@ public sealed partial class PreferencesWindow : NotaWindow
         };
 
         return Sections(
-            Section("PLUGIN SCAN FOLDERS", 10,
+            Section("Plugin scan folders", 10,
                 well,
                 new StackPanel { Orientation = Orientation.Horizontal, Spacing = 8, Children = { addBtn, removeBtn } },
                 Caption("Extra folders are searched for VST3 plugins on the next rescan (AU uses the system registry).")),
-            Section("SCAN", 10,
+            Section("Scan", 10,
                 new StackPanel { Orientation = Orientation.Horizontal, Spacing = 14, Children = { rescan, rescanStatus } }));
     }
 
@@ -727,7 +722,7 @@ public sealed partial class PreferencesWindow : NotaWindow
     {
         if (_main is null) return Caption("Content folders are unavailable in this window.");
         var settings = _main.Settings;
-        return Sections(Section("CONTENT FOLDERS", 10, Table(new List<Control>
+        return Sections(Section("Content folders", 10, Table(new List<Control>
         {
             FolderRow("Samples",
                 () => settings.Current.SamplesFolder, () => settings.ResolvedSamplesFolder(),
@@ -752,7 +747,7 @@ public sealed partial class PreferencesWindow : NotaWindow
             if (ok) main.SetKeepVersionHistory(false);
             else sw.IsOn = true;
         };
-        return Section("VERSION HISTORY", 10, row,
+        return Section("Version history", 10, row,
             Caption("Every save records a version, listed in the browser's History tab. Versions share their audio, so each one costs only what it adds."));
     }
 
@@ -787,47 +782,118 @@ public sealed partial class PreferencesWindow : NotaWindow
 
     // ---- Appearance -------------------------------------------------------
 
-    // Graphite / Paper / System as a segmented control, each with a swatch of its ground. The
-    // choice applies immediately — NotaThemeService re-tints the palette and repaints every
-    // open window — and is persisted so the next launch starts in the same variant.
+    // The colour themes (spec 011) as a list: one row per theme with a chip of its own
+    // colours, its name and its kind, then a "Follow system" row that pairs a dark-mode
+    // theme with a light-mode one. Single selection across all rows: picking a theme turns
+    // follow-system off (its two per-mode choices are kept). Every pick applies at once —
+    // NotaThemeService re-tints the palette and repaints every open window — and is saved.
     private static Control ThemePicker()
     {
         var settings = App.Services.GetRequiredService<ISettingsService>();
-        var strip = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 2 };
-        var buttons = new List<(AppTheme Mode, ToggleButton Btn)>();
-
-        foreach (var (mode, label) in new[]
-                 {
-                     (AppTheme.Dark, "Ember Graphite"),
-                     (AppTheme.Light, "Ember Paper"),
-                     (AppTheme.System, "System"),
-                 })
+        var themes = NotaThemes.BuiltIn;
+        var list = new ListBox
         {
-            var m = mode;
-            var btn = new ToggleButton
-            {
-                Classes = { "seg" }, FontSize = 12,
-                Content = new StackPanel
-                {
-                    Orientation = Orientation.Horizontal, Spacing = 7,
-                    Children = { new ThemeSwatch(m), new TextBlock { Text = label, VerticalAlignment = VerticalAlignment.Center } },
-                },
-                IsChecked = settings.Current.Theme == m,
-            };
-            btn.Click += (_, _) =>
-            {
-                // A segment can only be turned on: clicking the live one must not clear it.
-                foreach (var (bm, b) in buttons) b.IsChecked = bm == m;
-                if (settings.Current.Theme == m) return;
-                settings.Current.Theme = m;
-                settings.Save();
-                NotaThemeService.Set(m);
-            };
-            buttons.Add((m, btn));
-            strip.Children.Add(btn);
+            SelectionMode = SelectionMode.Single, Width = 300, HorizontalAlignment = HorizontalAlignment.Left,
+            Background = Brushes.Transparent, Padding = new Thickness(0),
+        };
+        foreach (var t in themes)
+            list.Items.Add(ThemeRow(new ThemeChip(t), t.Name, t.IsDark ? "Dark" : "Light"));
+        list.Items.Add(ThemeRow(null, "Follow system", "Dark · Light"));
+        int followIndex = themes.Count;
+
+        var darkPick = ModeCombo(NotaThemeKind.Dark);
+        var lightPick = ModeCombo(NotaThemeKind.Light);
+        var modes = new StackPanel
+        {
+            Spacing = 6, Margin = new Thickness(0, 8, 0, 0),
+            Children = { ModeRow("In dark mode", darkPick), ModeRow("In light mode", lightPick) },
+        };
+
+        bool loading = true;
+        void Show()
+        {
+            var c = NotaThemeService.Choice;
+            list.SelectedIndex = c.FollowSystem ? followIndex : Math.Max(0, IndexOf(c.Single));
+            darkPick.SelectedItem = NotaThemes.Find(c.Dark);
+            lightPick.SelectedItem = NotaThemes.Find(c.Light);
+            modes.IsVisible = c.FollowSystem;
+        }
+        int IndexOf(string id) { for (int i = 0; i < themes.Count; i++) if (themes[i].Id == id) return i; return -1; }
+
+        void Commit(AppearanceChoice choice)
+        {
+            var single = NotaThemes.Find(choice.Single) ?? NotaThemes.Default;
+            Appearance.Store(settings.Current, choice, single.IsDark);
+            settings.Save();
+            NotaThemeService.Set(choice);
+            modes.IsVisible = choice.FollowSystem;
         }
 
-        return new Border { Classes = { "segmented" }, HorizontalAlignment = HorizontalAlignment.Left, Child = strip };
+        list.SelectionChanged += (_, _) =>
+        {
+            if (loading || list.SelectedIndex < 0) return;
+            var c = NotaThemeService.Choice;
+            if (list.SelectedIndex == followIndex)
+            {
+                if (!c.FollowSystem) Commit(c with { FollowSystem = true });
+            }
+            else
+            {
+                var id = themes[list.SelectedIndex].Id;
+                if (c.FollowSystem || c.Single != id) Commit(c with { FollowSystem = false, Single = id });
+            }
+        };
+        darkPick.SelectionChanged += (_, _) =>
+        {
+            if (!loading && darkPick.SelectedItem is NotaColourTheme t && t.Id != NotaThemeService.Choice.Dark)
+                Commit(NotaThemeService.Choice with { Dark = t.Id });
+        };
+        lightPick.SelectionChanged += (_, _) =>
+        {
+            if (!loading && lightPick.SelectedItem is NotaColourTheme t && t.Id != NotaThemeService.Choice.Light)
+                Commit(NotaThemeService.Choice with { Light = t.Id });
+        };
+
+        Show();
+        loading = false;
+        return new StackPanel { Children = { list, modes } };
+    }
+
+    // A theme row: accent tick (styled on selection), chip, name, kind on the right.
+    private static ListBoxItem ThemeRow(Control? chip, string name, string kind)
+    {
+        var grid = new Grid { ColumnDefinitions = new ColumnDefinitions("Auto,Auto,*,Auto"), ColumnSpacing = 8 };
+        var edge = new Border { Classes = { "RowEdge" }, Height = 14, VerticalAlignment = VerticalAlignment.Center };
+        grid.Children.Add(edge);
+        var c = chip ?? new Border { Width = ThemeChip.ChipWidth };
+        c.VerticalAlignment = VerticalAlignment.Center;
+        Grid.SetColumn(c, 1); grid.Children.Add(c);
+        var label = new TextBlock { Text = name, Classes = { "RowName" }, VerticalAlignment = VerticalAlignment.Center };
+        Grid.SetColumn(label, 2); grid.Children.Add(label);
+        var tag = new TextBlock { Text = kind, FontSize = 11, Foreground = TextMuted, VerticalAlignment = VerticalAlignment.Center };
+        Grid.SetColumn(tag, 3); grid.Children.Add(tag);
+        return new ListBoxItem { Content = grid, Padding = new Thickness(0, 0, 8, 0) };
+    }
+
+    // The theme for one OS mode while following the system: only themes of that kind.
+    private static ComboBox ModeCombo(NotaThemeKind kind)
+    {
+        var combo = Combo(220);
+        combo.ItemsSource = NotaThemes.OfKind(kind).ToList();
+        combo.ItemTemplate = new FuncDataTemplate<NotaColourTheme>((t, _) => t is null ? new TextBlock() : new StackPanel
+        {
+            Orientation = Orientation.Horizontal, Spacing = 8,
+            Children = { new ThemeChip(t) { VerticalAlignment = VerticalAlignment.Center }, new TextBlock { Text = t.Name, VerticalAlignment = VerticalAlignment.Center } },
+        });
+        return combo;
+    }
+
+    private static Control ModeRow(string label, Control picker)
+    {
+        var grid = new Grid { ColumnDefinitions = new ColumnDefinitions("110,Auto"), ColumnSpacing = 10 };
+        grid.Children.Add(new TextBlock { Text = label, FontSize = 12, Foreground = TextSecondary, VerticalAlignment = VerticalAlignment.Center });
+        Grid.SetColumn(picker, 1); grid.Children.Add(picker);
+        return grid;
     }
 
     // Bars / Solid for the arrangement's audio-clip waveforms. Saving fires Settings.Changed,
@@ -854,36 +920,23 @@ public sealed partial class PreferencesWindow : NotaWindow
         return new Border { Classes = { "segmented" }, HorizontalAlignment = HorizontalAlignment.Left, Child = strip };
     }
 
-    // A 10px chip of a variant's ground — both variants at once, whichever one is live.
-    // System is split corner to corner, Paper over Graphite.
-    private sealed class ThemeSwatch : Control
+    // A theme in four 10px squares of its own colours — ground, panel, primary text,
+    // accent — whichever theme is live, so every row previews itself.
+    private sealed class ThemeChip : Control
     {
-        private readonly AppTheme _mode;
-        public ThemeSwatch(AppTheme mode) { _mode = mode; Width = 10; Height = 10; VerticalAlignment = VerticalAlignment.Center; }
+        public const double ChipWidth = 4 * 10 + 3 * 2;
+        private readonly NotaColourTheme _theme;
+        public ThemeChip(NotaColourTheme theme) { _theme = theme; Width = ChipWidth; Height = 10; }
 
         public override void Render(DrawingContext ctx)
         {
-            var dark = new ImmutableSolidColorBrush(NotaPalette.ColorIn(NotaPalette.SurfaceCard, NotaThemeVariant.Dark));
-            var light = new ImmutableSolidColorBrush(NotaPalette.ColorIn(NotaPalette.SurfaceCard, NotaThemeVariant.Light));
-            var r = new Rect(0, 0, Width, Height);
-            var box = new RoundedRect(r, NotaRadius.ClipValue);
-            using (ctx.PushClip(box))
+            var slots = new[] { NotaPalette.BgApp, NotaPalette.Panel, NotaPalette.TextPrimary, NotaPalette.Accent };
+            for (int i = 0; i < slots.Length; i++)
             {
-                ctx.FillRectangle(_mode == AppTheme.Dark ? dark : light, r);
-                if (_mode == AppTheme.System)
-                {
-                    var g = new StreamGeometry();
-                    using (var c = g.Open())
-                    {
-                        c.BeginFigure(new Point(r.Right, r.Top), true);
-                        c.LineTo(r.BottomRight);
-                        c.LineTo(r.BottomLeft);
-                        c.EndFigure(true);
-                    }
-                    ctx.DrawGeometry(dark, null, g);
-                }
+                var r = new Rect(i * 12, 0, 10, 10);
+                ctx.DrawRectangle(new ImmutableSolidColorBrush(NotaPalette.ColorIn(slots[i], _theme)),
+                    new Pen(BorderStrong, 1), new RoundedRect(r.Deflate(0.5), NotaRadius.ClipValue));
             }
-            ctx.DrawRectangle(null, new Pen(BorderStrong, 1), new RoundedRect(r.Deflate(0.5), NotaRadius.ClipValue));
         }
     }
 
@@ -971,11 +1024,11 @@ public sealed partial class PreferencesWindow : NotaWindow
 
         return Sections(
             Section("UI", 10,
-                Row("Theme", ThemePicker()),
-                Row("", Caption("Ember Graphite is the warm dark palette; Ember Paper is the same system on a light ground. System follows the OS appearance and switches with it.")),
+                Row("Colour theme", ThemePicker()),
+                Row("", Caption("Themes change colours only. Follow system switches between a dark-mode and a light-mode theme with the OS appearance.")),
                 Row("Waveform", WaveformPicker()),
                 Row("", Caption("How audio clips draw on the arrangement: Bars spaces the peaks out so the rhythm reads; Solid draws every pixel."))),
-            Section("AI CONTROL (MCP)", 12, enable, details));
+            Section("AI control (MCP)", 12, enable, details));
     }
 
     // ---- Shortcuts --------------------------------------------------------
@@ -988,7 +1041,7 @@ public sealed partial class PreferencesWindow : NotaWindow
     // keys (see IsKeyToken) is drawn as one key-cap per token; a gesture is plain text.
     private static readonly (string Title, (string Key, string Action)[] Rows)[] ShortcutGroups =
     {
-        ("FILE", new[]
+        ("File", new[]
         {
             ("⌘N   ⌘O", "New project / open a project"),
             ("⌘S   ⌘⇧S", "Save (records a version) / save as"),
@@ -996,11 +1049,11 @@ public sealed partial class PreferencesWindow : NotaWindow
             ("⌘⇧E", "Export audio"),
             ("⌘,", "Settings"),
         }),
-        ("WINDOW", new[]
+        ("Window", new[]
         {
             ("F11", "Enter / leave full screen — the title bar hides in full screen"),
         }),
-        ("COMMAND PALETTE", new[]
+        ("Command palette", new[]
         {
             ("⌘⇧P", "Open / close the command palette — from any window, even while typing"),
             ("↑ ↓   PgUp PgDn", "Move through the results"),
@@ -1012,7 +1065,7 @@ public sealed partial class PreferencesWindow : NotaWindow
             ("> @ + # ~", "Type first to filter: actions, tracks, devices, presets, Modular nodes"),
             ("Esc", "Close and go back where you were"),
         }),
-        ("TRANSPORT", new[]
+        ("Transport", new[]
         {
             ("Space", "Play / Stop"),
             ("Return", "Stop (again → back to the start) · in the Session grid it launches the selection"),
@@ -1020,7 +1073,7 @@ public sealed partial class PreferencesWindow : NotaWindow
             ("⌘M", "Metronome"),
             ("⌘L", "Loop on / off · loop the selected clips or time range"),
         }),
-        ("ARRANGEMENT & EDITING", new[]
+        ("Arrangement & editing", new[]
         {
             ("⌘Z   ⌘⇧Z", "Undo / redo"),
             ("⌘A", "Select all clips"),
@@ -1040,7 +1093,7 @@ public sealed partial class PreferencesWindow : NotaWindow
             ("0", "Deactivate / activate the selected clip(s)"),
             ("Delete", "Delete the selected clip / range"),
         }),
-        ("GRID (ARRANGEMENT OR CLIP EDITOR — WHICHEVER YOU USED LAST)", new[]
+        ("Grid (Arrangement or clip editor — whichever you used last)", new[]
         {
             ("⌘1   ⌘2", "Narrow / widen the grid · in Auto, change the density"),
             ("⌘3", "Triplet grid on / off"),
@@ -1048,14 +1101,14 @@ public sealed partial class PreferencesWindow : NotaWindow
             ("⌘5", "Switch between the adaptive (Auto) and a fixed grid"),
             ("⌥ while dragging", "Move freely, ignoring the grid"),
         }),
-        ("TRACKS (AFTER A CLICK IN THE TRACK HEADERS)", new[]
+        ("Tracks (after a click in the track headers)", new[]
         {
             ("⌘A", "Select all tracks"),
             ("⌘C  ⌘X  ⌘V", "Copy / cut / paste the selected tracks · paste lands after the last one"),
             ("⌘D", "Duplicate the selected tracks"),
             ("Delete", "Delete the selected tracks · a group goes with its tracks"),
         }),
-        ("SESSION (AFTER A CLICK IN THE GRID)", new[]
+        ("Session (after a click in the grid)", new[]
         {
             ("← → ↑ ↓", "Move the selection between slots and scenes"),
             ("Return", "Launch the selected clip or scene"),
@@ -1071,7 +1124,7 @@ public sealed partial class PreferencesWindow : NotaWindow
             ("Double-click header", "Rename the track"),
             ("Right-click header or grid", "Add an instrument, audio or return track · rename or delete one"),
         }),
-        ("PIANO ROLL", new[]
+        ("Piano roll", new[]
         {
             ("← →", "Move notes by the grid"),
             ("↑ ↓", "Transpose by a semitone"),
@@ -1088,14 +1141,14 @@ public sealed partial class PreferencesWindow : NotaWindow
             ("Drag in the Bend / Pres / Slide lane", "Draw the selected note's MPE curve · ⌥ draws a straight line · drag a point to move it"),
             ("Double-click in an MPE lane", "Add a point · on a point, delete it · right-click to clear the curve"),
         }),
-        ("PLAY NOTES (COMPUTER KEYBOARD)", new[]
+        ("Play notes (computer keyboard)", new[]
         {
             ("A S D F G H J K", "White keys, from C4"),
             ("W E · T Y U", "Black keys (sharps)"),
             ("Z / X", "Shift octave down / up"),
             ("C / V", "Lower / raise velocity"),
         }),
-        ("BROWSER · PREVIEW", new[]
+        ("Browser · preview", new[]
         {
             ("↑ ↓", "Move through samples, presets and devices · with Auto on, each one plays as it is selected"),
             ("Click play button", "Play / stop the selected sample, preset or device"),
@@ -1104,7 +1157,7 @@ public sealed partial class PreferencesWindow : NotaWindow
             ("Scroll on the track button", "Step through the demo tracks an effect preset is heard through"),
             ("Double-click volume", "Reset the preview volume to 0\u2009dB"),
         }),
-        ("GAMEPAD (MACOS)", new[]
+        ("Gamepad (macOS)", new[]
         {
             ("Face buttons", "Play C4 D4 E4 F4"),
             ("Shoulder buttons", "Play G4 A4 B4 C5"),
@@ -1113,7 +1166,7 @@ public sealed partial class PreferencesWindow : NotaWindow
             ("Any button", "Mappable through MIDI Learn — a mapped button drives the control instead"),
             ("Sticks · triggers", "Mappable as continuous controls (a knob, a fader); they play no notes"),
         }),
-        ("MOUSE", new[]
+        ("Mouse", new[]
         {
             ("Double-click clip", "Open in the clip editor"),
             ("Right-click the metronome", "Count-in before Play / Record: off · 1 · 2 · 4 bars"),
@@ -1311,9 +1364,8 @@ public sealed partial class PreferencesWindow : NotaWindow
     // A search / filter box: the sunken field with a magnifier, the borderless TextBox inside.
     private static Control SearchField(TextBox box, double maxWidth)
     {
-        var icon = new Path { Data = Geometry.Parse(SearchIcon), Stroke = TextTertiary, StrokeThickness = 2, StrokeLineCap = PenLineCap.Round };
         var grid = new Grid { ColumnDefinitions = new ColumnDefinitions("Auto,*"), ColumnSpacing = 7 };
-        grid.Children.Add(IconBox(icon, 11));
+        grid.Children.Add(new Glyph(GlyphKind.Search, 11) { Foreground = TextTertiary });
         box.VerticalAlignment = VerticalAlignment.Center;
         Grid.SetColumn(box, 1);
         grid.Children.Add(box);
@@ -1351,7 +1403,7 @@ public sealed partial class PreferencesWindow : NotaWindow
 
     private static TextBlock SectionLabel(string text) => new()
     {
-        Text = text, Classes = { "SectionLabel" }, LetterSpacing = 1.2, Margin = new Thickness(0, 0, 0, 4),
+        Text = text, Classes = { "SectionLabel" }, Margin = new Thickness(0, 0, 0, 4),
     };
 
     private static TextBlock RowLabel(string text) => new()
@@ -1380,7 +1432,7 @@ public sealed partial class PreferencesWindow : NotaWindow
     private static void FillDeviceCombo(ComboBox combo, List<string> uids, IReadOnlyList<AudioDevice> devices, string savedUid)
     {
         uids.Clear();
-        combo.Items.Add("System Default");
+        combo.Items.Add("System default");
         uids.Add("");
         int selected = 0;
         for (int i = 0; i < devices.Count; i++)
