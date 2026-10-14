@@ -42,6 +42,15 @@ the shared icon set). Stacked on that branch.
 - Installed plug-ins report their own category (for example a VST3 "Fx|Reverb" or an Audio
   Unit type); the browser keeps it but does not use it for grouping.
 
+## Clarifications
+
+### Session 2026-10-14
+
+- Q: How should the categories appear? → A: As section headers in the list (like today's
+  Built-in / Plug-ins headers), each foldable. No category chips.
+- Q: Should plug-ins be categorised too? → A: Yes — plug-ins join the same categories from
+  the category they report; anything unrecognised goes under "Other".
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 — Browse devices by what they do (Priority: P1)
@@ -96,26 +105,28 @@ still shown; switch it on again and the categories return.
 
 ---
 
-### User Story 3 — Narrow the list to one category (Priority: P2)
+### User Story 3 — Fold the categories you don't need (Priority: P2)
 
-A user who only wants modulation effects narrows the Audio effects list to that one
-category, the way the Favorites and tag chips narrow it today, and clears it again with one
-action.
+A user who mostly reaches for modulation effects folds the other categories on the Audio
+effects tab, so the list shows just their headers and the open Modulation category. The
+fold state is remembered when they switch tabs and when Nota restarts.
 
-**Why this priority**: grouping makes a long list scannable; narrowing makes it short.
-Together they cover "browse" and "find".
+**Why this priority**: headers make a long list scannable; folding makes it short. Together
+they cover "browse" and "find" without a second filter control.
 
-**Independent Test**: pick one category on the Audio effects tab; only that category's
-devices remain; clear it; the whole list returns.
+**Independent Test**: fold every category but one on the Audio effects tab; only that
+category's devices show under the headers; switch tabs and restart; the same categories are
+still folded; unfold them again.
 
 **Acceptance Scenarios**:
 
-1. **Given** the Audio effects tab, **When** the user narrows it to Modulation, **Then**
-   only modulation devices (built-in and, where they report one, plug-ins) are shown.
-2. **Given** a category is narrowed, **When** the user types in the search field, **Then**
-   the search applies within that category.
-3. **Given** a category is narrowed, **When** the user clears it, **Then** the full list
-   returns, still arranged by category if the category view is on.
+1. **Given** the Audio effects tab in the category view, **When** the user folds a
+   category header, **Then** its devices hide and the header stays, showing its count.
+2. **Given** some categories are folded, **When** the user types in the search field,
+   **Then** matching devices show even inside folded categories (the search unfolds them for
+   as long as it is active), and the fold state returns when the search is cleared.
+3. **Given** categories are folded, **When** the user switches tabs or restarts Nota,
+   **Then** the same categories are still folded.
 
 ---
 
@@ -152,8 +163,10 @@ category.
 - **Rack devices** (Instrument Rack, Drum Rack, Audio Effect Rack) have a clear place.
 - **A new built-in device added in a later release without a category**: it is still
   listed, under "Other", and the design check fails until it gets one.
-- **Collapsed categories** (if categories can be folded): the fold state survives
-  switching tabs and restarting.
+- **Folded categories**: the fold state survives switching tabs and restarting; a search
+  shows matches inside folded categories without changing the saved fold state.
+- **A plug-in reporting several categories** (for example VST3 "Fx|Delay|Reverb"): it is
+  listed once, under the first category Nota recognises.
 - **Narrow browser** (folded to its rail or very narrow): category headers truncate like
   other headers; nothing overlaps.
 
@@ -164,20 +177,22 @@ category.
 - **FR-001**: Every built-in instrument, audio effect and MIDI effect MUST belong to
   exactly one category. The categories and their order MUST be fixed per tab (proposed in
   Assumptions), named in sentence case.
-- **FR-002**: The device tabs MUST present the list arranged by category:
-  [NEEDS CLARIFICATION: how should the categories appear? (A) section headers in the list,
-  like today's Built-in / Plug-ins, that can be folded open/closed; (B) a row of category
-  filter chips that narrow the list (no headers); (C) both — headers in the list plus
-  category chips to narrow it.]
+- **FR-002**: The device tabs MUST present the list as category section headers, in the
+  style of today's Built-in / Plug-ins headers (name and device count), each foldable by
+  clicking it. Fold state MUST persist per tab across tab switches and restarts. There is no
+  separate category chip row.
 - **FR-003**: The category view MUST be on by default for a new profile and for existing
   users, and MUST be switchable off in the browser's view options; the choice MUST persist
   across restarts.
 - **FR-004**: Within a category, devices MUST be alphabetical, with "Favorites first" still
   floating favourites to the top of their category.
-- **FR-005**: With the category view on, built-in devices and plug-ins MUST be arranged
-  [NEEDS CLARIFICATION: should plug-ins be categorised too? (A) yes — plug-ins join the
-  same categories from what they report, unknown ones under "Other"; (B) no — categories
-  apply to built-ins only and plug-ins stay in their own "Plug-ins" section below.]
+- **FR-005**: With the category view on, installed plug-ins MUST join the same categories,
+  mapped from the category they report; a plug-in whose category is missing or not
+  recognised MUST appear under "Other" (always last), never hidden. Inside a category,
+  built-in devices come before plug-ins when "Group by source" is on (no separate
+  Built-in / Plug-ins headers in the category view); with it off, built-ins and plug-ins
+  are mixed alphabetically. Each plug-in row keeps its format/vendor tag, so the source
+  stays visible.
 - **FR-006**: Search MUST keep working on the full device name and type, and MUST respect
   the category view (matches stay under their headers, empty categories hide).
 - **FR-007**: Opening, dragging, previewing, expanding presets, favouriting and tagging a
@@ -195,6 +210,7 @@ category.
   in that tab's order. A built-in device has exactly one. Plug-ins may map to one from the
   category they report.
 - **Category view setting**: on/off, per user, persisted, default on.
+- **Fold state**: per tab, the set of folded categories, per user, persisted.
 
 ## Success Criteria *(mandatory)*
 
@@ -229,6 +245,8 @@ category.
     planning.
 - The existing type tag on each row stays; the category is a separate, coarser grouping.
 - "Other" exists only for plug-ins (or a future uncategorised device) and is always last.
+- Plug-in categories are mapped from the VST3 sub-categories and Audio Unit types the
+  plug-in catalogue already stores; the exact mapping table is a planning detail.
 - The category view setting is a per-user preference stored with the other browser view
   options; no project-format change.
 - Users of other languages see the categories in English, like the rest of the app today.

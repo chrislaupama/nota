@@ -13,7 +13,7 @@
 
 ## Requirement Completeness
 
-- [ ] No [NEEDS CLARIFICATION] markers remain
+- [x] No [NEEDS CLARIFICATION] markers remain
 - [x] Requirements are testable and unambiguous
 - [x] Success criteria are measurable
 - [x] Success criteria are technology-agnostic (no implementation details)
@@ -31,6 +31,5 @@
 
 ## Notes
 
-- Two [NEEDS CLARIFICATION] markers remain: FR-002 (how categories appear) and FR-005
-  (whether plug-ins are categorised). Both change scope and UX; resolved with the user
-  before `/speckit-clarify` / `/speckit-plan`.
+- Both clarifications resolved 2026-10-14: FR-002 → foldable section headers (A);
+  FR-005 → plug-ins join the categories, unknown under "Other" (A). 16/16 items pass.
