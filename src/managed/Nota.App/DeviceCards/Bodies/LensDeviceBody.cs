@@ -505,7 +505,7 @@ internal sealed class LensDeviceBody : IDeviceBody
         DockPanel.SetDock(status, Dock.Bottom);
 
         var bodyRow = new DockPanel { LastChildFill = true, Margin = new Thickness(5), Children = { rail, right, centreBox } };
-        var root = new DockPanel { LastChildFill = true, Background = NotaPalette.BgApp, Children = { status, bodyRow } };
+        var root = new DockPanel { LastChildFill = true, Background = NotaPalette.SurfaceCard, Children = { status, bodyRow } };
 
         // ---- WAV export of the captured scope window --------------------------------------
         async void ExportWav()

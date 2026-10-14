@@ -679,7 +679,7 @@ internal sealed class PrismDeviceBody : IDeviceBody
 
         // ---- assemble ---------------------------------------------------------------
         var bodyRow = new DockPanel { LastChildFill = true, Margin = new Thickness(5), Children = { globCol, right, centreBox } };
-        var root = new DockPanel { LastChildFill = true, Background = RailBg, Children = { status, bodyRow } };
+        var root = new DockPanel { LastChildFill = true, Background = NotaPalette.SurfaceCard, Children = { status, bodyRow } };
 
         void Refresh()
         {

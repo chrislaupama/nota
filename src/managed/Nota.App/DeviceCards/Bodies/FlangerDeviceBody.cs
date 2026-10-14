@@ -331,7 +331,7 @@ internal sealed class FlangerDeviceBody : IDeviceBody
 
         // ---- assemble ---------------------------------------------------------------
         var bodyRow = new DockPanel { LastChildFill = true, Margin = new Thickness(5), Children = { left, right, centre } };
-        var root = new DockPanel { LastChildFill = true, Background = NotaPalette.SurfaceInset, Children = { status, bodyRow } };
+        var root = new DockPanel { LastChildFill = true, Background = NotaPalette.SurfaceCard, Children = { status, bodyRow } };
 
         void Refresh()
         {

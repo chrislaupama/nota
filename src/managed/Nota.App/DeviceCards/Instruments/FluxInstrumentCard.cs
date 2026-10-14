@@ -421,7 +421,7 @@ internal sealed class FluxInstrumentCard : IInstrumentCard
         Grid.SetColumn(macroPanel, 2); body.Children.Add(macroPanel);
 
         DockPanel.SetDock(statusHost, Dock.Bottom);
-        var root = new DockPanel { LastChildFill = true, Background = NotaPalette.Gutter, Children = { statusHost, body } };
+        var root = new DockPanel { LastChildFill = true, Background = NotaPalette.SurfaceCard, Children = { statusHost, body } };
 
         // Live tick: the scope, the pulled vector, transients per bar, then every readout.
         void Tick()

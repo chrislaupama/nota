@@ -706,7 +706,7 @@ internal sealed class RhythmInstrumentCard : IInstrumentCard
         Grid.SetRow(steps, 1); body.Children.Add(steps);
 
         DockPanel.SetDock(statusHost, Dock.Bottom);
-        var root = new DockPanel { LastChildFill = true, Background = NotaPalette.Gutter, Children = { statusHost, body } };
+        var root = new DockPanel { LastChildFill = true, Background = NotaPalette.SurfaceCard, Children = { statusHost, body } };
 
         LoadStrip(); PaintBanks();
         ctx.AddDeviceRefresher(Live);

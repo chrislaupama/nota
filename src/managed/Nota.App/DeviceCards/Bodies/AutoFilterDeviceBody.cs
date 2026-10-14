@@ -691,7 +691,7 @@ internal sealed class AutoFilterDeviceBody : IDeviceBody
 
         // ---- assemble ---------------------------------------------------------------
         var bodyRow = new DockPanel { LastChildFill = true, Margin = new Thickness(5), Children = { shapeCol, right, centreBox } };
-        var root = new DockPanel { LastChildFill = true, Background = NotaPalette.SurfaceInset, Children = { status, bodyRow } };
+        var root = new DockPanel { LastChildFill = true, Background = NotaPalette.SurfaceCard, Children = { status, bodyRow } };
 
         void Refresh()
         {

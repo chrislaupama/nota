@@ -515,7 +515,7 @@ internal sealed class PhysicalInstrumentCard : IInstrumentCard
         Grid.SetColumn(rail, 1); body.Children.Add(rail);
 
         DockPanel.SetDock(statusHost, Dock.Bottom);
-        var root = new DockPanel { LastChildFill = true, Background = NotaPalette.Gutter, Children = { statusHost, body } };
+        var root = new DockPanel { LastChildFill = true, Background = NotaPalette.SurfaceCard, Children = { statusHost, body } };
 
         ctx.SetInstLiveViz(Refresh);
         showTab();

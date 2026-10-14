@@ -509,7 +509,7 @@ internal sealed class KeysInstrumentCard : IInstrumentCard
 
         var statusHost = StatusStrip(status, meta);
         DockPanel.SetDock(statusHost, Dock.Bottom);
-        var root = new DockPanel { LastChildFill = true, Background = NotaPalette.Gutter, Children = { statusHost, body } };
+        var root = new DockPanel { LastChildFill = true, Background = NotaPalette.SurfaceCard, Children = { statusHost, body } };
         ShowTab();
         return root;
     }
@@ -544,7 +544,7 @@ internal sealed class KeysInstrumentCard : IInstrumentCard
 
         var statusHost = StatusStrip(status, meta);
         DockPanel.SetDock(statusHost, Dock.Bottom);
-        var root = new DockPanel { LastChildFill = true, Background = NotaPalette.Gutter, Children = { statusHost, island } };
+        var root = new DockPanel { LastChildFill = true, Background = NotaPalette.SurfaceCard, Children = { statusHost, island } };
         refresh();
         return root;
     }

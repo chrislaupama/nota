@@ -104,7 +104,7 @@ internal sealed partial class RackCardView
 
         var statusHost = DrumStatus(a, pads, macros);
         DockPanel.SetDock(statusHost, Dock.Bottom);
-        var root = new DockPanel { LastChildFill = true, Background = NotaPalette.Gutter, Children = { statusHost, body } };
+        var root = new DockPanel { LastChildFill = true, Background = NotaPalette.SurfaceCard, Children = { statusHost, body } };
 
         if (_irTick.Count > 0) _ctx.AddDeviceRefresher(() => { for (int i = 0; i < _irTick.Count; i++) _irTick[i](); });
         return root;

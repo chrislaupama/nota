@@ -35,7 +35,7 @@ internal sealed class LengthMidiBody : IMidiDeviceBody
     internal static readonly string[] Modes = { "Sync", "ms", "Gate %" };
     internal static readonly string[] Divs = { "1/32", "1/16", "1/8", "1/4", "1/2", "1/1", "1/8.", "1/4T" };
 
-    private static readonly IBrush Ground = NotaPalette.SurfaceInset;
+    private static readonly IBrush Ground = NotaPalette.SurfaceCard;   // the card surface: sections sit on it, divided by rules (spec 008)
     private static readonly IBrush Bd = NotaPalette.BorderDefault;
     private static readonly IBrush Rule = NotaPalette.GraphBorder;
     private static readonly IBrush Well = NotaPalette.BgSunken;

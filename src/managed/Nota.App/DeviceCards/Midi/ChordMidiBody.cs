@@ -46,7 +46,7 @@ internal sealed class ChordMidiBody : IMidiDeviceBody
     private static readonly bool[] MajorPc = { true, false, true, false, true, true, false, true, false, true, false, true };
     private static readonly bool[] MinorPc = { true, false, true, true, false, true, false, true, true, false, true, false };
 
-    private static readonly IBrush Ground = NotaPalette.SurfaceInset;
+    private static readonly IBrush Ground = NotaPalette.SurfaceCard;   // the card surface: sections sit on it, divided by rules (spec 008)
     private static readonly IBrush Bd = NotaPalette.BorderDefault;
     private static readonly IBrush Rule = NotaPalette.GraphBorder;
     private static readonly IBrush Well = NotaPalette.BgSunken;

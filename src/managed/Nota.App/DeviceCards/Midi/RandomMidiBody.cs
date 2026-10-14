@@ -36,7 +36,7 @@ internal sealed class RandomMidiBody : IMidiDeviceBody
     internal static readonly string[] Dists = { "Gauss", "Even", "Walk" };
     internal static readonly string[] Rates = { "Per note", "Per bar" };
 
-    private static readonly IBrush Ground = NotaPalette.SurfaceInset;
+    private static readonly IBrush Ground = NotaPalette.SurfaceCard;   // the card surface: sections sit on it, divided by rules (spec 008)
     private static readonly IBrush Bd = NotaPalette.BorderDefault;
     private static readonly IBrush Well = NotaPalette.BgSunken;
     private static readonly IBrush Txt = NotaPalette.TextPrimary;

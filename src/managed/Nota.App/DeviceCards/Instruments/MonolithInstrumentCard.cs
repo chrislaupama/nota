@@ -352,7 +352,7 @@ internal sealed class MonolithInstrumentCard : IInstrumentCard
 
         // ---- assemble ---------------------------------------------------------
         var bodyRow = new DockPanel { LastChildFill = true, Margin = new Thickness(5), Children = { wheels, right, centre } };
-        var root = new Border { Background = RailBg, Child = bodyRow };
+        var root = new Border { Background = NotaPalette.SurfaceCard, Child = bodyRow };
 
         ctx.SetInstLiveViz(Refresh);
         Refresh();

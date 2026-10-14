@@ -40,7 +40,7 @@ internal sealed class ScaleMidiBody : IMidiDeviceBody
     private static readonly int[] TypeRows = { 0, 1, 3, 4, 7, Custom };
     private static readonly string[] Folds = { "Nearest", "Down", "Up" };
 
-    private static readonly IBrush Ground = NotaPalette.SurfaceInset;
+    private static readonly IBrush Ground = NotaPalette.SurfaceCard;   // the card surface: sections sit on it, divided by rules (spec 008)
     private static readonly IBrush Bd = NotaPalette.BorderDefault;
     private static readonly IBrush Rule = NotaPalette.GraphBorder;
     private static readonly IBrush Well = NotaPalette.BgSunken;

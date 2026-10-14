@@ -1160,7 +1160,7 @@ internal sealed class AuroraInstrumentCard : IInstrumentCard
         DockPanel.SetDock(statusHost, Dock.Bottom);
         var root = new DockPanel
         {
-            LastChildFill = true, Background = NotaPalette.Gutter,
+            LastChildFill = true, Background = NotaPalette.SurfaceCard,
             Children = { statusHost, body },
         };
 

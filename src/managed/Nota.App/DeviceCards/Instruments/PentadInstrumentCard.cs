@@ -568,7 +568,7 @@ internal sealed class PentadInstrumentCard : IInstrumentCard
 
         // ---- assemble ---------------------------------------------------------------
         var bodyRow = new DockPanel { LastChildFill = true, Margin = new Thickness(5), Children = { wheels, right, centreBox } };
-        var root = new DockPanel { LastChildFill = true, Background = RailBg, Children = { status, bodyRow } };
+        var root = new DockPanel { LastChildFill = true, Background = NotaPalette.SurfaceCard, Children = { status, bodyRow } };
 
         ctx.SetInstLiveViz(Refresh);
         Refresh();

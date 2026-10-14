@@ -529,7 +529,7 @@ internal sealed class SamplerInstrumentCard : IInstrumentCard
         body.Children.Add(tabPanel);
         Grid.SetColumn(rail, 1); body.Children.Add(rail);
         DockPanel.SetDock(statusHost, Dock.Bottom);
-        var root = new DockPanel { LastChildFill = true, Background = NotaPalette.Gutter, Children = { statusHost, body } };
+        var root = new DockPanel { LastChildFill = true, Background = NotaPalette.SurfaceCard, Children = { statusHost, body } };
 
         showTab = () =>
         {

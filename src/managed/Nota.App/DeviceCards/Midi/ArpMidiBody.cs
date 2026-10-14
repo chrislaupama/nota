@@ -40,7 +40,7 @@ internal sealed class ArpMidiBody : IMidiDeviceBody
     private static readonly string[] RetrigNames = { "Off", "Note", "Beat" };
     private const double FreeMsMin = 20, FreeMsMax = 1000, LabelW = 50;
 
-    private static readonly IBrush Ground = NotaPalette.SurfaceInset;
+    private static readonly IBrush Ground = NotaPalette.SurfaceCard;   // the card surface: sections sit on it, divided by rules (spec 008)
     private static readonly IBrush Bd = NotaPalette.BorderDefault;
     private static readonly IBrush Rule = NotaPalette.GraphBorder;
     private static readonly IBrush Well = NotaPalette.BgSunken;

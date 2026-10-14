@@ -112,7 +112,7 @@ internal sealed class VelocityMidiBody : IMidiDeviceBody
     private static readonly string[] Modes = VelocityModel.Modes;
     private static readonly string[] Dirs = VelocityModel.Dirs;
 
-    private static readonly IBrush Ground = NotaPalette.SurfaceInset;
+    private static readonly IBrush Ground = NotaPalette.SurfaceCard;   // the card surface: sections sit on it, divided by rules (spec 008)
     private static readonly IBrush Bd = NotaPalette.BorderDefault;
     private static readonly IBrush Rule = NotaPalette.GraphBorder;
     private static readonly IBrush Well = NotaPalette.BgSunken;

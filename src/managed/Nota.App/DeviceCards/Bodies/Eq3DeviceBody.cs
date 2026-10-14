@@ -289,7 +289,7 @@ internal sealed class Eq3DeviceBody : IDeviceBody
         var bodyRow = new DockPanel { LastChildFill = true, Margin = new Thickness(5) };
         for (int b = 0; b < 3; b++) bodyRow.Children.Add(Docked(Strip(b), Dock.Left));
         bodyRow.Children.Add(graphBox);
-        var root = new DockPanel { LastChildFill = true, Background = NotaPalette.SurfaceInset, Children = { Docked(status, Dock.Bottom), bodyRow } };
+        var root = new DockPanel { LastChildFill = true, Background = NotaPalette.SurfaceCard, Children = { Docked(status, Dock.Bottom), bodyRow } };
 
         void Refresh()
         {

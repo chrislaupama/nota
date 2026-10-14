@@ -1079,7 +1079,7 @@ internal sealed class ConsortInstrumentCard : IInstrumentCard
 
         // ---- assemble ---------------------------------------------------------------
         var bodyRow = new DockPanel { LastChildFill = true, Margin = new Thickness(5, 5, 5, 4), Children = { wheels, right, centreBox } };
-        var main = new DockPanel { LastChildFill = true, Background = RailBg, Children = { status, strip, bodyRow } };
+        var main = new DockPanel { LastChildFill = true, Background = NotaPalette.SurfaceCard, Children = { status, strip, bodyRow } };
         var root = new Panel { Children = { main, overlay } };
 
         refreshAll = () =>
