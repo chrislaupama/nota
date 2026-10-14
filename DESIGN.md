@@ -554,12 +554,11 @@ Every built-in device is a **700 × 260** card (`DeviceCardKit.CardH`, width fro
 - **Header 22** (`HeaderH`, built by `DeviceChainView.Shell.cs` `BuildCardShell`): a
   raised strip with the `Shadow.Raised` bevel and a seam under it, in **fixed slots, left to
   right: name · preset · badges · power**.
-  - **Name** (12/600). For a card with a set width the name column is fixed — 22 % of the
-    card width, clamped to 56–160 (a card that sizes to its content lets the name take what
-    it needs) — so the preset picker starts at the same x on every card of that width. A
-    compact card drops the "Nota " prefix.
-  - **Preset** — the picker `‹ Name ⌄ ›`, an 18 px well field: the name opens the factory
-    presets, the chevrons step through them, wrapping. Only when the device has presets.
+  - **Name** (12/600), in the left half of the header, trimmed before it reaches the
+    picker. A compact card drops the "Nota " prefix.
+  - **Preset** — the picker `‹ Name ⌄ ›`, an 18 px well field, **centred in the header**
+    between two equal halves: the name opens the factory presets, the chevrons step through
+    them, wrapping. Only when the device has presets.
   - **Badges**, right-aligned before the power slot: the processing-type badge (mono 10,
     muted, sentence case; instruments add live voices, `Subtractive · 3/16`), then the
     card's own accessories (Learn, the S / L size toggle).

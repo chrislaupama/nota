@@ -115,10 +115,10 @@ public sealed partial class DeviceChainView
         int di = s.DeviceIndex;
         var extra = s.Utility ? new CardExtra() : Extra(s.Kind, di);
 
-        // ---- header (22), in fixed slots: name · preset · badges · power. The name column has
-        // a fixed width for a given card width, so the preset picker starts at the same x on
-        // every card of that width; the badges sit right-aligned before the power slot, which
-        // is reserved (empty) on a card that can't be bypassed. A/B, move and delete live in
+        // ---- header (22), in fixed slots: name · preset · badges · power. The preset picker
+        // sits in the centre of the header, between two equal halves: the name on the left
+        // (trimmed if it runs into the picker), the badges right-aligned before the power slot
+        // on the right; the power slot is reserved (empty) on a card that can't be bypassed. A/B, move and delete live in
         // the header's context menu (with the presets again); the whole header drags the card
         // to a new slot; Delete removes the selected card.
         var name = new TextBlock
@@ -169,17 +169,19 @@ public sealed partial class DeviceChainView
             power.Child = bypass;
         }
 
-        // A card with a set width gets a fixed name column (a share of the width); one that
-        // sizes to its content lets the name take what it needs.
-        var nameCol = double.IsNaN(s.Width) ? GridLength.Auto : new GridLength(Math.Round(Math.Clamp(s.Width * 0.22, 56, 160)));
+        // Two equal halves around the picker keep it centred whatever the name or the badges
+        // (a live voice count changes width) are doing.
+        var right = new Grid { ColumnSpacing = 8 };
+        right.ColumnDefinitions.Add(new ColumnDefinition(GridLength.Star));
+        right.ColumnDefinitions.Add(new ColumnDefinition(GridLength.Auto));
+        right.Children.Add(badges);
+        Grid.SetColumn(power, 1); right.Children.Add(power);
         var headerGrid = new Grid { ColumnSpacing = 8 };
-        headerGrid.ColumnDefinitions.Add(new ColumnDefinition(nameCol));
-        headerGrid.ColumnDefinitions.Add(new ColumnDefinition(GridLength.Auto));
         headerGrid.ColumnDefinitions.Add(new ColumnDefinition(GridLength.Star));
         headerGrid.ColumnDefinitions.Add(new ColumnDefinition(GridLength.Auto));
+        headerGrid.ColumnDefinitions.Add(new ColumnDefinition(GridLength.Star));
         headerGrid.Children.Add(name);
-        Grid.SetColumn(badges, 2); headerGrid.Children.Add(badges);
-        Grid.SetColumn(power, 3); headerGrid.Children.Add(power);
+        Grid.SetColumn(right, 2); headerGrid.Children.Add(right);
         var headerBar = new Border
         {
             Height = DeviceCardKit.HeaderH, Background = ShellHdr, BorderBrush = BorderDef, BorderThickness = new Thickness(0, 0, 0, 1),
@@ -224,8 +226,8 @@ public sealed partial class DeviceChainView
         }
         // A compact (mini) card keeps the same picker — same list, same current preset — only narrower:
         // the preset belongs to the device, not to the card size.
-        // The picker has its own slot after the name: the badges' live voice count changes
-        // width (Consort's "Duo 1/2" → "Poly 12/16") without moving it.
+        // The picker has its own centre slot: the badges' live voice count changes width
+        // (Consort's "Duo 1/2" → "Poly 12/16") without moving it.
         if (presets.Count > 0)
         {
             var picker = PresetPicker(presets.Select(p => p.Name).ToList(), curPreset, extra.Preset, ApplyPreset, StepPreset,
