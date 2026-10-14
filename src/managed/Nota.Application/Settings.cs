@@ -97,10 +97,8 @@ public sealed class Settings
     public bool BrowserShowTypeTags { get; set; } = true;
     /// <summary>Group the device tabs into BUILT-IN and PLUG-INS sections with counts.</summary>
     public bool BrowserGroupBySource { get; set; } = true;
-    /// <summary>Group the device tabs under foldable category headers (Synths, Dynamics…).</summary>
-    public bool BrowserCategoryView { get; set; } = true;
-    /// <summary>The folded category headers, keyed per tab: "instr:Synths", "fx:Dynamics", "midi:Shape".</summary>
-    public List<string> BrowserFoldedCategories { get; set; } = new();
+    /// <summary>Show the category chips above the device lists (Synths, Dynamics…).</summary>
+    public bool BrowserCategoryChips { get; set; } = true;
     /// <summary>Float favorited devices to the top of their section.</summary>
     public bool BrowserFavoritesFirst { get; set; } = true;
     /// <summary>The browser is folded down to its icon rail.</summary>

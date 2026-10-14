@@ -14517,7 +14517,7 @@ Console.WriteLine("-- background audio import --");
     Check(!bvm.Instruments.Any(i => i.Path == "factory:synth/Warm Pad"), "…and collapsing hides them again");
 
     bvm.FilterTree(0, "Glacier");
-    Check(bvm.Instruments.Select(i => i.Name).SequenceEqual(new[] { "Synths", "Nota Aurora", "Pads", "Glacier Pad" }),
+    Check(bvm.Instruments.Select(i => i.Name).SequenceEqual(new[] { "BUILT-IN", "Nota Aurora", "Pads", "Glacier Pad" }),
           $"search opens the folder around a hit ({string.Join(" / ", bvm.Instruments.Select(i => i.Name))})");
     bvm.FilterTree(0, "");
     bvm.FilterTree(1, "Mastering");
@@ -14530,7 +14530,7 @@ Console.WriteLine("-- background audio import --");
     Check(!bvm.Effects.Any(i => i.Depth > 0), "clearing the search collapses back to devices");
 }
 
-// --- browser: device categories (spec 009) — every built-in on its shelf, in a fixed order ---
+// --- browser: device categories (spec 009) — category chips narrow the device tabs ---
 Console.WriteLine("-- browser: device categories --");
 foreach (var (ok, label) in BrowserCategoryTests.Run()) Check(ok, label);
 

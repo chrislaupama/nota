@@ -18,7 +18,6 @@ using System.Collections.ObjectModel;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Avalonia;
-using Avalonia.Automation;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
 using Avalonia.Controls.Shapes;
@@ -197,6 +196,8 @@ public sealed class BrowserView : UserControl
     // showing similar sounds). Unlike the tag strip it wraps rather than folding into "+N":
     // it holds at most five fixed chips, and BPM and Key are the point of it.
     private readonly Border _sampleChipsHost;
+    private readonly Border _categoryChipsHost;   // device tabs: one chip per category (spec 009)
+    private readonly WrapPanel _categoryChips;
     private readonly WrapPanel _sampleChips;
 
     /// <summary>The project tempo / key, for the filter's "project" shortcuts.</summary>
@@ -325,6 +326,10 @@ public sealed class BrowserView : UserControl
 
         _sampleChips = new WrapPanel { ItemSpacing = 5, LineSpacing = 5 };
         _sampleChipsHost = new Border { Margin = new Thickness(8, 0, 8, 7), Child = _sampleChips, IsVisible = false };
+        // Category chips wrap rather than overflow into "+N": they are the main way to narrow
+        // a device tab, so every one stays in sight.
+        _categoryChips = new WrapPanel { ItemSpacing = 5, LineSpacing = 5 };
+        _categoryChipsHost = new Border { Margin = new Thickness(8, 0, 8, 7), Child = _categoryChips, IsVisible = false };
 
         _previewFooter = new PreviewPlayer { IsVisible = false };
         _previewFooter.SetContext(files: _active == FilesTab);
@@ -364,7 +369,7 @@ public sealed class BrowserView : UserControl
         contentHost.Children.Add(_emptyWrap);
 
         var right = new DockPanel();
-        var topStack = new StackPanel { Children = { headerRow, _chipsHost, _sampleChipsHost } };
+        var topStack = new StackPanel { Children = { headerRow, _categoryChipsHost, _chipsHost, _sampleChipsHost } };
         DockPanel.SetDock(topStack, Dock.Top);
         DockPanel.SetDock(_statusBar, Dock.Bottom);
         DockPanel.SetDock(_previewFooter, Dock.Bottom);
@@ -447,11 +452,10 @@ public sealed class BrowserView : UserControl
         _settings = settings;
         SetCollapsed(settings.Current.BrowserCollapsed, persist: false);
         if (_vm is null) return;
-        _vm.CategoryView = settings.Current.BrowserCategoryView;
         _vm.GroupBySource = settings.Current.BrowserGroupBySource;
         _vm.FavoritesFirst = settings.Current.BrowserFavoritesFirst;
-        _vm.SetFoldedCategories(settings.Current.BrowserFoldedCategories);
         RefreshRows();
+        RebuildCategoryChips();
     }
 
     public void SetViewModel(BrowserViewModel vm)
@@ -459,18 +463,9 @@ public sealed class BrowserView : UserControl
         _vm = vm;
         if (_settings is not null)
         {
-            vm.CategoryView = _settings.Current.BrowserCategoryView;
             vm.GroupBySource = _settings.Current.BrowserGroupBySource;
             vm.FavoritesFirst = _settings.Current.BrowserFavoritesFirst;
-            vm.SetFoldedCategories(_settings.Current.BrowserFoldedCategories);
         }
-        // Folds are saved as they change, like the ⋮ toggles.
-        vm.CategoryFoldsChanged += () =>
-        {
-            if (_settings is null) return;
-            _settings.Current.BrowserFoldedCategories = new List<string>(vm.FoldedCategories);
-            _settings.Save();
-        };
         // Tree tabs (Instruments / FX / MIDI / Files / Presets) bind straight to the VM's
         // flattened visible collections; the VM owns their filtering + expand/collapse.
         _pages[0].ItemsSource = vm.Instruments;
@@ -498,6 +493,9 @@ public sealed class BrowserView : UserControl
         // Rebuild the header chips whenever tags/favorites change (also refreshes active state).
         vm.LibraryChanged += RebuildChips;
         RebuildChips();
+        // A plug-in rescan can add or remove the Other chip.
+        vm.DevicesRebuilt += RebuildCategoryChips;
+        RebuildCategoryChips();
         vm.SampleIndexChanged += () => { if (_active == FilesTab) RefreshCounts(); };
         // A rescan (settings, a pack installed) can leave "similar" mode behind the view's back.
         vm.Samples.CollectionChanged += (_, _) =>
@@ -577,7 +575,8 @@ public sealed class BrowserView : UserControl
     private (string Line, string Detail) EmptyMessage(int tab)
     {
         bool searching = !string.IsNullOrEmpty(_search.Text?.Trim());
-        bool filtering = tab is 0 or 1 or 2 && _vm is not null && _vm.FilterMode != BrowserFilter.None;
+        bool filtering = tab is 0 or 1 or 2 && _vm is not null
+                         && (_vm.FilterMode != BrowserFilter.None || _vm.CategoryFilter(tab).Length > 0);
         bool sampleFilter = tab == FilesTab && _vm is not null && (!_vm.SampleFilter.IsEmpty || _vm.SimilarAnchor is not null);
         if (sampleFilter && _vm!.IndexProgress.Total > 0)
             return ("No matches yet", "Nota is still analysing your samples — more matches appear as it goes.");
@@ -597,7 +596,7 @@ public sealed class BrowserView : UserControl
     private int VisibleCount(int index)
     {
         var src = VisibleOf(index) ?? (IReadOnlyList<BrowserItem>)_filtered[index];
-        int n = _vm?.FoldedDeviceCount(index) ?? 0;   // folded away, but still matches
+        int n = 0;
         foreach (var it in src) if (!it.IsGroup) n++;
         return n;
     }
@@ -655,6 +654,7 @@ public sealed class BrowserView : UserControl
         if (auditions) SyncPreview(_pages[index]);
         // Favorite/tag filter chips apply only to the device tabs.
         _chipsHost.IsVisible = index is 0 or 1 or 2;
+        RebuildCategoryChips();
         _sampleChipsHost.IsVisible = index == FilesTab && _vm?.HasSampleIndex == true;
         _statusBar.IsVisible = !isMap;
         if (isMap) { _matchCount.Text = ""; _emptyWrap.IsVisible = false; return; }
@@ -707,9 +707,7 @@ public sealed class BrowserView : UserControl
         return item.IsGroup ? GroupRow(item) : IndexRow(item);
     }, supportsRecycling: false);
 
-    // A section header: caption, a hairline filling the gap, and the section's count. A
-    // category header also folds: its caret sits in the device rows' disclosure column and
-    // its caption on their name column, and a click anywhere on the row folds or opens it.
+    // A section header: caption, a hairline filling the gap, and the section's count.
     private Control GroupRow(BrowserItem item)
     {
         var label = new TextBlock
@@ -717,8 +715,7 @@ public sealed class BrowserView : UserControl
             Text = NotaText.Label(item.Name),
             Classes = { "GroupLabel" },
             VerticalAlignment = VerticalAlignment.Center,
-            TextTrimming = TextTrimming.CharacterEllipsis,
-            Margin = new Thickness(item.IsFoldable ? 3 : 10, 0, 0, 0),
+            Margin = new Thickness(10, 0, 0, 0),
         };
         var rule = new Border { Height = 1, VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(7, 0, 7, 0) };
         rule.BindResource(Border.BackgroundProperty, "Brush.Rule");
@@ -732,31 +729,12 @@ public sealed class BrowserView : UserControl
         count.Classes.Add("Mono");
         count.BindResource(TextBlock.ForegroundProperty, "Brush.TextDisabled");
 
-        var grid = new Grid { Height = GroupRowH, ColumnDefinitions = new ColumnDefinitions("Auto,Auto,*,Auto") };
-        Grid.SetColumn(label, 1);
+        var grid = new Grid { Height = GroupRowH, ColumnDefinitions = new ColumnDefinitions("Auto,*,Auto") };
         grid.Children.Add(label);
-        Grid.SetColumn(rule, 2);
+        Grid.SetColumn(rule, 1);
         grid.Children.Add(rule);
-        Grid.SetColumn(count, 3);
+        Grid.SetColumn(count, 2);
         grid.Children.Add(count);
-        if (!item.IsFoldable) return grid;
-
-        grid.Children.Add(new Border
-        {
-            Width = 14,
-            Margin = new Thickness(6, 0, 0, 0),
-            Child = RailIcon(item.IsFolded ? GlyphKind.CaretRight : GlyphKind.CaretDown, 12, "Brush.TextTertiary"),
-        });
-        grid.Background = Brushes.Transparent;   // the whole row is the hit target
-        grid.Cursor = new Cursor(StandardCursorType.Hand);
-        AutomationProperties.SetName(grid, $"{item.Name}, {item.GroupCount} devices, {(item.IsFolded ? "folded" : "open")}");
-        grid.PointerPressed += (_, e) =>
-        {
-            _listPointerDown = false;   // a fold is not a row pick: the release must not open the player
-            _vm?.ToggleCategoryFold(item);
-            RefreshCounts();
-            e.Handled = true;
-        };
         return grid;
     }
 
@@ -1017,10 +995,12 @@ public sealed class BrowserView : UserControl
             _settings.Save();
             RefreshRows();
         }));
-        flyout.Items.Add(CheckItem("Group by category", _vm?.CategoryView ?? true, v =>
+        flyout.Items.Add(CheckItem("Category chips", CategoryChipsOn, v =>
         {
-            if (_vm is not null) _vm.CategoryView = v;
-            if (_settings is not null) { _settings.Current.BrowserCategoryView = v; _settings.Save(); }
+            if (_settings is not null) { _settings.Current.BrowserCategoryChips = v; _settings.Save(); }
+            // A hidden chip must not keep narrowing the list.
+            if (!v && _vm is not null) for (int t = 0; t < 3; t++) _vm.SetCategoryFilter(t, "");
+            RebuildCategoryChips();
             RefreshCounts();
         }));
         flyout.Items.Add(CheckItem("Group by source", _vm?.GroupBySource ?? true, v =>
@@ -1193,6 +1173,32 @@ public sealed class BrowserView : UserControl
             _chipsPanel.Children.Add(MakeChip(tag.Title, tag.Color, active, () => ToggleFilter(BrowserFilter.Tag, tag.Id)));
         }
         _chipsPanel.InvalidateMeasure();
+    }
+
+    private bool CategoryChipsOn => _settings?.Current.BrowserCategoryChips ?? true;
+
+    // The active device tab's category chips (spec 009): one per category in the tab's order,
+    // Other last when something lands there. One pick at a time: a click picks, a click on
+    // the picked chip clears, a click on another switches. Each tab keeps its own pick.
+    private void RebuildCategoryChips()
+    {
+        _categoryChips.Children.Clear();
+        bool show = _vm is not null && _active is 0 or 1 or 2 && CategoryChipsOn;
+        _categoryChipsHost.IsVisible = show;
+        if (!show) return;
+        int tab = _active;
+        string picked = _vm!.CategoryFilter(tab);
+        foreach (var name in _vm.CategoriesOn(tab))
+        {
+            var category = name;
+            bool active = picked == category;
+            _categoryChips.Children.Add(MakeChip(category, null, active, () =>
+            {
+                _vm.SetCategoryFilter(tab, active ? "" : category);
+                RebuildCategoryChips();
+                RefreshCounts();
+            }));
+        }
     }
 
     // The chips that didn't fit on the line, offered as a menu off the "+N".

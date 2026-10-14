@@ -65,10 +65,6 @@ public sealed class BrowserItem : INotifyPropertyChanged
     /// caption and <see cref="GroupCount"/> how many rows it heads.</summary>
     public bool IsGroup => Kind == BrowserItemKind.Group;
     public int GroupCount { get; init; }
-    /// <summary>A category header that folds on click (false while a search is showing it).</summary>
-    public bool IsFoldable { get; init; }
-    /// <summary>A category header drawn folded: its devices are hidden beneath it.</summary>
-    public bool IsFolded { get; init; }
 
     /// <summary>The brand prefix a built-in device name carries ("Nota"), or "" — the browser
     /// prints it in tertiary ink so names scan on their distinctive word.</summary>
@@ -156,57 +152,39 @@ public sealed partial class BrowserViewModel : ObservableObject
         set { if (_favoritesFirst == value) return; _favoritesFirst = value; RebuildDeviceTabs(); }
     }
 
-    private bool _categoryView = true;
+    // The category chip picked on each device tab (0 Instruments, 1 Audio effects, 2 MIDI
+    // effects), "" for none. Held while the app runs; a restart starts unfiltered.
+    private readonly string[] _categoryFilter = { "", "", "" };
 
-    /// <summary>Group the device tabs under category headers (Synths, Dynamics…) instead of
-    /// one alphabetical list per source.</summary>
-    public bool CategoryView
+    /// <summary>The category a device tab is narrowed to, or "" for the whole list.</summary>
+    public string CategoryFilter(int tab) => tab is >= 0 and < 3 ? _categoryFilter[tab] : "";
+
+    /// <summary>Narrows a device tab to one category ("" clears it) and refreshes it.</summary>
+    public void SetCategoryFilter(int tab, string category)
     {
-        get => _categoryView;
-        set { if (_categoryView == value) return; _categoryView = value; RebuildDeviceTabs(); }
-    }
-
-    // Folded category headers, keyed "<tab>:<category>" ("fx:Dynamics"); devices under a
-    // folded header stay out of the list until it opens again or a search shows them.
-    private readonly HashSet<string> _folded = new(StringComparer.Ordinal);
-    private readonly (int Builtin, int Plugins)[] _foldedDevices = new (int, int)[3];
-
-    /// <summary>The folded category headers, for the settings file.</summary>
-    public IReadOnlyCollection<string> FoldedCategories => _folded;
-
-    /// <summary>After a header was folded or opened — the view persists <see cref="FoldedCategories"/>.</summary>
-    public event Action? CategoryFoldsChanged;
-
-    /// <summary>Restores saved folds. Keys naming no category of their tab are dropped.</summary>
-    public void SetFoldedCategories(IEnumerable<string> keys)
-    {
-        _folded.Clear();
-        foreach (var key in keys)
-        {
-            int colon = key.IndexOf(':');
-            if (colon <= 0) continue;
-            int tab = TabOfKey(key[..colon]);
-            string name = key[(colon + 1)..];
-            if (tab >= 0 && (name == DeviceCategories.Other || DeviceCategories.Order(TypeOf(tab)).Contains(name))) _folded.Add(key);
-        }
-        RebuildDeviceTabs();
-    }
-
-    /// <summary>Folds or opens a category header. A search shows every match, so headers
-    /// are not foldable while one is active.</summary>
-    public void ToggleCategoryFold(BrowserItem header)
-    {
-        if (!header.IsFoldable || !header.Path.StartsWith("cat:", StringComparison.Ordinal)) return;
-        var key = header.Path[4..];
-        int tab = TabOfKey(key[..key.IndexOf(':')]);
-        if (tab < 0) return;
-        if (!_folded.Remove(key)) _folded.Add(key);
+        if (tab is < 0 or >= 3 || _categoryFilter[tab] == (category ?? "")) return;
+        _categoryFilter[tab] = category ?? "";
         RebuildVisible(tab);
-        CategoryFoldsChanged?.Invoke();
     }
 
-    /// <summary>Devices on a tab that match but sit under a folded header (not in the list).</summary>
-    public int FoldedDeviceCount(int tab) => tab is >= 0 and < 3 ? _foldedDevices[tab].Builtin + _foldedDevices[tab].Plugins : 0;
+    /// <summary>A device tab's category chips, in order: the fixed categories, then Other
+    /// when a device on the tab lands there (an unrecognised plug-in).</summary>
+    public IReadOnlyList<string> CategoriesOn(int tab)
+    {
+        var list = DeviceCategories.Order(TypeOf(tab)).ToList();
+        var tree = tab == 2 ? _midiTree : tab == 1 ? _fxTree : _instrTree;
+        if (tree.Any(n => ShelfOf(tab, n) == DeviceCategories.Other)) list.Add(DeviceCategories.Other);
+        return list;
+    }
+
+    private string ShelfOf(int tab, BrowserItem node)
+        => DeviceCategories.Position(TypeOf(tab), node.DeviceCategory) == int.MaxValue ? DeviceCategories.Other : node.DeviceCategory;
+
+    private bool PassesCategoryFilter(int tab, BrowserItem node)
+        => _categoryFilter[tab].Length == 0 || ShelfOf(tab, node) == _categoryFilter[tab];
+
+    private static BuiltinDeviceType TypeOf(int tab)
+        => tab == 2 ? BuiltinDeviceType.MidiEffect : tab == 1 ? BuiltinDeviceType.AudioEffect : BuiltinDeviceType.Instrument;
 
     private void RebuildDeviceTabs() { RebuildVisible(0); RebuildVisible(1); RebuildVisible(2); }
 
@@ -515,8 +493,6 @@ public sealed partial class BrowserViewModel : ObservableObject
         var dst = tab == 2 ? MidiEffects : tab == 1 ? Effects : Instruments;
         string q = _treeQuery[tab].Trim();
         dst.Clear();
-        _foldedDevices[tab] = (0, 0);
-        if (_categoryView) { RebuildCategoryView(tab, tree, dst, q); return; }
 
         // Favorited devices float to the top (stable sorts: alphabetical order survives
         // inside each run, and the source sort keeps the favorites-first order within a section).
@@ -530,6 +506,7 @@ public sealed partial class BrowserViewModel : ObservableObject
         foreach (var node in ordered)
         {
             if (!PassesLibraryFilter(node)) continue;   // header favorite/tag chip
+            if (!PassesCategoryFilter(tab, node)) continue;   // category chip
             if (q.Length == 0 || Matches(node, q) || AnyMatch(node.Children, q))
                 devices.Add(node);
         }
@@ -558,58 +535,6 @@ public sealed partial class BrowserViewModel : ObservableObject
             else AddPresetRows(node.Children, Matches(node, q) ? "" : q, dst);
         }
     }
-
-    // The category view: a header per category with something to show, in the tab's fixed
-    // order (Other last). Inside a category, built-ins come before plug-ins (Group by source),
-    // favourites first, then the name the row prints — so a plug-in sorts next to "Reverb",
-    // not after every "Nota …". Search and the favourite/tag chip filter exactly as the flat
-    // list does; device rows are the same objects, so expand, drag and favourite carry over.
-    private void RebuildCategoryView(int tab, List<BrowserItem> tree, ObservableCollection<BrowserItem> dst, string q)
-    {
-        var type = TypeOf(tab);
-        string Shelf(BrowserItem n) => DeviceCategories.Position(type, n.DeviceCategory) == int.MaxValue ? DeviceCategories.Other : n.DeviceCategory;
-        var devices = tree
-            .Where(n => PassesLibraryFilter(n) && (q.Length == 0 || Matches(n, q) || AnyMatch(n.Children, q)))
-            .OrderBy(n => DeviceCategories.Position(type, Shelf(n)))
-            .ThenBy(n => _groupBySource && n.IsPlugin ? 1 : 0)
-            .ThenBy(n => _favoritesFirst && _library is not null && !_library.IsFavorite(n.LibraryKey) ? 1 : 0)
-            .ThenBy(n => n.ShortName, StringComparer.OrdinalIgnoreCase)
-            .ToList();
-
-        // Folds apply only without a query: a search shows every hit, and leaves the folds as they were.
-        _foldedDevices[tab] = (0, 0);
-        foreach (var shelf in devices.GroupBy(Shelf))
-        {
-            bool folded = q.Length == 0 && _folded.Contains($"{TabKey(tab)}:{shelf.Key}");
-            dst.Add(new BrowserItem
-            {
-                Name = shelf.Key,
-                Kind = BrowserItemKind.Group,
-                GroupCount = shelf.Count(),
-                Path = $"cat:{TabKey(tab)}:{shelf.Key}",
-                IsFoldable = q.Length == 0,
-                IsFolded = folded,
-            });
-            if (folded)
-            {
-                int pl = shelf.Count(n => n.IsPlugin);
-                _foldedDevices[tab] = (_foldedDevices[tab].Builtin + shelf.Count() - pl, _foldedDevices[tab].Plugins + pl);
-                continue;
-            }
-            foreach (var node in shelf)
-            {
-                dst.Add(node);
-                // Presets as in the flat list: shown while expanded, or the hits of a query.
-                if (q.Length == 0) { if (node.IsExpanded) AddPresetRows(node.Children, "", dst); }
-                else AddPresetRows(node.Children, Matches(node, q) ? "" : q, dst);
-            }
-        }
-    }
-
-    private static string TabKey(int tab) => tab == 2 ? "midi" : tab == 1 ? "fx" : "instr";
-    private static int TabOfKey(string key) => key switch { "instr" => 0, "fx" => 1, "midi" => 2, _ => -1 };
-    private static BuiltinDeviceType TypeOf(int tab)
-        => tab == 2 ? BuiltinDeviceType.MidiEffect : tab == 1 ? BuiltinDeviceType.AudioEffect : BuiltinDeviceType.Instrument;
 
     // A device's preset rows: loose presets, then category folders with their presets. With
     // no query, a folder shows its presets only while expanded; with one, a folder shows up
@@ -646,8 +571,7 @@ public sealed partial class BrowserViewModel : ObservableObject
         => nodes.Any(n => Matches(n, q) || AnyMatch(n.Children, q));
 
     /// <summary>Device rows on a tab, split by source — for the browser's status line.
-    /// Counts what matches (search + favorite/tag filter applied), folded categories included:
-    /// folding is a view choice, not a filter.</summary>
+    /// Counts what is actually visible (search + favorite/tag filter applied).</summary>
     public (int builtin, int plugins) VisibleDeviceCounts(int tab)
     {
         var src = tab == 2 ? MidiEffects : tab == 1 ? Effects : Instruments;
@@ -657,7 +581,7 @@ public sealed partial class BrowserViewModel : ObservableObject
             if (it.IsGroup || it.Depth > 0) continue;
             if (it.IsPlugin) pl++; else bi++;
         }
-        return (bi + _foldedDevices[tab].Builtin, pl + _foldedDevices[tab].Plugins);
+        return (bi, pl);
     }
 
     private static bool Matches(BrowserItem it, string q)

@@ -319,32 +319,32 @@ The header branch, folding and their checks are removed.
 **Independent test**: each device tab shows its chips. A chip lists exactly its category,
 and with no chip the list is today's.
 
-- [ ] T037 In `VM`, remove the headers build:
+- [X] T037 In `VM`, remove the headers build:
   - `CategoryView`, the `RebuildCategoryView` branch and its call;
   - the fold state (`_folded`, `SetFoldedCategories`, `FoldedCategories`, `CategoryFoldsChanged`, `ToggleCategoryFold`, `FoldedDeviceCount`, `_foldedDevices`) and the folded counts in `VisibleDeviceCounts`, which goes back to as before;
   - `BrowserItem.IsFoldable` / `IsFolded`.
 
   Keep `DeviceCategory`, `TabKey` and `TypeOf`.
-- [ ] T038 In `VM`, add the category filter (data-model § Category filter):
+- [X] T038 In `VM`, add the category filter (data-model § Category filter):
   - `string[] _categoryFilter = { "", "", "" }`;
   - `CategoryFilter(int tab)`;
   - `SetCategoryFilter(int tab, string name)`, which rebuilds that tab;
   - `CategoriesOn(int tab)`: `Order(TypeOf(tab))`, plus `Other` when any tree node's shelf is `Other`;
   - in `RebuildVisible`'s device loop, `if (!PassesCategoryFilter(tab, node)) continue;` beside `PassesLibraryFilter`. The shelf is `DeviceCategory`, normalised to `Other` when the tab doesn't list it.
-- [ ] T039 [P] In `Application/Settings.cs`, replace `BrowserCategoryView` and `BrowserFoldedCategories` with `public bool BrowserCategoryChips { get; set; } = true;` (doc: "Show the category chips above the device lists (Synths, Dynamics…)").
-- [ ] T040 In `App/BrowserView.cs`, remove the headers build:
+- [X] T039 [P] In `Application/Settings.cs`, replace `BrowserCategoryView` and `BrowserFoldedCategories` with `public bool BrowserCategoryChips { get; set; } = true;` (doc: "Show the category chips above the device lists (Synths, Dynamics…)").
+- [X] T040 In `App/BrowserView.cs`, remove the headers build:
   - restore `GroupRow` (no caret, no click, the original margins and columns);
   - restore `VisibleCount` without folded devices;
   - remove the fold load/save wiring, `CategoryView` application, and the "Group by category" ⋮ item.
-- [ ] T041 In `App/BrowserView.cs`, add the chip row:
+- [X] T041 In `App/BrowserView.cs`, add the chip row:
   - a `WrapPanel _categoryChips` in a host `Border` (same margins as `_chipsHost`), placed in `topStack` between `headerRow` and `_chipsHost`;
   - `RebuildCategoryChips()` makes one `MakeChip(name, null, active, …)` per `_vm.CategoriesOn(_active)`; a click toggles `_vm.SetCategoryFilter(_active, active ? "" : name)`, then rebuilds the chips and calls `RefreshCounts()`;
   - shown only on tabs 0–2 while `BrowserCategoryChips` is on; rebuilt on tab change and on `DevicesRebuilt`;
   - a tooltip "<n> devices" per chip if cheap, else none.
 
   The chip spacing matches the Files tab's `_sampleChips`.
-- [ ] T042 In `App/BrowserView.cs`, add `CheckItem("Category chips", …)` in ⋮ after "Show type tags". It saves `BrowserCategoryChips`; turning it off calls `SetCategoryFilter(t, "")` for tabs 0–2, then updates the row's visibility and `RefreshCounts()`. Apply the setting in `SetSettings` / `SetViewModel`. `EmptyMessage`'s `filtering` also counts a picked category.
-- [ ] T043 Rewrite `Smoke/BrowserCategoryTests.cs` for chips:
+- [X] T042 In `App/BrowserView.cs`, add `CheckItem("Category chips", …)` in ⋮ after "Show type tags". It saves `BrowserCategoryChips`; turning it off calls `SetCategoryFilter(t, "")` for tabs 0–2, then updates the row's visibility and `RefreshCounts()`. Apply the setting in `SetSettings` / `SetViewModel`. `EmptyMessage`'s `filtering` also counts a picked category.
+- [X] T043 Rewrite `Smoke/BrowserCategoryTests.cs` for chips:
   - **(a)** No pick: each tab equals today's list (`BUILT-IN` plus built-ins by `Name`).
   - **(b)** `CategoriesOn` equals `Order` on each tab (no plug-ins means no Other).
   - **(c)** For every category, picking it lists exactly its built-ins (`DeviceCategories.Of(type)`), and the union over the chips covers every device once.
@@ -357,8 +357,8 @@ and with no chip the list is today's.
   - **(j)** `Deserialize<Settings>("{}").BrowserCategoryChips == true`.
 
   Restore the `Program.cs` Glacier assertion to `BUILT-IN, Nota Aurora, Pads, Glacier Pad`.
-- [ ] T044 Build. Run `--browser` and the design checks (`check.sh`): all pass, `RunLabels` included (the new chip and ⋮ strings).
-- [ ] T045 Under Xvfb, run quickstart § 2 steps 1–6:
+- [X] T044 Build. Run `--browser` and the design checks (`check.sh`): all pass, `RunLabels` included (the new chip and ⋮ strings).
+- [X] T045 Under Xvfb, run quickstart § 2 steps 1–6:
   - pick and clear a chip;
   - switch chips;
   - a chip plus search and Favorites;
@@ -367,7 +367,18 @@ and with no chip the list is today's.
   - the minimum width wraps.
 
   Compare the no-pick list with the T002 baseline (it must be pixel-identical below the chip row).
-- [ ] T046 Capture the three tabs in all four themes, with and without a chip picked, and make before/after contact sheets for the PR (quickstart § 2 step 7).
+- [X] T046 Capture the three tabs in all four themes, with and without a chip picked, and make before/after contact sheets for the PR (quickstart § 2 step 7).
+  *Result*:
+  - **Checks**: `--browser` 29/29; design checks 152/152 (`RunLabels` included). `BrowserView.cs` was restored to its pre-headers state and the chip row added fresh.
+  - **Under Xvfb**:
+    - Audio effects shows 8 chips in three wrapped rows above Favorites;
+    - Reverb & delay narrows to Chamber, Delay and Reverb;
+    - Dynamics switches the list, and with "prism" it shows only Prism;
+    - Instruments is unfiltered while Audio effects keeps Dynamics.
+  - **⋮ off**: clears the pick and hides the row. After a relaunch, the list matches the T002 baseline pixel for pixel (AE 0).
+  - **Minimum width**: one chip per line, no overlap.
+  - **Captures**: four themes, unpicked and picked. Contact sheets were sent in the session.
+
 - [ ] T047 [P] Docs:
   - `DESIGN.md`: replace the "Browser categories" bullet with the chip row (its own wrapping row above Favorites/tags, `MakeChip`, one pick per tab, Other last when used);
   - `FEATURES.md`: replace the "Device categories" bullet and the View options wording ("category chips");
