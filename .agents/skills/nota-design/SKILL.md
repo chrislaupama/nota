@@ -27,7 +27,7 @@ the project accepted.
 | `Theme/NotaPalette.cs` · `NotaColourTheme.cs` · `NotaThemeService.cs` | The token slots (the catalogue) and helpers (`Wash`, `InkOn`, `Ink`, `Derived`) · loading and validating themes · applying a theme: slots re-tinted, the same brushes published as `Brush.*`, `Shadow.*` built. |
 | `Theme/NotaGeometry.cs` · `NotaFonts.cs` · `NotaText.cs` · `NotaNum.cs` | Radii/sizes/spacing · Geist typefaces and type scale · sentence-case labels · number formatting. |
 | `DeviceCardKit.cs`, `Controls/` | The shared controls and card builders; `Controls/NotaGraph.cs` for graph windows. |
-| `tests/Nota.SmokeTest/DesignTokenCheck*.cs` | The guard tests (incl. `RunStudio`, `RunThemes`) — run the smoke test after any UI change. |
+| `tests/Nota.SmokeTest/DesignTokenCheck*.cs` | The guard tests (incl. `RunStudio`, `RunThemes`, `RunLabels`, `RunIcons`) and their ratchet lists (`*AllowList.txt`, which only shrink) — run the smoke test after any UI change. |
 | `../saine/DESIGN.md` | The reference system, when a question is not settled by the files above. |
 
 If `DESIGN.md` / `DESIGN.html` disagree with the theme files, **the theme files win** and
@@ -73,20 +73,31 @@ Most of these are enforced by `DesignTokenCheck`; the smoke test fails when one 
   `Modal` 4 for modals only; `Docked` 0; `Bar` 1 for bars inside a plot.
 - **Geist for words, Geist Mono for every number a user reads.** Names are never mono.
   Nothing under 7 px.
-- **Sentence case, no tracking.** Route labels through `NotaText.Label` (it sentence-cases
-  caps literals and keeps acronyms and units: `LFO rate`, `Gain dB`). Never
-  `ToUpperInvariant()` a label, never set `LetterSpacing`.
+- **Sentence case, no tracking — every label.** Menu items, command titles, palette
+  headings, window titles, tooltips, buttons: "Save as…", "Export audio", "Recent". Capitals
+  stay only on acronyms and units (`NotaText.Fixed`), "Nota …" product and device names,
+  the view names (Arrangement, Session, Modular, Mixer), proper nouns, and a page after
+  "Settings: ". Route labels through `NotaText.Label` (it sentence-cases caps literals and
+  keeps acronyms and units: `LFO rate`, `Gain dB`). Never `ToUpperInvariant()` a label,
+  never set `LetterSpacing`. `RunLabels` fails on an all-caps or Title Case literal;
+  `LabelAllowList.txt` is for data only (preset, mode, proper names).
 - **Opacity is not a state.** Disabled and muted take the next ink step; use
   `Inactive.Set` for a subtree. The only allowed `Opacity` is a drag ghost.
 - **State changes colour only** — never size, border width or position. Hover and colour
   transitions 120 ms ease-out; meters, playhead and spectra are never animated.
 - **Numbers are set, not printed.** The app installs a display culture (point decimal,
-  U+2212 minus). Put a thin space (` ` in source) before units, keep precision fixed
-  (dB one decimal, tempo two, percent whole, Hz up to 999 then `3.2 k`) — use `NotaNum`
-  helpers.
-- **Icons are geometry.** `Glyph` / `GlyphKind`: a round-capped 1.5 px stroke at 16 px
-  (scaled), play and record filled. No unicode symbols (`■ ▶ ● ✓ ★ ▾`…) and no emoji as
-  text. `·` separates meta; `→` in prose is fine.
+  U+2212 minus — typed literals too, `"−12"`, never `"-12"`). Put a thin space (` ` in
+  source) before units, keep precision fixed (dB one decimal, tempo two, percent whole, Hz
+  up to 999 then `3.2 k`) — use `NotaNum` helpers. Ranges take an en dash, closed between
+  plain numbers (`1–127`), spaced when an endpoint has a space (`20 Hz – 20 kHz`).
+- **Every icon is a `Glyph`.** `Controls/Glyph.cs` is the one icon set: path kinds on a
+  16-unit grid, scaled as a whole (never `Stretch.Uniform`); stroked parts take the shared
+  pen (round caps and joins, `max(1.2, size × 1.5/16)`), filled parts the ink (transport
+  shapes, the Arrangement / Session view keys, OS marks, `StarFilled`, carets, Snap). A
+  missing icon is a new `GlyphKind` with a one-line comment, never a path in a view —
+  `RunIcons` fails on `Geometry.Parse`, `Data="M…"` or a path string outside `Glyph.cs`.
+  No unicode symbols (`■ ▶ ● ✓ ★ ▾`…) and no emoji as text. `·` separates meta; `→` in
+  prose is fine.
 - **Copy:** English. Labels one word where it fits, no vowel-dropped contractions
   (`Feedback`, not `Fdbk`; `Freq`/`Reso`/`Thresh` are allowed). Tooltips short and
   verb-first. Empty states are one Ink 5 line.
@@ -95,13 +106,20 @@ Most of these are enforced by `DesignTokenCheck`; the smoke test fails when one 
 
 - **700 × 260** (`DeviceCardKit.CardH`; width exceptions are listed in `DESIGN.md`): panel
   body, radius 3, seam frame.
-- **Header 22:** a raised strip with the `Shadow.Raised` bevel. Name left; preset picker
-  `‹ Name ⌄ ›` (when the device has presets), the processing-type badge (mono, muted,
-  sentence case) and the power switch (accent while on) right — nothing else. A/B, move
-  and delete go in the header's right-click menu.
-- **Body:** inset 6, sections on the panel tone with gap 5, titled in `DeviceSection`
-  (muted 600), divided inside by rules; columns choice → work → output. Device text keeps
-  the device scale (7.5–10.5 px) because the frame is kept.
+- **Header 22** (`BuildCardShell` in `DeviceChainView.Shell.cs` — every card uses it,
+  racks, the generic instrument card, plug-ins and Sends included; never build a header of
+  your own): a raised strip with the `Shadow.Raised` bevel, in fixed slots **name · preset ·
+  badges · power**. The preset picker `‹ Name ⌄ ›` is centred in the header between two
+  equal halves (name left, badges and power right), only when the device has presets; the badges — the
+  type badge (mono, muted, sentence case) and the card's accessories (`HeaderExtra`: Learn,
+  S / L) — right-aligned; the power switch (accent while on) last, its slot reserved even
+  on a card that cannot be bypassed. A/B, move and delete go in the right-click menu.
+- **Body:** inset 6; columns choice → work → output. **Sections are
+  `DeviceCardKit.Section(body)`** — no fill, no frame, a 1 px `Rule` on a top or left edge
+  facing a neighbouring section (found from the layout, or pass `SectionEdge`); never a
+  framed `Border` box. Graph windows and wells keep their frames; chips, tiles, pads and
+  readouts are not sections. Titled in `DeviceSection` (muted 600). Device text keeps the
+  device scale (7.5–10.5 px) because the frame is kept.
 - Values at rest neutral, the accent only for what is live or chosen; modulation shows its
   source chroma; graphs go through `NotaGraph` (well, rule frame, radius 3, `VizGrid`,
   `VizInk` primary curve, accent only on the active node, corner axis labels, no fills
