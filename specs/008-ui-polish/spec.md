@@ -17,6 +17,8 @@
 - Q: To reach two header rows above the first track, should the Sections row or the Overview strip give way? → A: Neither. Keep the Overview, Sections and Zoom/ruler rows exactly as they are, with no removal, merge, move or restyle. Critique F9 is out of scope.
 - Q: Should the "Nota" prefix on built-in browser rows go, dim, or stay? → A: Go, in the browser rows only. Rows read "Aurora", "Bass"…, and full names ("Nota Aurora") stay everywhere else: card headers, device chain, menus and search.
 - Q: Where does the power key sit on every device-card header? → A: At the far right. The order is name, preset stepper, badges, power, as on Auto Filter today.
+- Plan finding (research R4): the mixer and export are separate OS windows, not in-window overlays. Under the test display (no window manager) they showed no frame. On macOS and Windows they have Nota's own title bar. US2 is narrowed to what users see: the mixer fits its strips, and Escape closes the mixer and export like the palette. Neither becomes an overlay.
+- Plan finding (research R8, R9): the view commands have no keyboard shortcut today, so the view keys show their name (and a shortcut only if one is assigned later). The loop readout already uses an en dash. The real number defect is the mixer scale's hyphen-minus.
 
 ## Nota Context *(fill in — drives plan and tasks)*
 
@@ -74,27 +76,27 @@ tracks and check the track list.
 
 ---
 
-### User Story 2 - Overlays read as overlays (Priority: P1)
+### User Story 2 - Floating windows behave like the palette (Priority: P1)
 
-When the mixer or the export dialog opens over the arrangement, it is clearly a separate
-layer: it has a header naming it, a defined edge and a shadow, and it closes the same way
-every time. The command palette already works like this.
+The mixer and the export window are separate windows with Nota's title bar. They should
+behave as consistently as the command palette: Escape closes them, and the mixer is
+exactly as wide as its strips, with no dead space.
 
-**Why this priority**: The mixer and export are used constantly. Today they blend into
-the page and look unfinished (F4).
+**Why this priority**: The mixer and export are used constantly. A mixer with an empty
+half and windows that ignore Escape feel unfinished (F4, corrected by research R4).
 
-**Independent Test**: Open the mixer, export and command palette in each built-in theme,
-and compare their headers, edges, shadows and close behaviour.
+**Independent Test**: Open the mixer with 2, 5 and 12 tracks and check its width. Press
+Escape in the mixer, the export window and the palette.
 
 **Acceptance Scenarios**:
 
-1. **Given** any built-in theme, **When** the mixer, export dialog or command palette
-   opens, **Then** it shows a header with its name ("Mixer", "Export audio"; the palette
-   keeps its search field as its header), a 1 px edge and the floating-layer shadow.
-2. **Given** an open overlay, **When** the user presses Escape or clicks its close
-   control, **Then** it closes. This works the same in all three.
-3. **Given** the mixer overlay, **When** it opens, **Then** its width fits its strips,
-   with no dead area inside its edge.
+1. **Given** the mixer window, **When** it opens, **Then** its width fits its strips and
+   the master. It is at least 560 px and at most the screen width (scrolling beyond
+   that), with no empty area to the right of the last strip.
+2. **Given** the mixer, the export window or the command palette, **When** the user
+   presses Escape, **Then** it closes. The export window treats Escape as Cancel.
+3. **Given** macOS or Windows, **When** the mixer or export opens, **Then** its title bar
+   names it in sentence case ("Mixer", "Export audio").
 
 ---
 
@@ -171,10 +173,11 @@ check fails if an icon is drawn outside the shared set.
    check runs, **Then** it fails and names the file.
 3. **Given** the transport row, **When** it shows, **Then** Arrangement, Session and
    Modular are three icon keys in the same place and order, with the current view marked
-   as selected (accent fill, as today). Hovering a key shows its name and shortcut, and
-   screen readers announce the view name.
-4. **Given** the view keys, **When** the user clicks one or uses the existing shortcut,
-   **Then** the same view opens as before.
+   as selected (accent fill, as today). Hovering a key shows its name (and its shortcut,
+   if one is ever assigned), and screen readers announce the view name.
+4. **Given** the view keys, **When** the user clicks one,
+   **Then** the same view opens as before. View switching from the menu and the command
+   palette is unchanged; there is no keyboard shortcut today and none is added.
 
 ---
 
@@ -203,9 +206,9 @@ the critique screenshots. Confirm the arrangement header rows are unchanged.
 3. **Given** an empty device chain, **When** the dock shows, **Then** the add-device
    target is a slim element at the end of the chain. A dashed outline appears only while
    something is being dragged.
-4. **Given** the loop range or any other range, **When** it shows, **Then** it is set with
-   an en dash ("1.1–5.1"), and negative numbers use the true minus sign everywhere,
-   including the mixer scale.
+4. **Given** any range, **When** it shows, **Then** it uses an en dash, closed between plain
+   numbers ("1–127") and spaced when an endpoint contains a space. Negative numbers use
+   the true minus sign everywhere, including the mixer scale ("−12").
 
 ---
 
@@ -213,7 +216,7 @@ the critique screenshots. Confirm the arrangement header rows are unchanged.
 
 - **Small windows**: at the minimum window size, the session toolbar overflow and the
   arrangement header changes still leave every control reachable.
-- **Every theme**: overlays, headers and icons look right in all four built-in themes, and
+- **Every theme**: windows, card headers, sections and icons look right in all four built-in themes, and
   every theme still passes the readability bar.
 - **Third-party plugin cards** (VST3 / AU) use the same header anatomy for the parts Nota
   draws: name, preset where available, and power at the far right.
@@ -240,11 +243,11 @@ the critique screenshots. Confirm the arrangement header rows are unchanged.
 
 **Overlays (US2)**
 
-- **FR-004**: The mixer, the export dialog and the command palette MUST share one overlay
-  treatment: a header with the overlay's name (the palette keeps its search field), a
-  1 px edge, the floating-layer shadow, and closing with Escape or a close control (F4).
-- **FR-005**: The mixer overlay MUST size to its content, with no dead area inside its
-  edge (F4).
+- **FR-004**: The mixer and export windows MUST close on Escape (export as Cancel), the
+  same as the command palette. Their window titles MUST be in sentence case (F4,
+  research R4). They stay separate windows.
+- **FR-005**: The mixer window MUST size its width to its strips and the master, between
+  560 px and the screen width, with no dead area to the right of the last strip (F4).
 
 **Labels (US3)**
 
@@ -270,8 +273,9 @@ the critique screenshots. Confirm the arrangement header rows are unchanged.
   shared set.
 - **FR-019**: The Arrangement / Session / Modular switcher MUST be three icon keys from
   the shared set, in the same order and place, with the selected-key treatment for the
-  current view. Each key MUST have a tooltip with the view name and shortcut, and an
-  accessible name. Shortcuts and menu commands for switching views are unchanged.
+  current view. Each key MUST have a tooltip with the view name (plus the shortcut, if one
+  exists) and an accessible name. Menu and palette commands for switching views are
+  unchanged, and no shortcut is added.
 - **FR-020**: Built-in device-card sections MUST be divided by 1 px rules on the card
   surface instead of framed boxes. Section titles, contents, positions and the card frame
   are unchanged, and graph windows keep their own frame (resolves 006 T066).
@@ -286,8 +290,9 @@ the critique screenshots. Confirm the arrangement header rows are unchanged.
   both forms. The type tag MUST be visually quieter than the name (F10).
 - **FR-014**: An empty device chain MUST show a slim add-device target at the end of the
   chain. A dashed outline appears only during a drag (F11).
-- **FR-015**: Ranges MUST be set with an en dash and negative numbers with the true minus
-  sign, everywhere numbers are shown (F12).
+- **FR-015**: Ranges MUST use an en dash, closed between plain numbers and spaced when an
+  endpoint contains a space. Negative numbers MUST use the true minus sign everywhere
+  numbers are shown, including the mixer scale (F12, research R9).
 
 **General**
 
@@ -295,13 +300,13 @@ the critique screenshots. Confirm the arrangement header rows are unchanged.
   card frames, arrangement row heights and the arrangement header rows stay as they are.
 - **FR-017**: All changes MUST look right in all four built-in themes and keep every
   theme passing the readability bar.
-- **FR-018**: DESIGN.md MUST describe the overlay treatment, the device-card header
+- **FR-018**: DESIGN.md MUST describe the floating-window behaviour, the device-card header
   anatomy and the icon-set rule. The changelog MUST record the visible changes.
 
 ### Key Entities
 
-- **Overlay**: an in-window floating layer (mixer, export, command palette). It has a
-  name, a header, an edge, a shadow and a close behaviour.
+- **Floating window**: the mixer and export windows. Each has a title bar (Nota's on
+  macOS/Windows, native on Linux), closes on Escape, and the mixer sizes to its content.
 - **Device-card header**: the strip at the top of a card, with fixed slots, left to
   right: name, preset stepper, badges, power.
 - **Icon**: a named shape in the shared set. It has one grid, one stroke weight, and a
@@ -323,8 +328,8 @@ the critique screenshots. Confirm the arrangement header rows are unchanged.
 - **SC-004**: The automated check finds 0 all-caps or Title Case label literals and 0
   icons drawn outside the shared set. The existing design, theme and appearance checks
   still pass.
-- **SC-005**: In a side-by-side review, the mixer, export and palette overlays are judged
-  "the same family" on header, edge, shadow and close.
+- **SC-005**: Escape closes the mixer, export and palette in 3 of 3 cases, and the
+  mixer's empty width to the right of the master strip is 0 px with 2, 5 and 12 tracks.
 - **SC-006**: Every feature in FEATURES.md is still reachable by the same path and
   shortcut.
 - **SC-007**: The view switcher takes at least 100 px less width in the transport row at
@@ -343,8 +348,8 @@ the critique screenshots. Confirm the arrangement header rows are unchanged.
   product names stay capitalised ("Nota Auto Filter" keeps its capitals as a name).
 - **The browser's "Nota" prefix** is dropped from the browser rows only (clarified). Device
   names themselves are unchanged.
-- **Overlay = in-window panel.** OS windows (Preferences, plugin windows) keep their own
-  title bars and are out of scope.
+- **Windows stay windows.** The mixer and export keep being separate windows (research
+  R4). Preferences and plugin windows are out of scope.
 - **Arrangement header rows** are out of scope (clarified): Overview, Sections and the
   Zoom/ruler row stay as they are.
 - **Screenshots** come from the same Xvfb harness as 006 and 007, at 1200 × 800, in every
