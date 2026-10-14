@@ -565,7 +565,7 @@
                   Background="{DynamicResource Brush.TrackOff}"
                   BorderBrush="Transparent" BorderThickness="1">
             <Rectangle x:Name="Knob" Width="7" Height="7" HorizontalAlignment="Left"
-                       VerticalAlignment="Center" Margin="0.5,0,0,0" RadiusX="1.5" RadiusY="1.5"
+                       VerticalAlignment="Center" Margin="0.5,0,0,0" RadiusX="2" RadiusY="2"
                        Fill="{DynamicResource Brush.TextTertiary}"/>
           </Border>
           <ContentPresenter x:Name="PART_ContentPresenter" Grid.Column="1"

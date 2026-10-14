@@ -120,7 +120,7 @@ floating window (**View → Mixer**, ⌘M).
   the density), ⌘3 triplets, ⌘4 snap on / off, ⌘5 Auto ↔ fixed (also Edit → Grid), acting
   on the editor used last. Hold ⌥ to drag freely; clip edges still attract a dragged clip.
 - **Session View** — a clip grid (tracks × scenes) with an inspector that the toolbar's
-  **Inspector** button shows or hides (remembered); on a narrow window the least-used
+  **Inspector** key (the sidebar icon) shows or hides (remembered); on a narrow window the least-used
   toolbar controls fold into a **⋯** menu. Named, coloured clips with note / waveform
   previews and a progress pie on the clip's own clock; selection apart from launching,
   keyboard editing (arrows, Return, ⌘C/X/V, ⌘D, ⌘I, F2, Delete) and drag between slots;

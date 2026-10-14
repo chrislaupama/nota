@@ -302,14 +302,16 @@ internal sealed partial class RackCardView(DeviceCardContext ctx)
     {
         var plus = new Glyph(GlyphKind.Plus, 10) { Foreground = IrMuted };
         var lbl = new TextBlock { Text = "Device", FontSize = 8, Foreground = IrMuted, HorizontalAlignment = HorizontalAlignment.Center };
-        var dash = new Avalonia.Controls.Shapes.Rectangle { Stroke = DashIdle, StrokeThickness = 1, StrokeDashArray = new Avalonia.Collections.AvaloniaList<double> { 3, 2.5 }, RadiusX = NotaRadius.ControlValue, RadiusY = NotaRadius.ControlValue };
+        var dash = new Avalonia.Controls.Shapes.Rectangle { Stroke = DashIdle, StrokeThickness = 1, StrokeDashArray = new Avalonia.Collections.AvaloniaList<double> { 3, 2.5 }, RadiusX = NotaRadius.ControlValue, RadiusY = NotaRadius.ControlValue, IsVisible = false };
         var box = new Panel { Width = 52, Cursor = new Cursor(StandardCursorType.Hand), Background = Brushes.Transparent,
             Children = { dash, new StackPanel { VerticalAlignment = VerticalAlignment.Center, HorizontalAlignment = HorizontalAlignment.Center, Spacing = 2, Children = { plus, lbl } } } };
 
-        void Idle() { dash.Stroke = DashIdle; dash.Fill = null; plus.Foreground = IrMuted; lbl.Foreground = IrMuted; }
+        // The dashed outline shows only while an effect is dragged over the slot (spec 008).
+        void Idle() { dash.IsVisible = false; dash.Stroke = DashIdle; dash.Fill = null; plus.Foreground = IrMuted; lbl.Foreground = IrMuted; }
         void Hover() { dash.Stroke = NotaPalette.TextTertiary; plus.Foreground = IrTxt; lbl.Foreground = NotaPalette.TextSecondary; }
-        void Drop() { dash.Stroke = IrTeal; dash.Fill = NotaPalette.Wash(NotaPalette.Teal, 0x22); plus.Foreground = IrTeal; lbl.Foreground = IrTeal; }
+        void Drop() { dash.IsVisible = true; dash.Stroke = IrTeal; dash.Fill = NotaPalette.Wash(NotaPalette.Teal, 0x22); plus.Foreground = IrTeal; lbl.Foreground = IrTeal; }
 
+        ToolTip.SetTip(box, "Add device — click for the list, or drop an effect here");
         box.PointerEntered += (_, _) => Hover();
         box.PointerExited += (_, _) => Idle();
         box.PointerPressed += (_, _) => ShowAddDeviceMenu(a, sc, box);

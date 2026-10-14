@@ -675,7 +675,7 @@ Every region is **docked**: radius 0, no gutter, separated by 1 px seams (the wi
   everything outside the played region darkened. Envelopes and expression curves are
   neutral viz ink; only the point under the pointer is the accent.
 
-- **Session** — the inspector column is 260 and can be hidden: an "Inspector" toggle at
+- **Session** — the inspector column is 260 and can be hidden: an Inspector key (`Glyph` Sidebar, its tooltip names it) at
   the right end of the toolbar, remembered (`SessionInspectorOpen`, on by default). When
   the toolbar is narrow its least-used controls fold, one at a time, into a "⋯" menu that
   lists whatever is hidden — the position readout first, then Back to Arrangement, Capture
@@ -796,8 +796,6 @@ True today, not yet fixed:
 - **Column order** choice → work → output is applied in Utility; the other cards have not
   been audited card by card.
 - **Slider reset** on double-click works only where the card passes a default.
-- **Off-scale radii** still in `RadiusAllowList.txt`: Mosaic's drop target (6) and the
-  7 px switch knob (1.5).
 - **Names:** presets with emotional names (Screaming Lead, VHS Fever, Gentle Master,
   Transparent Safety, Dive Bomb, Laser Zap…) and multi-word device names (Auto Filter,
   Beat Repeat, Dynamic EQ-8, EQ-3, the "Nota " prefix — dropped only from browser rows and

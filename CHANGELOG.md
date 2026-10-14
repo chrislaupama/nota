@@ -71,7 +71,7 @@ Entry categories: `Added`, `Changed`, `Fixed`, `Removed`.
   rows sit on a line of their own.
 - **The Session toolbar fits small windows:** controls no longer run off the edge — when
   space runs out, the least-used ones move into a "⋯" menu. The inspector is narrower and
-  can be hidden with the new Inspector button; Nota remembers your choice.
+  can be hidden with the new Inspector key (the sidebar icon); Nota remembers your choice.
 - **Modular lists your tracks on open:** opening Modular after loading a project showed an
   empty track list. It now lists the tracks and opens on the first one, and an empty
   project says "No tracks yet".

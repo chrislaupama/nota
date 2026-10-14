@@ -133,8 +133,13 @@ public sealed partial class SessionView
         stopAll.Click += (_, _) => { _engine.StopAllSession(); UpdateStates(); };
 
         // The inspector column can be folded away to give the grid its width back (critique F2).
-        _inspectorToggle = new ToggleButton { Content = "Inspector", Height = NotaSize.Shell, FontSize = 11, Padding = new Thickness(10, 0), IsChecked = InspectorOpen };
-        ToolTip.SetTip(_inspectorToggle, "Show or hide the inspector");
+        _inspectorToggle = new ToggleButton
+        {
+            Content = new Glyph(GlyphKind.Sidebar, 16), Width = NotaSize.Shell + 6, Height = NotaSize.Shell, Padding = new Thickness(0),
+            HorizontalContentAlignment = HorizontalAlignment.Center, VerticalContentAlignment = VerticalAlignment.Center, IsChecked = InspectorOpen,
+        };
+        ToolTip.SetTip(_inspectorToggle, "Inspector — show or hide it");
+        Avalonia.Automation.AutomationProperties.SetName(_inspectorToggle, "Inspector");
         _inspectorToggle.Click += (_, _) => SetInspectorOpen(_inspectorToggle.IsChecked == true);
 
         // Overflow: when the bar is too narrow, the least-used controls fold into "⋯" one by one

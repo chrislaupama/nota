@@ -276,3 +276,9 @@ T028 Mixer/Detail ∥ T029 Drum Rack ∥ T030 browser/arrangement menus ∥ T031
 - **Ratchets** (`LabelAllowList.txt`, `IconAllowList.txt`, the seeded `RunNumbers` and `RunGeometry` lines) only ever shrink. A phase is not done while it leaves its own ratchet lines behind.
 - **Card baseline**: every card change is compared with the T002 baseline by `edgediff`. A moved control is a defect, not a design choice.
 - **Window chrome**: the mixer and export titles and title bars are checked on macOS by the user (Xvfb has no window manager).
+
+## Phase 10: Convergence
+
+- [X] T061 Make the Instrument Rack chain's "+ Device" slot (`App/DeviceCards/Rack/RackCardView.cs` `IrAddDeviceSlot`) show its dashed outline only while a drag is over it, per FR-014 (partial)
+- [X] T062 Shrink `Smoke/RadiusAllowList.txt` to data-only exemptions: put the Mosaic drop target (`App/DeviceCards/Instruments/MosaicInstrumentCard.cs`, radius 6) on the radius scale, and fix or document the 7 px switch knob radius in `App/Theme/NotaTheme.axaml`, per plan: ratchets shrink to data-only exemptions (partial)
+- [X] T063 Make the Session inspector toggle (`App/SessionView.Toolbar.cs` `_inspectorToggle`) the Glyph `Sidebar` icon key with a tooltip, or record why the text toggle stays, per T017 (contradicts)

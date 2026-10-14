@@ -1283,7 +1283,7 @@ internal sealed class MosaicInstrumentCard : IInstrumentCard
             var dash = new Rectangle
             {
                 Stroke = AccentBright, StrokeThickness = 1.2, StrokeDashArray = new Avalonia.Collections.AvaloniaList<double> { 4, 3 },
-                RadiusX = 6, RadiusY = 6, Fill = NotaPalette.Wash(NotaPalette.SurfaceCard, 0xE6),
+                RadiusX = NotaRadius.ControlValue, RadiusY = NotaRadius.ControlValue, Fill = NotaPalette.Wash(NotaPalette.SurfaceCard, 0xE6),
             };
             var box = new Panel
             {

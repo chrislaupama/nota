@@ -8,7 +8,3 @@
 # longer matches anything.
 #
 # Format: path (from src/managed) <TAB> RadiusX|RadiusY = value <TAB> # reason
-Nota.App/DeviceCards/Instruments/MosaicInstrumentCard.cs	RadiusX = 6	# pre-008, fix in US4 (Mosaic drop target)
-Nota.App/DeviceCards/Instruments/MosaicInstrumentCard.cs	RadiusY = 6	# pre-008, fix in US4 (Mosaic drop target)
-Nota.App/Theme/NotaTheme.axaml	RadiusX = 1.5	# pre-008, switch knob 7px: review in US4
-Nota.App/Theme/NotaTheme.axaml	RadiusY = 1.5	# pre-008, switch knob 7px: review in US4
