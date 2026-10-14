@@ -152,38 +152,50 @@ The Xvfb harness and capture scripts from 008 live in `/tmp/claude-0/`, outside 
 
 **Independent test**: fold all but one category on Audio effects; only that category's devices show; switch tabs and restart, and the folds are kept; a search reveals hits inside folded categories, and clearing the search restores the folds.
 
-- [ ] T019 [US3] In `VM`, add the fold state:
+- [X] T019 [US3] In `VM`, add the fold state:
   - `HashSet<string> _folded` (`StringComparer.Ordinal`) with keys `"{TabKey}:{name}"`;
   - `SetFoldedCategories(IEnumerable<string>)`, which loads without raising the event;
   - `IReadOnlyCollection<string> FoldedCategories`;
   - `public event Action? CategoryFoldsChanged`;
   - `ToggleCategoryFold(BrowserItem header)`. It does nothing unless `header.IsFoldable`. Otherwise it parses the tab from `Path` (`cat:<tabKey>:<name>`), flips the key, `RebuildVisible(tab)`, and raises the event.
-- [ ] T020 [US3] In `VM` `RebuildVisible`'s category branch:
+- [X] T020 [US3] In `VM` `RebuildVisible`'s category branch:
   - **No query**: a header in `_folded` gets `IsFolded = true` and its devices and presets are skipped; the header and its `GroupCount` stay.
   - **Query active**: headers get `IsFoldable = false` and `IsFolded = false`, and folds are ignored.
-- [ ] T021 [US3] In `VM`, record per-tab `(builtin, plugins)` counts of the filtered devices *before* folding, during `RebuildVisible` (both branches), and have `VisibleDeviceCounts(tab)` return them (R6). Check that `App/BrowserView.cs` `StatusFor` still reads correctly.
-- [ ] T022 [US3] In `App/BrowserView.cs` `GroupRow`, when `item.IsFoldable`:
+- [X] T021 [US3] In `VM`, record per-tab `(builtin, plugins)` counts of the filtered devices *before* folding, during `RebuildVisible` (both branches), and have `VisibleDeviceCounts(tab)` return them (R6). Check that `App/BrowserView.cs` `StatusFor` still reads correctly.
+- [X] T022 [US3] In `App/BrowserView.cs` `GroupRow`, when `item.IsFoldable`:
   - **Caret**: put `RailIcon(item.IsFolded ? GlyphKind.CaretRight : GlyphKind.CaretDown, 12, "Brush.TextTertiary")` before the label in a new leading `Auto` column, with the label's left margin adjusted so the caret sits where a device row's disclosure sits.
   - **Click**: `Cursor = Hand`; `PointerPressed` calls `_vm?.ToggleCategoryFold(item)`, then `RefreshCounts()`, and sets `e.Handled = true`.
   - **Accessible name**: `AutomationProperties.SetName(grid, $"{name}, {count} devices, {(folded ? "folded" : "open")}")`.
 
   Non-foldable group rows (Built-in / Plug-ins, or any header during a search) render exactly as today. The new tooltip and automation strings must pass `RunLabels`.
-- [ ] T023 [US3] In `App/BrowserView.cs`:
+- [X] T023 [US3] In `App/BrowserView.cs`:
   - `SetSettings` / `SetViewModel` call `vm.SetFoldedCategories(settings.Current.BrowserFoldedCategories)`;
   - subscribe once to `vm.CategoryFoldsChanged`, which writes `_settings.Current.BrowserFoldedCategories = vm.FoldedCategories.ToList()` and calls `_settings.Save()`.
-- [ ] T024 [US3] Add checks to `Smoke/Program.cs`:
+- [X] T024 [US3] Add checks to `Smoke/Program.cs`:
   - **(a)** Folding Dynamics on Audio effects removes Compressor, Prism, Ceiling and Shutter. The Dynamics header stays with `IsFolded` and `GroupCount == 4`.
   - **(b)** `VisibleDeviceCounts(1)` is unchanged by the fold.
   - **(c)** A search for "Prism" shows Dynamics (`IsFoldable == false`) with Prism. Clearing the query brings back the folded Dynamics, and `FoldedCategories` is unchanged throughout (US3/AC2).
   - **(d)** `ToggleCategoryFold` during a search is a no-op.
   - **(e)** Folding on Audio effects doesn't affect Instruments' `Racks` (keys are per tab).
   - **(f)** `SetFoldedCategories(new[]{"fx:Dynamics","fx:Nonexistent"})` folds Dynamics and ignores the unknown key.
-- [ ] T025 [US3] Manual check under Xvfb (quickstart § 2 steps 2–3, 7):
+- [X] T025 [US3] Manual check under Xvfb (quickstart § 2 steps 2–3, 7):
   - fold, switch tabs, relaunch: the folds are kept;
   - a search shows hits in folded categories with no caret, and clearing it restores the folds;
   - the minimum browser width truncates captions with the caret and count visible.
 
   Screenshot folded and open headers in all four themes.
+
+  *Result*: all fold checks pass (`--browser`). Under Xvfb:
+  - Dynamics and Modulation fold with their counts kept, and the status line stays "26 built-in";
+  - "comp" shows Dynamics open with no caret, and clearing it restores both folds;
+  - a relaunch restores the folds from `settings.json`;
+  - at the 160 px minimum width the caption, caret and count stay visible, with no overlap.
+
+  Two fixes found here:
+  - a header click no longer opens the empty preview player (it cleared `_listPointerDown`; the same flash existed on the old Built-in header);
+  - the search-box count and the empty state include devices under folded headers, so a tab with every category folded doesn't say "No audio effects yet".
+
+  Four-theme captures are in T034.
 
 ---
 

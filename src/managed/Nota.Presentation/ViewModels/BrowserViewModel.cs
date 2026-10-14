@@ -166,6 +166,48 @@ public sealed partial class BrowserViewModel : ObservableObject
         set { if (_categoryView == value) return; _categoryView = value; RebuildDeviceTabs(); }
     }
 
+    // Folded category headers, keyed "<tab>:<category>" ("fx:Dynamics"); devices under a
+    // folded header stay out of the list until it opens again or a search shows them.
+    private readonly HashSet<string> _folded = new(StringComparer.Ordinal);
+    private readonly (int Builtin, int Plugins)[] _foldedDevices = new (int, int)[3];
+
+    /// <summary>The folded category headers, for the settings file.</summary>
+    public IReadOnlyCollection<string> FoldedCategories => _folded;
+
+    /// <summary>After a header was folded or opened — the view persists <see cref="FoldedCategories"/>.</summary>
+    public event Action? CategoryFoldsChanged;
+
+    /// <summary>Restores saved folds. Keys naming no category of their tab are dropped.</summary>
+    public void SetFoldedCategories(IEnumerable<string> keys)
+    {
+        _folded.Clear();
+        foreach (var key in keys)
+        {
+            int colon = key.IndexOf(':');
+            if (colon <= 0) continue;
+            int tab = TabOfKey(key[..colon]);
+            string name = key[(colon + 1)..];
+            if (tab >= 0 && (name == DeviceCategories.Other || DeviceCategories.Order(TypeOf(tab)).Contains(name))) _folded.Add(key);
+        }
+        RebuildDeviceTabs();
+    }
+
+    /// <summary>Folds or opens a category header. A search shows every match, so headers
+    /// are not foldable while one is active.</summary>
+    public void ToggleCategoryFold(BrowserItem header)
+    {
+        if (!header.IsFoldable || !header.Path.StartsWith("cat:", StringComparison.Ordinal)) return;
+        var key = header.Path[4..];
+        int tab = TabOfKey(key[..key.IndexOf(':')]);
+        if (tab < 0) return;
+        if (!_folded.Remove(key)) _folded.Add(key);
+        RebuildVisible(tab);
+        CategoryFoldsChanged?.Invoke();
+    }
+
+    /// <summary>Devices on a tab that match but sit under a folded header (not in the list).</summary>
+    public int FoldedDeviceCount(int tab) => tab is >= 0 and < 3 ? _foldedDevices[tab].Builtin + _foldedDevices[tab].Plugins : 0;
+
     private void RebuildDeviceTabs() { RebuildVisible(0); RebuildVisible(1); RebuildVisible(2); }
 
     public ObservableCollection<BrowserItem> Instruments { get; } = new();
@@ -473,6 +515,7 @@ public sealed partial class BrowserViewModel : ObservableObject
         var dst = tab == 2 ? MidiEffects : tab == 1 ? Effects : Instruments;
         string q = _treeQuery[tab].Trim();
         dst.Clear();
+        _foldedDevices[tab] = (0, 0);
         if (_categoryView) { RebuildCategoryView(tab, tree, dst, q); return; }
 
         // Favorited devices float to the top (stable sorts: alphabetical order survives
@@ -523,7 +566,7 @@ public sealed partial class BrowserViewModel : ObservableObject
     // list does; device rows are the same objects, so expand, drag and favourite carry over.
     private void RebuildCategoryView(int tab, List<BrowserItem> tree, ObservableCollection<BrowserItem> dst, string q)
     {
-        var type = tab == 2 ? BuiltinDeviceType.MidiEffect : tab == 1 ? BuiltinDeviceType.AudioEffect : BuiltinDeviceType.Instrument;
+        var type = TypeOf(tab);
         string Shelf(BrowserItem n) => DeviceCategories.Position(type, n.DeviceCategory) == int.MaxValue ? DeviceCategories.Other : n.DeviceCategory;
         var devices = tree
             .Where(n => PassesLibraryFilter(n) && (q.Length == 0 || Matches(n, q) || AnyMatch(n.Children, q)))
@@ -533,16 +576,26 @@ public sealed partial class BrowserViewModel : ObservableObject
             .ThenBy(n => n.ShortName, StringComparer.OrdinalIgnoreCase)
             .ToList();
 
+        // Folds apply only without a query: a search shows every hit, and leaves the folds as they were.
+        _foldedDevices[tab] = (0, 0);
         foreach (var shelf in devices.GroupBy(Shelf))
         {
+            bool folded = q.Length == 0 && _folded.Contains($"{TabKey(tab)}:{shelf.Key}");
             dst.Add(new BrowserItem
             {
                 Name = shelf.Key,
                 Kind = BrowserItemKind.Group,
                 GroupCount = shelf.Count(),
                 Path = $"cat:{TabKey(tab)}:{shelf.Key}",
-                IsFoldable = true,
+                IsFoldable = q.Length == 0,
+                IsFolded = folded,
             });
+            if (folded)
+            {
+                int pl = shelf.Count(n => n.IsPlugin);
+                _foldedDevices[tab] = (_foldedDevices[tab].Builtin + shelf.Count() - pl, _foldedDevices[tab].Plugins + pl);
+                continue;
+            }
             foreach (var node in shelf)
             {
                 dst.Add(node);
@@ -554,6 +607,9 @@ public sealed partial class BrowserViewModel : ObservableObject
     }
 
     private static string TabKey(int tab) => tab == 2 ? "midi" : tab == 1 ? "fx" : "instr";
+    private static int TabOfKey(string key) => key switch { "instr" => 0, "fx" => 1, "midi" => 2, _ => -1 };
+    private static BuiltinDeviceType TypeOf(int tab)
+        => tab == 2 ? BuiltinDeviceType.MidiEffect : tab == 1 ? BuiltinDeviceType.AudioEffect : BuiltinDeviceType.Instrument;
 
     // A device's preset rows: loose presets, then category folders with their presets. With
     // no query, a folder shows its presets only while expanded; with one, a folder shows up
@@ -590,7 +646,8 @@ public sealed partial class BrowserViewModel : ObservableObject
         => nodes.Any(n => Matches(n, q) || AnyMatch(n.Children, q));
 
     /// <summary>Device rows on a tab, split by source — for the browser's status line.
-    /// Counts what is actually visible (search + favorite/tag filter applied).</summary>
+    /// Counts what matches (search + favorite/tag filter applied), folded categories included:
+    /// folding is a view choice, not a filter.</summary>
     public (int builtin, int plugins) VisibleDeviceCounts(int tab)
     {
         var src = tab == 2 ? MidiEffects : tab == 1 ? Effects : Instruments;
@@ -600,7 +657,7 @@ public sealed partial class BrowserViewModel : ObservableObject
             if (it.IsGroup || it.Depth > 0) continue;
             if (it.IsPlugin) pl++; else bi++;
         }
-        return (bi, pl);
+        return (bi + _foldedDevices[tab].Builtin, pl + _foldedDevices[tab].Plugins);
     }
 
     private static bool Matches(BrowserItem it, string q)

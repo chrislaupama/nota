@@ -92,6 +92,42 @@ internal static class BrowserCategoryTests
         yield return (vm.Effects.Where(r => r.IsGroup).Select(r => r.Name).SequenceEqual(DeviceCategories.Order(BuiltinDeviceType.AudioEffect)),
             "turning the category view back on restores the headers");
 
+        // Folding: a header keeps its count, its devices leave the list, the status counts
+        // don't change; a search shows hits inside a folded category and leaves the folds alone.
+        var counts0 = vm.VisibleDeviceCounts(1);
+        var dynamics = vm.Effects.First(r => r.IsGroup && r.Name == "Dynamics");
+        vm.ToggleCategoryFold(dynamics);
+        var dyn = vm.Effects.First(r => r.IsGroup && r.Name == "Dynamics");
+        var dynamicsDevices = new[] { "Nota Compressor", "Nota Prism", "Nota Ceiling", "Nota Shutter" };
+        yield return (dyn.IsFolded && dyn.GroupCount == 4 && !vm.Effects.Any(r => dynamicsDevices.Contains(r.Name))
+                      && vm.Effects.SkipWhile(r => r != dyn).Skip(1).First().IsGroup,
+            "folding a category hides its devices and keeps the header with its count");
+        yield return (vm.VisibleDeviceCounts(1) == counts0 && vm.FoldedDeviceCount(1) == 4, "folding leaves the device counts alone");
+        yield return (vm.FoldedCategories.SequenceEqual(new[] { "fx:Dynamics" }), "the fold is recorded per tab");
+        yield return (vm.Instruments.Where(r => r.IsGroup).All(r => !r.IsFolded) && vm.Instruments.Any(r => r.Name == "Nota Instrument Rack"),
+            "a fold on one tab leaves the others open");
+
+        vm.FilterTree(1, "Prism");
+        var hit = vm.Effects.ToList();
+        var hdr = hit.FirstOrDefault(r => r.IsGroup && r.Name == "Dynamics");
+        yield return (hdr is { IsFoldable: false, IsFolded: false } && hit.Any(r => r.Name == "Nota Prism") && vm.FoldedDeviceCount(1) == 0,
+            "a search shows hits inside a folded category, its header not foldable meanwhile");
+        vm.ToggleCategoryFold(hdr!);
+        yield return (vm.FoldedCategories.SequenceEqual(new[] { "fx:Dynamics" }), "folding during a search does nothing");
+        vm.FilterTree(1, "");
+        yield return (vm.Effects.First(r => r.IsGroup && r.Name == "Dynamics").IsFolded && !vm.Effects.Any(r => r.Name == "Nota Prism"),
+            "clearing the search restores the fold");
+
+        vm.ToggleCategoryFold(vm.Effects.First(r => r.IsGroup && r.Name == "Dynamics"));
+        yield return (vm.FoldedCategories.Count == 0 && vm.Effects.Any(r => r.Name == "Nota Prism"), "a second click opens it again");
+
+        vm.SetFoldedCategories(new[] { "fx:Dynamics", "fx:Nonexistent", "bogus", "midi:Shape" });
+        yield return (vm.FoldedCategories.OrderBy(k => k).SequenceEqual(new[] { "fx:Dynamics", "midi:Shape" })
+                      && vm.Effects.First(r => r.IsGroup && r.Name == "Dynamics").IsFolded
+                      && vm.MidiEffects.First(r => r.IsGroup && r.Name == "Shape").IsFolded,
+            "saved folds restore; unknown keys are dropped");
+        vm.SetFoldedCategories(Array.Empty<string>());
+
         // An existing settings file has neither key: the category view is on, nothing folded (FR-003).
         var old = JsonSerializer.Deserialize<Settings>("{}")!;
         yield return (old.BrowserCategoryView && old.BrowserFoldedCategories.Count == 0,

@@ -18,6 +18,7 @@ using System.Collections.ObjectModel;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Avalonia;
+using Avalonia.Automation;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
 using Avalonia.Controls.Shapes;
@@ -449,6 +450,7 @@ public sealed class BrowserView : UserControl
         _vm.CategoryView = settings.Current.BrowserCategoryView;
         _vm.GroupBySource = settings.Current.BrowserGroupBySource;
         _vm.FavoritesFirst = settings.Current.BrowserFavoritesFirst;
+        _vm.SetFoldedCategories(settings.Current.BrowserFoldedCategories);
         RefreshRows();
     }
 
@@ -460,7 +462,15 @@ public sealed class BrowserView : UserControl
             vm.CategoryView = _settings.Current.BrowserCategoryView;
             vm.GroupBySource = _settings.Current.BrowserGroupBySource;
             vm.FavoritesFirst = _settings.Current.BrowserFavoritesFirst;
+            vm.SetFoldedCategories(_settings.Current.BrowserFoldedCategories);
         }
+        // Folds are saved as they change, like the ⋮ toggles.
+        vm.CategoryFoldsChanged += () =>
+        {
+            if (_settings is null) return;
+            _settings.Current.BrowserFoldedCategories = new List<string>(vm.FoldedCategories);
+            _settings.Save();
+        };
         // Tree tabs (Instruments / FX / MIDI / Files / Presets) bind straight to the VM's
         // flattened visible collections; the VM owns their filtering + expand/collapse.
         _pages[0].ItemsSource = vm.Instruments;
@@ -587,7 +597,7 @@ public sealed class BrowserView : UserControl
     private int VisibleCount(int index)
     {
         var src = VisibleOf(index) ?? (IReadOnlyList<BrowserItem>)_filtered[index];
-        int n = 0;
+        int n = _vm?.FoldedDeviceCount(index) ?? 0;   // folded away, but still matches
         foreach (var it in src) if (!it.IsGroup) n++;
         return n;
     }
@@ -697,7 +707,9 @@ public sealed class BrowserView : UserControl
         return item.IsGroup ? GroupRow(item) : IndexRow(item);
     }, supportsRecycling: false);
 
-    // A section header: caption, a hairline filling the gap, and the section's count.
+    // A section header: caption, a hairline filling the gap, and the section's count. A
+    // category header also folds: its caret sits in the device rows' disclosure column and
+    // its caption on their name column, and a click anywhere on the row folds or opens it.
     private Control GroupRow(BrowserItem item)
     {
         var label = new TextBlock
@@ -705,7 +717,8 @@ public sealed class BrowserView : UserControl
             Text = NotaText.Label(item.Name),
             Classes = { "GroupLabel" },
             VerticalAlignment = VerticalAlignment.Center,
-            Margin = new Thickness(10, 0, 0, 0),
+            TextTrimming = TextTrimming.CharacterEllipsis,
+            Margin = new Thickness(item.IsFoldable ? 3 : 10, 0, 0, 0),
         };
         var rule = new Border { Height = 1, VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(7, 0, 7, 0) };
         rule.BindResource(Border.BackgroundProperty, "Brush.Rule");
@@ -719,12 +732,31 @@ public sealed class BrowserView : UserControl
         count.Classes.Add("Mono");
         count.BindResource(TextBlock.ForegroundProperty, "Brush.TextDisabled");
 
-        var grid = new Grid { Height = GroupRowH, ColumnDefinitions = new ColumnDefinitions("Auto,*,Auto") };
+        var grid = new Grid { Height = GroupRowH, ColumnDefinitions = new ColumnDefinitions("Auto,Auto,*,Auto") };
+        Grid.SetColumn(label, 1);
         grid.Children.Add(label);
-        Grid.SetColumn(rule, 1);
+        Grid.SetColumn(rule, 2);
         grid.Children.Add(rule);
-        Grid.SetColumn(count, 2);
+        Grid.SetColumn(count, 3);
         grid.Children.Add(count);
+        if (!item.IsFoldable) return grid;
+
+        grid.Children.Add(new Border
+        {
+            Width = 14,
+            Margin = new Thickness(6, 0, 0, 0),
+            Child = RailIcon(item.IsFolded ? GlyphKind.CaretRight : GlyphKind.CaretDown, 12, "Brush.TextTertiary"),
+        });
+        grid.Background = Brushes.Transparent;   // the whole row is the hit target
+        grid.Cursor = new Cursor(StandardCursorType.Hand);
+        AutomationProperties.SetName(grid, $"{item.Name}, {item.GroupCount} devices, {(item.IsFolded ? "folded" : "open")}");
+        grid.PointerPressed += (_, e) =>
+        {
+            _listPointerDown = false;   // a fold is not a row pick: the release must not open the player
+            _vm?.ToggleCategoryFold(item);
+            RefreshCounts();
+            e.Handled = true;
+        };
         return grid;
     }
 
