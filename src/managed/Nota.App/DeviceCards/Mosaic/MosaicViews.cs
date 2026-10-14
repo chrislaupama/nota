@@ -215,7 +215,7 @@ internal sealed class MosaicZoneMap : Control
             else if (_cycleNext >= 0) { _sel = _cycleNext; Selected?.Invoke(_sel); }
         }
         _cycleNext = -1;
-        _drag = Drag.None; _dragZone = -1;
+        _drag = Drag.None; InvalidateVisual(); _dragZone = -1;
         e.Pointer.Capture(null);
     }
 
@@ -361,7 +361,7 @@ internal sealed class MosaicCurveView : Control
     {
         base.OnPointerReleased(e);
         if (!_drag) return;
-        _drag = false; End?.Invoke();
+        _drag = false; InvalidateVisual(); End?.Invoke();
         e.Pointer.Capture(null);
     }
 

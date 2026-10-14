@@ -124,7 +124,7 @@ internal sealed class AutoFilterCurve : Control
     protected override void OnPointerReleased(PointerReleasedEventArgs e)
     {
         if (!_drag) return;
-        _drag = false;
+        _drag = false; InvalidateVisual();
         GestureEnd?.Invoke();
         e.Pointer.Capture(null);
     }

@@ -607,7 +607,7 @@ internal sealed class LensVSlider : Control
     }
     protected override void OnPointerReleased(PointerReleasedEventArgs e)
     {
-        if (_drag) { _drag = false; GestureEnd?.Invoke(); e.Pointer.Capture(null); }
+        if (_drag) { _drag = false; InvalidateVisual(); GestureEnd?.Invoke(); e.Pointer.Capture(null); }
     }
     protected override void OnPointerWheelChanged(PointerWheelEventArgs e)
     {
