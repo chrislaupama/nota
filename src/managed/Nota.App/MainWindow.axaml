@@ -156,9 +156,20 @@
                      Foreground="{DynamicResource Brush.TextPrimary}"/>
           <Border Classes="segmented" VerticalAlignment="Center">
             <StackPanel Orientation="Horizontal" Spacing="1">
-              <ToggleButton x:Name="ArrangeBtn" Classes="seg" Content="Arrangement" IsChecked="True" Click="OnShowArrangement"/>
-              <ToggleButton x:Name="SessionBtn" Classes="seg" Content="Session" Click="OnShowSession"/>
-              <ToggleButton x:Name="ModularBtn" Classes="seg" Content="Modular" Click="OnShowModular"/>
+              <!-- The views as icon keys (spec 008): the tooltip and the accessible name carry
+                   the view name. View → Arrangement / Session / Modular do the same. -->
+              <ToggleButton x:Name="ArrangeBtn" Classes="seg view" IsChecked="True" Click="OnShowArrangement"
+                            ToolTip.Tip="Arrangement" AutomationProperties.Name="Arrangement">
+                <app:Glyph Kind="Arrangement" Size="16"/>
+              </ToggleButton>
+              <ToggleButton x:Name="SessionBtn" Classes="seg view" Click="OnShowSession"
+                            ToolTip.Tip="Session" AutomationProperties.Name="Session">
+                <app:Glyph Kind="Session" Size="16"/>
+              </ToggleButton>
+              <ToggleButton x:Name="ModularBtn" Classes="seg view" Click="OnShowModular"
+                            ToolTip.Tip="Modular" AutomationProperties.Name="Modular">
+                <app:Glyph Kind="Modular" Size="16"/>
+              </ToggleButton>
             </StackPanel>
           </Border>
         </StackPanel>
@@ -269,16 +280,7 @@
           <ToggleButton x:Name="MetronomeBtn" Classes="tp-icon" IsChecked="{Binding Transport.MetronomeOn}"
                         ContextRequested="OnMetronomeContext"
                         ToolTip.Tip="Turn the metronome on or off (M) · right-click for count-in">
-            <Viewbox Width="15" Height="15">
-              <Canvas Width="24" Height="24">
-                <Path Stroke="{Binding $parent[ToggleButton].Foreground}" StrokeThickness="1.7"
-                      StrokeJoin="Round" Data="M9.8 5.5 H14.2 L19 20 H5 Z"/>
-                <Path Stroke="{Binding $parent[ToggleButton].Foreground}" StrokeThickness="1.7"
-                      StrokeLineCap="Round" Data="M12 19 L13.9 3.2"/>
-                <Ellipse Canvas.Left="11.33" Canvas.Top="9.4" Width="3.2" Height="3.2"
-                         Fill="{Binding $parent[ToggleButton].Foreground}"/>
-              </Canvas>
-            </Viewbox>
+            <app:Glyph Kind="Metronome" Size="15"/>
           </ToggleButton>
           <!-- Follow playhead: keep the arrangement scrolling with the cursor. The
                playhead marker standing on its ruler. A flag (block + point) rather than a
@@ -287,44 +289,18 @@
                which shares one code path. -->
           <ToggleButton x:Name="FollowBtn" Classes="tp-icon" Click="OnToggleFollow"
                         ToolTip.Tip="Scroll the arrangement to keep the playhead in view">
-            <Viewbox Width="15" Height="15">
-              <Canvas Width="24" Height="24">
-                <Path Stroke="{Binding $parent[ToggleButton].Foreground}" StrokeThickness="1.7"
-                      StrokeLineCap="Round" Data="M3.5 17.8 H20.5"/>
-                <Path Fill="{Binding $parent[ToggleButton].Foreground}" Data="M6.5 5 H12.5 V9 L9.5 12.5 L6.5 9 Z"/>
-                <Path Stroke="{Binding $parent[ToggleButton].Foreground}" StrokeThickness="1.7"
-                      StrokeLineCap="Round" Data="M9.5 12.5 V17.8"/>
-              </Canvas>
-            </Viewbox>
+            <app:Glyph Kind="Follow" Size="15"/>
           </ToggleButton>
           <!-- Snapping on/off, independent of which grid the GRID cell shows. Off is the
                same as holding Alt, but latched. A horseshoe magnet: the poles are banded
                off the body by a transparent gap, so the shape reads on any button state. -->
           <ToggleButton x:Name="SnapToggle" Classes="tp-icon" IsChecked="True" Click="OnToggleSnapEnabled"
                         ToolTip.Tip="Snap clips to the grid (hold Alt to drag freely)">
-            <Viewbox Width="15" Height="15">
-              <Canvas Width="24" Height="24">
-                <Path Fill="{Binding $parent[ToggleButton].Foreground}"
-                      Data="M4 17 V12.5 A8 8 0 0 1 20 12.5 V17 H15.5 V12.5 A3.5 3.5 0 0 0 8.5 12.5 V17 Z"/>
-                <Rectangle Canvas.Left="4" Canvas.Top="19" Width="4.5" Height="2.5"
-                           Fill="{Binding $parent[ToggleButton].Foreground}"/>
-                <Rectangle Canvas.Left="15.5" Canvas.Top="19" Width="4.5" Height="2.5"
-                           Fill="{Binding $parent[ToggleButton].Foreground}"/>
-              </Canvas>
-            </Viewbox>
+            <app:Glyph Kind="Snap" Size="15"/>
           </ToggleButton>
           <!-- Automation: a breakpoint envelope — the ramp and handles the lanes draw -->
           <ToggleButton x:Name="AutomationToggle" Classes="tp-icon" Click="OnToggleAutomation">
-            <Viewbox Width="15" Height="15">
-              <Canvas Width="24" Height="24">
-                <Path Stroke="{Binding $parent[ToggleButton].Foreground}" StrokeThickness="1.8"
-                      StrokeLineCap="Round" StrokeJoin="Round" Data="M3 17.5 H9 L14.5 7.5 H21"/>
-                <Ellipse Canvas.Left="7.1" Canvas.Top="15.6" Width="3.8" Height="3.8"
-                         Fill="{Binding $parent[ToggleButton].Foreground}"/>
-                <Ellipse Canvas.Left="12.6" Canvas.Top="5.6" Width="3.8" Height="3.8"
-                         Fill="{Binding $parent[ToggleButton].Foreground}"/>
-              </Canvas>
-            </Viewbox>
+            <app:Glyph Kind="Automation" Size="15"/>
           </ToggleButton>
           <!-- Shown only while a hand-moved control has taken a lane over from
                playback (M9-C); one click hands every overridden lane back. -->
@@ -337,7 +313,7 @@
         <!-- <Button Grid.Column="5" Classes="chip" Margin="12,0,0,0" ToolTip.Tip="Add a track"> -->
         <!--   <StackPanel Orientation="Horizontal" Spacing="7" VerticalAlignment="Center"> -->
         <!--     <TextBlock Text="+ Track" VerticalAlignment="Center"/> -->
-        <!--     <Path Data="M0,0 L3.5,4 L7,0 Z" Fill="{DynamicResource Brush.TextTertiary}" VerticalAlignment="Center"/> -->
+        <!--     <app:Glyph Kind="CaretDown" Size="9" Foreground="{DynamicResource Brush.TextTertiary}"/> -->
         <!--   </StackPanel> -->
         <!--   <Button.Flyout> -->
         <!--     <MenuFlyout Placement="BottomEdgeAlignedLeft"> -->
@@ -504,9 +480,7 @@
                       IsVisible="False" Click="OnLiveFreezeClick"
                       ToolTip.Tip="Bounce to a linked audio track below and put the source to sleep">
                 <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
-                  <Path Width="14" Height="14" Stretch="None" StrokeThickness="1.4"
-                        Stroke="{DynamicResource Brush.TextSecondary}" VerticalAlignment="Center"
-                        Data="{x:Static app:NotaIcons.ChainLink}"/>
+                  <app:Glyph Kind="ChainLink" Size="14" Foreground="{DynamicResource Brush.TextSecondary}"/>
                   <TextBlock Text="Live freeze" FontSize="12" VerticalAlignment="Center"
                              Foreground="{DynamicResource Brush.TextSecondary}"/>
                 </StackPanel>

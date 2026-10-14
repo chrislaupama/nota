@@ -1808,13 +1808,7 @@ public sealed partial class ArrangementView : UserControl
             // Freeze badge: a drawn chain-link for a sleeping live-freeze source (1);
             // a drawn snowflake for an in-place frozen track or a linked frozen track (2).
             Control badge = t.LiveRole == 1
-                ? new Avalonia.Controls.Shapes.Path
-                {
-                    Data = NotaIcons.ChainLink, Stretch = Stretch.None,
-                    Stroke = FrozenAccent, StrokeThickness = 1.4,
-                    Width = 14, Height = 14,
-                    VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(0, 0, 4, 0),
-                }
+                ? new Glyph(GlyphKind.ChainLink, 14) { Foreground = FrozenAccent, Margin = new Thickness(0, 0, 4, 0) }
                 : new Glyph(GlyphKind.Freeze, 10) { Foreground = FrozenAccent, Margin = new Thickness(0, 0, 4, 0) };
             Grid.SetColumn(badge, 0);
             nameRow.Children.Add(badge);

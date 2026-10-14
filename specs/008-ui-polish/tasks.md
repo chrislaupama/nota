@@ -29,10 +29,10 @@ workstream (plan § Complexity Tracking).
 
 **Purpose**: a known-good build and a full visual baseline to diff against.
 
-- [ ] T001 Build `008-ui-polish` with `scripts/build-linux.sh` (Xvfb, PulseAudio null sink) and record the smoke-test result in `/tmp`, not committed. Only "Consort stress" should fail.
+- [X] T001 Build `008-ui-polish` with `scripts/build-linux.sh` (Xvfb, PulseAudio null sink) and record the smoke-test result in `/tmp`, not committed. Only "Consort stress" should fail.
 - [ ] T002 [P] Write `/tmp/claude-0/scripts/cards.sh <theme> <outdir>`, outside the repo. It adds each of the 51 built-in devices from the browser one at a time and screenshots the dock. Capture the **baseline** in Studio Dark and Studio Light into `/tmp/claude-0/shots/cards-before/`.
 - [ ] T003 [P] Re-run the critique tour (`/tmp/claude-0/scripts/tour.sh`) in all four themes into `/tmp/claude-0/shots/tour-before/` as the SC-001 baseline.
-- [ ] T004 [P] Write `/tmp/claude-0/scripts/edgediff.sh before.png after.png`. It edge-detects both images (`convert -colorspace gray -edge 1 -threshold 25%`), dilates by 1 px, then reports the moved-edge pixel count and writes a red overlay. This is the P4.2 "nothing moved" check.
+- [X] T004 [P] Write `/tmp/claude-0/scripts/edgediff.sh before.png after.png`. It edge-detects both images (`convert -colorspace gray -edge 1 -threshold 25%`), dilates by 1 px, then reports the moved-edge pixel count and writes a red overlay. This is the P4.2 "nothing moved" check.
 
 ---
 
@@ -81,7 +81,7 @@ workstream (plan § Complexity Tracking).
 
   Every control stays reachable (P1.2). Thresholds are measured from the groups' desired sizes, not hard-coded.
 
-  *Done as*: one fold order (readout → Back to arrangement → Capture scene → section toggles → Follow) into "⋯", which offers whatever is hidden. The icon-only level 1 lands with the icon set (US5). The arrangement has no keyboard track navigation, so T012's `Select` hook is not needed; drops go through `ApplyInsertResult`.
+  *Done as*: one fold order (readout → Back to arrangement → Capture scene → section toggles → Follow) into "⋯", which offers whatever is hidden. The icon-only level 1 was dropped: the fold already keeps every control reachable, and I/O, Sends and Mixer read better as words than as new icons. The arrangement has no keyboard track navigation, so T012's `Select` hook is not needed; drops go through `ApplyInsertResult`.
 - [X] T019 [US1] Verify US1 under Xvfb at 1200 × 800:
   - Session with the inspector open and closed shows nothing cut off;
   - Modular after opening a project with no selection lists the tracks and selects one;
@@ -144,22 +144,24 @@ workstream (plan § Complexity Tracking).
 
 **Independent Test**: `-- design: icons --` passes with an empty `IconAllowList.txt`. The view keys work and show tooltips.
 
-- [ ] T033 [US5] Extend `App/Controls/Glyph.cs` per data-model § Icon:
+- [X] T033 [US5] Extend `App/Controls/Glyph.cs` per data-model § Icon:
   - Add path-based kinds on a 16-unit grid, drawn with the shared stroke rule or filled. No `Stretch.Uniform`.
   - Add all the new kinds: the views, rail/pages, player/transport, palette kinds and OS marks.
   - Keep existing kinds pixel-identical.
   - Each new kind gets a one-line comment naming what it depicts.
-- [ ] T034 [US5] Write `/tmp/claude-0/scripts/glyph-sheet.sh`, outside the repo. It renders every `GlyphKind` at 12/16/24 px in Studio Dark and Light on a contact sheet (via a hidden `--glyph-sheet` debug path or a smoke-test render to PNG) for visual review of weight consistency. Review it, and fix any kind that reads heavier or lighter.
-- [ ] T035 [P] [US5] Replace the inline icons in `App/BrowserView.cs`: `GridIcon` rail icons, Options, Downloads arrow, disclosure carets, favourite star → `Glyph`. Remove the `GridIcon` helper.
-- [ ] T036 [P] [US5] Replace the inline icons in `App/PreferencesWindow.cs` (page icons, search) and `App/PreferencesWindow.Store.cs` (OS marks) → `Glyph`. Remove `IconBox` path use.
-- [ ] T037 [P] [US5] Replace the inline icons in `App/CommandPaletteView.cs` (kind icons, search; drop `Stretch.Uniform`), `App/HistoryView.cs` (options, star), `App/PreviewPlayer.cs` (loop, speaker levels, play, caret, stop) and `App/DeviceCards/Instruments/RhythmInstrumentCard.cs` (folder) → `Glyph`.
-- [ ] T038 [P] [US5] Replace the transport toggle icons in `App/MainWindow.axaml` (metronome, follow, snap, automation) and `App/NotaIcons.cs` `ChainLink` (used by `MainWindow.axaml:507`, `MainWindow.Freeze.cs:274` and `ArrangementView.cs:1788`) → `Glyph`. Delete `NotaIcons.cs` if it ends up empty.
-- [ ] T039 [US5] View switcher in `App/MainWindow.axaml:154-162`:
+- [X] T034 [US5] Write `/tmp/claude-0/scripts/glyph-sheet.sh`, outside the repo. It renders every `GlyphKind` at 12/16/24 px in Studio Dark and Light on a contact sheet (via a hidden `--glyph-sheet` debug path or a smoke-test render to PNG) for visual review of weight consistency. Review it, and fix any kind that reads heavier or lighter.
+- [X] T035 [P] [US5] Replace the inline icons in `App/BrowserView.cs`: `GridIcon` rail icons, Options, Downloads arrow, disclosure carets, favourite star → `Glyph`. Remove the `GridIcon` helper.
+- [X] T036 [P] [US5] Replace the inline icons in `App/PreferencesWindow.cs` (page icons, search) and `App/PreferencesWindow.Store.cs` (OS marks) → `Glyph`. Remove `IconBox` path use.
+- [X] T037 [P] [US5] Replace the inline icons in `App/CommandPaletteView.cs` (kind icons, search; drop `Stretch.Uniform`), `App/HistoryView.cs` (options, star), `App/PreviewPlayer.cs` (loop, speaker levels, play, caret, stop) and `App/DeviceCards/Instruments/RhythmInstrumentCard.cs` (folder) → `Glyph`.
+- [X] T038 [P] [US5] Replace the transport toggle icons in `App/MainWindow.axaml` (metronome, follow, snap, automation) and `App/NotaIcons.cs` `ChainLink` (used by `MainWindow.axaml:507`, `MainWindow.Freeze.cs:274` and `ArrangementView.cs:1788`) → `Glyph`. Delete `NotaIcons.cs` if it ends up empty.
+- [X] T039 [US5] View switcher in `App/MainWindow.axaml:154-162`:
   - The three `ToggleButton.seg` hold `Glyph` Arrangement / Session / Modular, at 28 × 24, in the same order.
   - `ToolTip.Tip` and `AutomationProperties.Name` are the view name. The tooltip appends a shortcut only if the command gains one (read from `CommandCatalog`).
   - The checked state uses the accent fill, as today.
   - Measure the width before and after; it must be at least 100 px narrower (SC-007).
-- [ ] T040 [US5] Empty `Smoke/IconAllowList.txt`. Run the check (green), take screenshots of the rail, browser, Preferences, palette, history, player and transport in all four themes, and commit "feat(008): US5".
+
+  *Measured*: about 230 px → 87 px at 1200 × 800.
+- [X] T040 [US5] Empty `Smoke/IconAllowList.txt`. Run the check (green), take screenshots of the rail, browser, Preferences, palette, history, player and transport in all four themes, and commit "feat(008): US5".
 
 ---
 

@@ -321,11 +321,7 @@ internal sealed class RhythmInstrumentCard : IInstrumentCard
         }, out _, padX: 6, fontSize: 7);
         ToolTip.SetTip(srcSeg, "Synth: the voice's own engine · Sample: a loaded one-shot (loads one if the voice has none)");
 
-        var folder = new Avalonia.Controls.Shapes.Path
-        {
-            Data = Geometry.Parse("M1 3.5 L4.5 3.5 L5.6 2 L11 2 L11 10 L1 10 Z"), Stroke = NotaPalette.TextStrong, StrokeThickness = 1.2,
-            Width = 7, Height = 7, Stretch = Stretch.Uniform, VerticalAlignment = VerticalAlignment.Center,
-        };
+        var folder = new Glyph(GlyphKind.Folder, 8) { Foreground = NotaPalette.TextStrong };
         var fileText = new TextBlock
         {
             Text = sampleMode ? sampleName : "Load file…", FontSize = 7, FontWeight = FontWeight.SemiBold, MaxWidth = 90,
@@ -334,7 +330,7 @@ internal sealed class RhythmInstrumentCard : IInstrumentCard
         if (sampleMode) fileText.FontFamily = NotaFonts.MonoFamily;
         var fileBtn = SmallButton(new StackPanel { Orientation = Orientation.Horizontal, Spacing = 4, Children = { folder, fileText } }, fileText,
             () => LoadSample(kit, sel), () => sampleMode);
-        readouts.Add(() => folder.Stroke = sampleMode ? NotaPalette.TextPrimary : NotaPalette.TextStrong);
+        readouts.Add(() => folder.Foreground = sampleMode ? NotaPalette.TextPrimary : NotaPalette.TextStrong);
         ToolTip.SetTip(fileBtn, sampleMode ? $"{sampleName} — click to load another file" : "Load a one-shot into this voice (or drop a file on the voice)");
 
         var voiceHead = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 6, Margin = new Thickness(7, 0), VerticalAlignment = VerticalAlignment.Center };

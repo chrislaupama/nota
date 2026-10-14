@@ -55,32 +55,31 @@ public sealed partial class PreferencesWindow : NotaWindow
 
     private const double LabelCol = 150;   // the label column every form row shares
 
-    // Sidebar: group heading, then its pages. Icons are 24×24 stroke paths drawn at 14px.
-    private sealed record Page(string Title, string Subtitle, string Icon);
+    // Sidebar: group heading, then its pages. Icons are Glyph kinds drawn at 14px.
+    private sealed record Page(string Title, string Subtitle, GlyphKind Icon);
 
     private static readonly (string Group, Page[] Pages)[] Nav =
     {
         ("Devices", new[]
         {
-            new Page("Audio", "Device, sample rate and buffer", "M4 10 V14 M8 7 V17 M12 4 V20 M16 8 V16 M20 11 V13"),
-            new Page("MIDI", "Controllers Nota listens to", "M4 5 H20 V19 H4 Z M8 5 V13 M12 5 V13 M16 5 V13"),
-            new Page("Gamepads", "Play notes or drive mapped controls", "M7 8 H17 A4 4 0 0 1 21 12 V13 A4 4 0 0 1 14 16 H10 A4 4 0 0 1 3 13 V12 A4 4 0 0 1 7 8 Z M7 11 V13 M6 12 H8 M16 11.5 H16.01 M18 12.5 H18.01"),
-            new Page("Remote", "Phones and tablets on this network", "M8 3 H16 A1.5 1.5 0 0 1 17.5 4.5 V19.5 A1.5 1.5 0 0 1 16 21 H8 A1.5 1.5 0 0 1 6.5 19.5 V4.5 A1.5 1.5 0 0 1 8 3 Z M11 18 H13"),
+            new Page("Audio", "Device, sample rate and buffer", GlyphKind.Levels),
+            new Page("MIDI", "Controllers Nota listens to", GlyphKind.MidiPort),
+            new Page("Gamepads", "Play notes or drive mapped controls", GlyphKind.Gamepad),
+            new Page("Remote", "Phones and tablets on this network", GlyphKind.Phone),
         }),
         ("Plug-ins", new[]
         {
-            new Page("Plug-ins", "Where Nota looks for VST3", "M9 3 V7 M15 3 V7 M6 7 H18 V11 A6 6 0 0 1 6 11 Z M12 17 V21"),
-            new Page("Downloads", "Plug-ins, sample packs and AI models", "M12 4 V15 M7 10 L12 15 L17 10 M5 19 H19"),
+            new Page("Plug-ins", "Where Nota looks for VST3", GlyphKind.Plug),
+            new Page("Downloads", "Plug-ins, sample packs and AI models", GlyphKind.Downloads),
         }),
         ("General", new[]
         {
-            new Page("Library", "Content folders and version history", "M3 7 A1 1 0 0 1 4 6 H9 L11 8 H20 A1 1 0 0 1 21 9 V18 A1 1 0 0 1 20 19 H4 A1 1 0 0 1 3 18 Z"),
-            new Page("Appearance", "Theme, waveforms and AI control", "M12 4 A8 8 0 1 0 12 20 Z M12 4 A8 8 0 0 1 12 20"),
-            new Page("Shortcuts", "Keyboard reference", "M3 7 H21 V17 H3 Z M7 11 H7.01 M11 11 H11.01 M15 11 H15.01 M8 14 H16"),
+            new Page("Library", "Content folders and version history", GlyphKind.Library),
+            new Page("Appearance", "Theme, waveforms and AI control", GlyphKind.Appearance),
+            new Page("Shortcuts", "Keyboard reference", GlyphKind.Shortcuts),
         }),
     };
 
-    private const string SearchIcon = "M4 10.5 A6.5 6.5 0 1 0 17 10.5 A6.5 6.5 0 1 0 4 10.5 Z M15.5 15.5 L21 21";
 
     private readonly MainWindowViewModel? _main;
 
@@ -113,7 +112,7 @@ public sealed partial class PreferencesWindow : NotaWindow
     {
         public required Border Root;
         public required Border Edge;
-        public required Path Icon;
+        public required Glyph Icon;
         public required TextBlock Label;
         public required TextBlock Badge;
     }
@@ -190,7 +189,7 @@ public sealed partial class PreferencesWindow : NotaWindow
             Width = 2, CornerRadius = NotaRadius.Bar, Margin = new Thickness(0, 7),
             HorizontalAlignment = HorizontalAlignment.Left, Background = Brushes.Transparent,
         };
-        var icon = new Path { Data = Geometry.Parse(page.Icon), StrokeThickness = 1.6, StrokeLineCap = PenLineCap.Round, StrokeJoin = PenLineJoin.Round };
+        var icon = new Glyph(page.Icon, 14);
         var label = new TextBlock { Text = page.Title, FontSize = 12, VerticalAlignment = VerticalAlignment.Center };
         var badge = new TextBlock
         {
@@ -198,8 +197,7 @@ public sealed partial class PreferencesWindow : NotaWindow
             VerticalAlignment = VerticalAlignment.Center, IsVisible = false,
         };
         var row = new Grid { ColumnDefinitions = new ColumnDefinitions("Auto,*,Auto"), ColumnSpacing = 8, Margin = new Thickness(10, 0) };
-        var iconBox = IconBox(icon, 14);
-        row.Children.Add(iconBox);
+        row.Children.Add(icon);
         Grid.SetColumn(label, 1); row.Children.Add(label);
         Grid.SetColumn(badge, 2); row.Children.Add(badge);
 
@@ -216,10 +214,6 @@ public sealed partial class PreferencesWindow : NotaWindow
         return root;
     }
 
-    // A 24×24 stroke path scaled into a square box — the sidebar and search icons.
-    private static Control IconBox(Path path, double size)
-        => new Viewbox { Width = size, Height = size, VerticalAlignment = VerticalAlignment.Center, Child = new Canvas { Width = 24, Height = 24, Children = { path } } };
-
     private void Select(int index)
     {
         StopTests();   // the Audio pane is rebuilt on every visit — don't leave a tone / check orphaned
@@ -230,7 +224,7 @@ public sealed partial class PreferencesWindow : NotaWindow
             var n = _navItems[i];
             n.Root.Background = on ? NotaPalette.SurfaceHover : Brushes.Transparent;
             n.Edge.Background = on ? Brass : Brushes.Transparent;
-            n.Icon.Stroke = on ? Brass : TextTertiary;
+            n.Icon.Foreground = on ? Brass : TextTertiary;
             n.Label.Foreground = on ? TextPrimary : TextSecondary;
             n.Label.FontWeight = on ? FontWeight.SemiBold : FontWeight.Normal;
         }
@@ -1367,9 +1361,8 @@ public sealed partial class PreferencesWindow : NotaWindow
     // A search / filter box: the sunken field with a magnifier, the borderless TextBox inside.
     private static Control SearchField(TextBox box, double maxWidth)
     {
-        var icon = new Path { Data = Geometry.Parse(SearchIcon), Stroke = TextTertiary, StrokeThickness = 2, StrokeLineCap = PenLineCap.Round };
         var grid = new Grid { ColumnDefinitions = new ColumnDefinitions("Auto,*"), ColumnSpacing = 7 };
-        grid.Children.Add(IconBox(icon, 11));
+        grid.Children.Add(new Glyph(GlyphKind.Search, 11) { Foreground = TextTertiary });
         box.VerticalAlignment = VerticalAlignment.Center;
         Grid.SetColumn(box, 1);
         grid.Children.Add(box);

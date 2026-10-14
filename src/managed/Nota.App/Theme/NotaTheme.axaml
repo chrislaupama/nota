@@ -8,7 +8,8 @@
 -->
 <Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:sys="using:System">
+        xmlns:sys="using:System"
+        xmlns:app="using:Nota.App">
   <Styles.Resources>
     <ResourceDictionary>
       <!-- Fonts: Geist for names and words, Geist Mono for every measurement.
@@ -467,6 +468,14 @@
     <Setter Property="BorderThickness" Value="0"/>
     <Setter Property="Foreground" Value="{DynamicResource Brush.TextSecondary}"/>
   </Style>
+  <!-- The view switcher: icon keys, 28 × 24, the glyph centred. -->
+  <Style Selector="ToggleButton.seg.view">
+    <Setter Property="Width" Value="28"/>
+    <Setter Property="Height" Value="24"/>
+    <Setter Property="Padding" Value="0"/>
+    <Setter Property="HorizontalContentAlignment" Value="Center"/>
+    <Setter Property="VerticalContentAlignment" Value="Center"/>
+  </Style>
   <Style Selector="ToggleButton.seg:pointerover /template/ ContentPresenter#PART_ContentPresenter">
     <Setter Property="Background" Value="{DynamicResource Brush.SurfaceHover}"/>
   </Style>
@@ -823,11 +832,11 @@
   <Style Selector="Border.RailTab:pointerover">
     <Setter Property="Background" Value="{DynamicResource Brush.SurfaceHover}"/>
   </Style>
-  <Style Selector="Border.RailTab Path">
-    <Setter Property="Stroke" Value="{DynamicResource Brush.TextSecondary}"/>
+  <Style Selector="Border.RailTab app|Glyph">
+    <Setter Property="Foreground" Value="{DynamicResource Brush.TextSecondary}"/>
   </Style>
-  <Style Selector="Border.RailTab.active Path">
-    <Setter Property="Stroke" Value="{DynamicResource Brush.AccentBright}"/>
+  <Style Selector="Border.RailTab.active app|Glyph">
+    <Setter Property="Foreground" Value="{DynamicResource Brush.AccentBright}"/>
   </Style>
   <!-- The active edge: a 2px accent bar inset from the tab's top and bottom. -->
   <Style Selector="Border.RailBar">
