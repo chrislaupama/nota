@@ -122,13 +122,14 @@
 
           <!-- === Semantic: by purpose only === -->
           <SolidColorBrush x:Key="Brush.Record">#F06A6E</SolidColorBrush>        <!-- active recording. The only claim on red. -->
-          <SolidColorBrush x:Key="Brush.RecordInk">#FFFFFF</SolidColorBrush>     <!-- the disc on an engaged record button -->
+          <SolidColorBrush x:Key="Brush.RecordInk">#17181A</SolidColorBrush>     <!-- the disc on an engaged record button: dark on the light Dark-theme red -->
           <SolidColorBrush x:Key="Brush.Danger">#F06A6E</SolidColorBrush>        <!-- Alert: overload, clipping -->
           <SolidColorBrush x:Key="Brush.DangerHover">#F48386</SolidColorBrush>
           <SolidColorBrush x:Key="Brush.DangerBright">#F58F92</SolidColorBrush>  <!-- Alert Light: overload readout text on dark -->
           <SolidColorBrush x:Key="Brush.DangerSubtle">#33F06A6E</SolidColorBrush>
           <SolidColorBrush x:Key="Brush.Warning">#F2B53C</SolidColorBrush>       <!-- Caution: meter -6..0 dB -->
           <SolidColorBrush x:Key="Brush.Success">#6CC673</SolidColorBrush>       <!-- Signal: working meter zone -->
+          <SolidColorBrush x:Key="Brush.SuccessInk">#17181A</SolidColorBrush>    <!-- ink on a Success fill (Session play) -->
           <SolidColorBrush x:Key="Brush.SuccessDim">#3F8A45</SolidColorBrush>    <!-- Signal Dim: transport input, metronome -->
 
           <!-- === Role chromas: inside visualisers only, never on a button ===
@@ -239,6 +240,7 @@
           <SolidColorBrush x:Key="Brush.DangerSubtle">#33B3262C</SolidColorBrush>
           <SolidColorBrush x:Key="Brush.Warning">#7A4F00</SolidColorBrush>
           <SolidColorBrush x:Key="Brush.Success">#22692B</SolidColorBrush>
+          <SolidColorBrush x:Key="Brush.SuccessInk">#FFFFFF</SolidColorBrush>
           <SolidColorBrush x:Key="Brush.SuccessDim">#79B880</SolidColorBrush>
 
           <!-- Role chromas -->
@@ -526,10 +528,12 @@
   <Style Selector="Button.tp-play.playing.session">
     <Setter Property="Background" Value="{DynamicResource Brush.Success}"/>
     <Setter Property="BorderBrush" Value="{DynamicResource Brush.Success}"/>
+    <Setter Property="Foreground" Value="{DynamicResource Brush.SuccessInk}"/>
   </Style>
   <Style Selector="Button.tp-play.playing.session:pointerover /template/ ContentPresenter#PART_ContentPresenter">
     <Setter Property="Background" Value="{DynamicResource Brush.Success}"/>
     <Setter Property="BorderBrush" Value="{DynamicResource Brush.Success}"/>
+    <Setter Property="Foreground" Value="{DynamicResource Brush.SuccessInk}"/>
   </Style>
 
   <!-- Chips: raised keys like any button, a little tighter (Saine § Chips). -->
