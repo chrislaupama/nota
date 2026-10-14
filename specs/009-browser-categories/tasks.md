@@ -247,14 +247,19 @@ The Xvfb harness and capture scripts from 008 live in `/tmp/claude-0/`, outside 
 
 ## Phase 7: Polish & Cross-Cutting
 
-- [ ] T030 [P] `DESIGN.md`:
+- [X] T030 [P] `DESIGN.md`:
   - **Browser bullet** (layout section, around line 651): device tabs group under foldable category headers in the group-header style, with a 12 px disclosure caret and the count; Other is last; a search ignores folds.
   - **"Enforced by tests" list**: add `RunBrowser`.
 
   Regenerate `DESIGN.html` with `python3 scripts/design-html.py`.
-- [ ] T031 [P] `.claude/skills/nota-instrument/SKILL.md`: add "add the device to its category in `Application/Palette/DeviceCategories.cs` (the `RunBrowser` check fails otherwise)" to the registration checklist.
-- [ ] T032 [P] `CHANGELOG.md` `[Unreleased]` Added: the browser groups instruments, audio effects and MIDI effects into foldable categories by default (plug-ins included, by their reported category). "Group by category" in ⋮ turns it off.
-- [ ] T033 [P] Run the nota-features skill for `FEATURES.md`: the browser section (categories, folding, the view option). Note nota-docs (the sibling repo `nota-daw/nota-docs`, unavailable here) as a follow-up in the PR. nota-shortcuts is N/A (no shortcut change).
+- [X] T031 [P] `.claude/skills/nota-instrument/SKILL.md`: add "add the device to its category in `Application/Palette/DeviceCategories.cs` (the `RunBrowser` check fails otherwise)" to the registration checklist.
+- [X] T032 [P] `CHANGELOG.md` `[Unreleased]` Added: the browser groups instruments, audio effects and MIDI effects into foldable categories by default (plug-ins included, by their reported category). "Group by category" in ⋮ turns it off.
+- [X] T033 [P] Run the nota-features skill for `FEATURES.md`: the browser section (categories, folding, the view option). Note nota-docs (the sibling repo `nota-daw/nota-docs`, unavailable here) as a follow-up in the PR. nota-shortcuts is N/A (no shortcut change).
+  *Result*:
+  - DESIGN.md has a "Browser categories" bullet and a `RunBrowser` row. `DESIGN.html` is regenerated from tokens only, so it is unchanged.
+  - FEATURES.md gains a "Device categories" bullet and "group by category" in View options. The compact-index bullet's stale "tertiary Nota prefix" claim now describes the short names shipped in 008.
+  - The nota-docs follow-up goes in the PR.
+
 - [ ] T034 Run quickstart.md § 2 in full under Xvfb in all four themes. Make before/after contact sheets of the three device tabs (T002 vs final) for the PR.
 - [ ] T035 Nota closing checks:
   - the two-line SPDX header is on `Application/Palette/DeviceCategories.cs` and `Smoke/DesignTokenCheck.Browser.cs`;

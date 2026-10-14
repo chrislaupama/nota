@@ -650,6 +650,13 @@ Every region is **docked**: radius 0, no gutter, separated by 1 px seams (the wi
   hover raised hover, selected raised hover with a 2 px accent tick. A built-in device's
   browser row shows its short name ("Aurora", not "Nota Aurora" — search still matches the
   full name); the type tag on the right is `TextFaint` mono 10.
+- **Browser categories** — the Instruments, Audio effects and MIDI effects tabs group their
+  devices under category headers by default ("Group by category" in ⋮ turns it off). A
+  category header is the group header (`GroupLabel` · hairline · mono count) with a 12 px
+  disclosure caret in the device rows' caret column and the caption on their name column;
+  a click anywhere on it folds it, the count staying. Plug-ins join by the category they
+  report, `Other` last. A search shows every hit with folds ignored and carets hidden. The
+  categories live in `DeviceCategories.cs`, in sentence case.
 - **Mixer strips** are panel-tone columns on seams, each with a 3 px top bar in the track
   colour (muted grey for master).
 - **Arrangement** (geometry unchanged): track rows 64 (the header carries every control),
@@ -735,6 +742,7 @@ sections) and fails the build on:
 | `RunBans` | No hex outside `Ink()` (bar three data tables), no RGB typed as numbers, no named system colours, `Opacity` only on drag ghosts, no brush snapshotting a theme colour |
 | `RunLabels` | No all-caps or Title Case label literal in a label context (`Text`, `Content`, `Header`, `Title`, tooltips, menu headers, command titles, palette and Settings headings, local label builders), unless it is `NotaText.Fixed` acronyms, goes through `NotaText.Label`, or names a view, product or proper noun; interpolated strings are skipped. `LabelAllowList.txt` holds only data (preset, mode and window-tab names, proper names) |
 | `RunIcons` | No path geometry outside `Controls/Glyph.cs`: no `Geometry.Parse` / `StreamGeometry.Parse` / `PathGeometry.Parse`, no axaml `Data="M…"`, no SVG path string. `IconAllowList.txt` is empty |
+| `RunBrowser` | Every built-in device sits in exactly one category of its own tab (`DeviceCategories.cs`); no category names a missing device or is empty; names in sentence case; 18 / 26 / 6 devices shelved |
 | `RunStudio` | Every `Radius.*` on the 0/1/2/3/4 scale; only `Shadow.Popover` / `Shadow.Modal` blurred, no literal `BoxShadow` in views; no positive `LetterSpacing` in the theme, `NotaType` tracking 0, no upper-casing in the shared label builders; knob arcs, slider fills and graph curves neutral at rest (`VizInk`); transport 44 · console 30 · seam 1; no Ember value in the Studio themes |
 
 When a check fails, fix the view — or, for a genuine exception, add it to the check's
