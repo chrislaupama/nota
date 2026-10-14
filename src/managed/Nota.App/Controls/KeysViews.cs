@@ -75,7 +75,7 @@ internal sealed class KeysPickupView : Control, IMidiLearnRegions
     protected override void OnPointerReleased(PointerReleasedEventArgs e)
     {
         if (!_drag) return;
-        _drag = false;
+        _drag = false; InvalidateVisual();
         _e.EndAutomationWrite(_t, AutomationTarget.PluginParam, -1, -1, "sym");
         _e.EndAutomationWrite(_t, AutomationTarget.PluginParam, -1, -1, "dist");
         e.Pointer.Capture(null);

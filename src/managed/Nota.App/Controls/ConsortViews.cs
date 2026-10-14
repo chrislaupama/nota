@@ -190,7 +190,7 @@ internal sealed class ConsortFilterCurve : Control
     { base.OnPointerPressed(e); if (!e.GetCurrentPoint(this).Properties.IsLeftButtonPressed) return; _drag = true; DragStarted?.Invoke(); Apply(e); e.Pointer.Capture(this); e.Handled = true; }
     protected override void OnPointerMoved(PointerEventArgs e) { base.OnPointerMoved(e); if (_drag) Apply(e); }
     protected override void OnPointerReleased(PointerReleasedEventArgs e)
-    { base.OnPointerReleased(e); if (_drag) { _drag = false; DragEnded?.Invoke(); e.Pointer.Capture(null); } }
+    { base.OnPointerReleased(e); if (_drag) { _drag = false; InvalidateVisual(); DragEnded?.Invoke(); e.Pointer.Capture(null); } }
 
     // |H| of a 4-pole ladder at ω/ωc = wr (resonance k), low-pass or high-pass tap.
     private double Mag(double wr, bool hp)
@@ -333,7 +333,7 @@ internal sealed class ConsortStepGrid : Control
         if (i >= 0 && i != _last) { _last = i; Paint?.Invoke(i, (e.KeyModifiers & KeyModifiers.Alt) != 0); }
     }
     protected override void OnPointerReleased(PointerReleasedEventArgs e)
-    { base.OnPointerReleased(e); if (_drag) { _drag = false; PaintEnded?.Invoke(); e.Pointer.Capture(null); } }
+    { base.OnPointerReleased(e); if (_drag) { _drag = false; InvalidateVisual(); PaintEnded?.Invoke(); e.Pointer.Capture(null); } }
 
     public override void Render(DrawingContext ctx)
     {
@@ -396,7 +396,7 @@ internal sealed class ConsortPitchLane : Control
         if (v != _p[_dragStep]) { _p[_dragStep] = v; PitchChanged?.Invoke(_dragStep, v); InvalidateVisual(); }
     }
     protected override void OnPointerReleased(PointerReleasedEventArgs e)
-    { base.OnPointerReleased(e); if (_dragStep >= 0) { DragEnded?.Invoke(_dragStep); _dragStep = -1; e.Pointer.Capture(null); } }
+    { base.OnPointerReleased(e); if (_dragStep >= 0) { DragEnded?.Invoke(_dragStep); _dragStep = -1; InvalidateVisual(); e.Pointer.Capture(null); } }
 
     public override void Render(DrawingContext ctx)
     {
@@ -692,7 +692,7 @@ internal sealed class ConsortPatchMatrix : Control
         base.OnPointerReleased(e);
         if (_drag is not { } dg) return;
         GestureEnd?.Invoke(_rows[dg.r], _cols[dg.c]);
-        _drag = null; e.Pointer.Capture(null);
+        _drag = null; InvalidateVisual(); e.Pointer.Capture(null);
     }
 
     public override void Render(DrawingContext ctx)
