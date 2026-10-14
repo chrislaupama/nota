@@ -110,6 +110,7 @@ internal static class NotaThemes
         {
             using var doc = JsonDocument.Parse(json);
             var root = doc.RootElement;
+            if (root.ValueKind != JsonValueKind.Object) return Fail("the file must hold one JSON object", out error);
             if (!root.TryGetProperty("formatVersion", out var fv) || fv.ValueKind != JsonValueKind.Number
                 || !fv.TryGetInt32(out var version) || version != 1)
                 return Fail("formatVersion must be 1", out error);
@@ -146,6 +147,12 @@ internal static class NotaThemes
         catch (JsonException e)
         {
             return Fail("not valid JSON: " + e.Message, out error);
+        }
+        catch (Exception e) when (e is InvalidOperationException or FormatException)
+        {
+            // A JSON value of the wrong kind somewhere the checks above don't look: fail this
+            // theme with a reason (the loader logs and skips it) rather than throw out of startup.
+            return Fail("unexpected value: " + e.Message, out error);
         }
     }
 
