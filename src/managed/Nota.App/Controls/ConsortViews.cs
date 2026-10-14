@@ -192,6 +192,10 @@ internal sealed class ConsortFilterCurve : Control
     protected override void OnPointerReleased(PointerReleasedEventArgs e)
     { base.OnPointerReleased(e); if (_drag) { _drag = false; InvalidateVisual(); DragEnded?.Invoke(); e.Pointer.Capture(null); } }
 
+    // Capture taken away mid-drag (the window deactivates): end the gesture and drop the accent.
+    protected override void OnPointerCaptureLost(PointerCaptureLostEventArgs e)
+    { if (_drag) { _drag = false; InvalidateVisual(); DragEnded?.Invoke(); } base.OnPointerCaptureLost(e); }
+
     // |H| of a 4-pole ladder at ω/ωc = wr (resonance k), low-pass or high-pass tap.
     private double Mag(double wr, bool hp)
     {
@@ -335,6 +339,9 @@ internal sealed class ConsortStepGrid : Control
     protected override void OnPointerReleased(PointerReleasedEventArgs e)
     { base.OnPointerReleased(e); if (_drag) { _drag = false; InvalidateVisual(); PaintEnded?.Invoke(); e.Pointer.Capture(null); } }
 
+    protected override void OnPointerCaptureLost(PointerCaptureLostEventArgs e)
+    { if (_drag) { _drag = false; InvalidateVisual(); PaintEnded?.Invoke(); } base.OnPointerCaptureLost(e); }
+
     public override void Render(DrawingContext ctx)
     {
         double w = Bounds.Width, h = Bounds.Height;
@@ -397,6 +404,9 @@ internal sealed class ConsortPitchLane : Control
     }
     protected override void OnPointerReleased(PointerReleasedEventArgs e)
     { base.OnPointerReleased(e); if (_dragStep >= 0) { DragEnded?.Invoke(_dragStep); _dragStep = -1; InvalidateVisual(); e.Pointer.Capture(null); } }
+
+    protected override void OnPointerCaptureLost(PointerCaptureLostEventArgs e)
+    { if (_dragStep >= 0) { DragEnded?.Invoke(_dragStep); _dragStep = -1; InvalidateVisual(); } base.OnPointerCaptureLost(e); }
 
     public override void Render(DrawingContext ctx)
     {
@@ -534,6 +544,12 @@ internal sealed class ConsortJackField : Control
         if (t is { } to && to.Out != f.Out) { if (f.Out) Connect?.Invoke(f.Index, to.Index); else Connect?.Invoke(to.Index, f.Index); }
         else if (!_moved) Context?.Invoke(f, this);
         _from = null; e.Pointer.Capture(null); InvalidateVisual();
+    }
+
+    protected override void OnPointerCaptureLost(PointerCaptureLostEventArgs e)
+    {
+        if (_from is not null) { _from = null; InvalidateVisual(); }
+        base.OnPointerCaptureLost(e);
     }
     protected override void OnPointerExited(PointerEventArgs e) { base.OnPointerExited(e); if (_hover != null) { _hover = null; InvalidateVisual(); } }
 
@@ -693,6 +709,12 @@ internal sealed class ConsortPatchMatrix : Control
         if (_drag is not { } dg) return;
         GestureEnd?.Invoke(_rows[dg.r], _cols[dg.c]);
         _drag = null; InvalidateVisual(); e.Pointer.Capture(null);
+    }
+
+    protected override void OnPointerCaptureLost(PointerCaptureLostEventArgs e)
+    {
+        if (_drag is { } dg) { GestureEnd?.Invoke(_rows[dg.r], _cols[dg.c]); _drag = null; InvalidateVisual(); }
+        base.OnPointerCaptureLost(e);
     }
 
     public override void Render(DrawingContext ctx)

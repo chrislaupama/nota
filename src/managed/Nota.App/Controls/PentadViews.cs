@@ -85,6 +85,10 @@ internal sealed class PentadFilterCurve : Control
     protected override void OnPointerReleased(PointerReleasedEventArgs e)
     { base.OnPointerReleased(e); if (_drag) { _drag = false; InvalidateVisual(); DragEnded?.Invoke(); e.Pointer.Capture(null); } }
 
+    // Capture taken away mid-drag (the window deactivates): end the gesture and drop the accent.
+    protected override void OnPointerCaptureLost(PointerCaptureLostEventArgs e)
+    { if (_drag) { _drag = false; InvalidateVisual(); DragEnded?.Invoke(); } base.OnPointerCaptureLost(e); }
+
     // dB at normalized x (0..1 across 20 Hz..20 kHz): 4 identical poles with feedback k.
     private double Db(double x)
     {

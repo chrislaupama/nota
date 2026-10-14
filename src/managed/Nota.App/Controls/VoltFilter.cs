@@ -57,6 +57,10 @@ namespace Nota.App;
         protected override void OnPointerReleased(PointerReleasedEventArgs e)
         { if (_drag) { _drag = false; InvalidateVisual(); Gest(false); e.Pointer.Capture(null); } }
 
+        // Capture taken away mid-drag (the window deactivates): end the gesture and drop the accent.
+        protected override void OnPointerCaptureLost(PointerCaptureLostEventArgs e)
+        { if (_drag) { _drag = false; InvalidateVisual(); Gest(false); } base.OnPointerCaptureLost(e); }
+
         private void Gest(bool begin)
         {
             void G1((int i, string id) p) { if (p.i < 0) return; if (begin) _e.BeginAutomationWrite(_t, AutomationTarget.PluginParam, -1, -1, p.id); else _e.EndAutomationWrite(_t, AutomationTarget.PluginParam, -1, -1, p.id); }

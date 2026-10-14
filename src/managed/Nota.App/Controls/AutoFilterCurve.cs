@@ -129,6 +129,13 @@ internal sealed class AutoFilterCurve : Control
         e.Pointer.Capture(null);
     }
 
+    protected override void OnPointerCaptureLost(PointerCaptureLostEventArgs e)
+    {
+        // Capture taken away mid-drag (the window deactivates): end the gesture and drop the accent.
+        if (_drag) { _drag = false; InvalidateVisual(); GestureEnd?.Invoke(); }
+        base.OnPointerCaptureLost(e);
+    }
+
     private void Apply(Point p)
     {
         double w = Bounds.Width, h = Bounds.Height;

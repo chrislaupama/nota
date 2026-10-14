@@ -81,6 +81,18 @@ internal sealed class KeysPickupView : Control, IMidiLearnRegions
         e.Pointer.Capture(null);
     }
 
+    protected override void OnPointerCaptureLost(PointerCaptureLostEventArgs e)
+    {
+        // Capture taken away mid-drag (the window deactivates): end the gesture and drop the accent.
+        if (_drag)
+        {
+            _drag = false; InvalidateVisual();
+            _e.EndAutomationWrite(_t, AutomationTarget.PluginParam, -1, -1, "sym");
+            _e.EndAutomationWrite(_t, AutomationTarget.PluginParam, -1, -1, "dist");
+        }
+        base.OnPointerCaptureLost(e);
+    }
+
     private void Apply(Point p)
     {
         var r = Plot();
