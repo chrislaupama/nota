@@ -65,7 +65,7 @@ internal sealed class AfFader : Control
     {
         base.OnPointerReleased(e);
         if (!_drag) return;
-        _drag = false; e.Pointer.Capture(null); GestureEnd?.Invoke();
+        _drag = false; InvalidateVisual(); e.Pointer.Capture(null); GestureEnd?.Invoke();
     }
 
     public override void Render(DrawingContext ctx)
@@ -128,7 +128,7 @@ internal abstract class AfWindowBase : Control
     protected override void OnPointerReleased(PointerReleasedEventArgs e)
     {
         if (!_drag) return;
-        _drag = false; e.Pointer.Capture(null); GestureEnd?.Invoke();
+        _drag = false; InvalidateVisual(); e.Pointer.Capture(null); GestureEnd?.Invoke();
     }
 
     protected static void Grid(DrawingContext ctx, double w, double h, int cols)

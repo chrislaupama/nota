@@ -85,7 +85,7 @@ internal sealed class ChamberFader : Control
     }
     protected override void OnPointerMoved(PointerEventArgs e) { base.OnPointerMoved(e); if (_drag) Apply(e); }
     protected override void OnPointerReleased(PointerReleasedEventArgs e)
-    { base.OnPointerReleased(e); if (_drag) { _drag = false; e.Pointer.Capture(null); DragEnded?.Invoke(); } }
+    { base.OnPointerReleased(e); if (_drag) { _drag = false; InvalidateVisual(); e.Pointer.Capture(null); DragEnded?.Invoke(); } }
 
     public override void Render(DrawingContext ctx)
     {
@@ -372,7 +372,7 @@ internal sealed class ChamberDecayGraph : Control
         Changed?.Invoke(_drag, _rt[_drag]); InvalidateVisual();
     }
     protected override void OnPointerReleased(PointerReleasedEventArgs e)
-    { base.OnPointerReleased(e); if (_drag >= 0) { int b = _drag; _drag = -1; e.Pointer.Capture(null); DragEnded?.Invoke(b); } }
+    { base.OnPointerReleased(e); if (_drag >= 0) { int b = _drag; _drag = -1; InvalidateVisual(); e.Pointer.Capture(null); DragEnded?.Invoke(b); } }
 
     private static string S(double s) => s >= 10 ? NotaNum.F($"{s:0}\u2009s") : NotaNum.F($"{s:0.0}\u2009s");
 
@@ -498,7 +498,7 @@ internal sealed class ChamberEqCurve : Control
         InvalidateVisual();
     }
     protected override void OnPointerReleased(PointerReleasedEventArgs e)
-    { base.OnPointerReleased(e); if (_drag >= 0) { int d = _drag; _drag = -1; e.Pointer.Capture(null); DragEnded?.Invoke(d); } }
+    { base.OnPointerReleased(e); if (_drag >= 0) { int d = _drag; _drag = -1; InvalidateVisual(); e.Pointer.Capture(null); DragEnded?.Invoke(d); } }
 
     // |H| (dB) of the four stages at f.
     private double Db(double f)

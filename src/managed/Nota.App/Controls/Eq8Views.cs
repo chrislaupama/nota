@@ -268,7 +268,7 @@ public sealed class Eq8Curve : Control
             if (_gestFreq) _engine.EndAutomationWrite(_track, AutomationTarget.DeviceParam, _device, Eq8.P(_drag, Eq8.FreqF), "");
             if (_gestGain) _engine.EndAutomationWrite(_track, AutomationTarget.DeviceParam, _device, Eq8.P(_drag, Eq8.GainF), "");
         }
-        _drag = -1; _gestFreq = _gestGain = false;
+        _drag = -1; InvalidateVisual(); _gestFreq = _gestGain = false;
     }
 
     protected override void OnPointerWheelChanged(PointerWheelEventArgs e)

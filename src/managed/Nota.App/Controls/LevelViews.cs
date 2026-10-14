@@ -109,7 +109,7 @@ internal sealed class LvHistoryView : Control
     {
         base.OnPointerReleased(e);
         if (!_dragging) return;
-        _dragging = false; e.Pointer.Capture(null); GestureEnd?.Invoke();
+        _dragging = false; InvalidateVisual(); e.Pointer.Capture(null); GestureEnd?.Invoke();
     }
 
     public override void Render(DrawingContext ctx)
@@ -225,7 +225,7 @@ internal sealed class LvGainFader : Control
     {
         base.OnPointerReleased(e);
         if (!_drag) return;
-        _drag = false; e.Pointer.Capture(null); GestureEnd?.Invoke();
+        _drag = false; InvalidateVisual(); e.Pointer.Capture(null); GestureEnd?.Invoke();
     }
 
     public override void Render(DrawingContext ctx)
