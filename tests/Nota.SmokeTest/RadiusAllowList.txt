@@ -1,0 +1,20 @@
+# SPDX-License-Identifier: AGPL-3.0-only
+# Copyright (c) 2026 Egor Khindikaynen (Nota). See LICENSES/ for license terms.
+#
+# Radius ratchet for DesignTokenCheck.RunGeometry (spec 008 T009).
+#
+# Rectangle RadiusX / RadiusY literals off the 0/1/2/3/4 scale, as of the day the check
+# landed. A line may only be removed: a new offender fails, and so does a line that no
+# longer matches anything.
+#
+# Format: path (from src/managed) <TAB> RadiusX|RadiusY = value <TAB> # reason
+Nota.App/DeviceCards/Instruments/MosaicInstrumentCard.cs	RadiusX = 6	# pre-008, fix in US4 (Mosaic drop target)
+Nota.App/DeviceCards/Instruments/MosaicInstrumentCard.cs	RadiusY = 6	# pre-008, fix in US4 (Mosaic drop target)
+Nota.App/DeviceCards/Rack/RackCardView.cs	RadiusX = 6	# pre-008, fix in US6 (rack add-device target)
+Nota.App/DeviceCards/Rack/RackCardView.cs	RadiusY = 6	# pre-008, fix in US6 (rack add-device target)
+Nota.App/DeviceChainView.cs	RadiusX = 7	# pre-008, fix in US6 (add-device target)
+Nota.App/DeviceChainView.cs	RadiusY = 7	# pre-008, fix in US6 (add-device target)
+Nota.App/NotaIcons.cs	RadiusX = 1.8	# pre-008, goes with ChainLink into Glyph in US5
+Nota.App/NotaIcons.cs	RadiusY = 1.8	# pre-008, goes with ChainLink into Glyph in US5
+Nota.App/Theme/NotaTheme.axaml	RadiusX = 1.5	# pre-008, switch knob 7px: review in US4
+Nota.App/Theme/NotaTheme.axaml	RadiusY = 1.5	# pre-008, switch knob 7px: review in US4

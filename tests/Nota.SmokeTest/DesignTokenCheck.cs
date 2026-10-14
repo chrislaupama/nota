@@ -134,6 +134,29 @@ internal static partial class DesignTokenCheck
         var gradients = Offenders(@"\b(?:Linear|Radial|Conic)GradientBrush\b|NotaPalette\.VGradient\(");
         yield return (gradients.Length == 0,
             gradients.Length == 0 ? "no gradients in views" : $"gradients in: {string.Join(", ", gradients)}");
+
+        // A Rectangle's RadiusX/RadiusY is a corner radius too, so it keeps the 0/1/2/3/4
+        // scale (spec 008 R9: the add-device targets drew at 7 and 6). Ratchet in
+        // RadiusAllowList.txt (path + "RadiusX = n") with today's offenders.
+        var inv = System.Globalization.CultureInfo.InvariantCulture;
+        var offScale = new List<Hit>();
+        foreach (var f in SourceFiles(app, ".cs", ".axaml"))
+        {
+            int n = 0;
+            foreach (var line in File.ReadLines(f))
+            {
+                n++;
+                var code = f.EndsWith(".cs") ? CodeOf(line) : Regex.Replace(line, "<!--.*?-->", "");
+                foreach (Match m in Regex.Matches(code, @"\bRadius(?<axis>[XY])\s*=\s*""?(?<v>[0-9]+(?:\.[0-9]+)?)\b"))
+                    if (!new[] { 0d, 1, 2, 3, 4 }.Contains(double.Parse(m.Groups["v"].Value, inv)))
+                        offScale.Add(new Hit(Rel(root, f), n, $"Radius{m.Groups["axis"].Value} = {m.Groups["v"].Value}"));
+            }
+        }
+        var list = ReadRatchet(Path.Combine(root, RatchetDir, "RadiusAllowList.txt"));
+        var radiusUsed = new HashSet<(string, string)>();
+        yield return RatchetVerdict("Rectangle radius off the 0/1/2/3/4 scale", offScale, list.ToHashSet(), radiusUsed);
+        yield return RatchetStale("radius allow-list", list, radiusUsed);
+        yield return (true, $"radius allow-list: {list.Distinct().Count()} entries (ratchet: may only shrink)");
     }
 
     /// <summary>Type: the theme and NotaFonts point at the same bundled Geist files, and no
@@ -243,6 +266,7 @@ internal static partial class DesignTokenCheck
             ("vowel-dropped parameter label", new("\"(FDBK|FEEDB|FB|ATK|DEC|SUS|REL|LVL|DET|SPR|QNT|PIT|TRANSP|AMT|VOL|POS|EMPH|RESON)\"")),
         };
         var hits = rules.ToDictionary(r => r.Name, _ => new List<string>());
+        var minus = new List<Hit>();
         foreach (var f in Directory.EnumerateFiles(app, "*.cs", SearchOption.AllDirectories)
                      .Where(f => !f.Contains("/obj/") && !f.Contains("/bin/") && !f.EndsWith("NotaNum.cs")))
         {
@@ -255,10 +279,37 @@ internal static partial class DesignTokenCheck
                 var literals = string.Join("\n", Regex.Matches(code, "\"((?:[^\"\\\\]|\\\\.)*)\"").Select(m => m.Value));
                 foreach (var (name, re) in rules)
                     if (re.IsMatch(name.StartsWith("invariant") ? code : literals)) hits[name].Add($"{Path.GetRelativePath(app, f)}:{n}");
+                var full = CodeOf(line);
+                foreach (var (at, body) in Literals(full))
+                    if (ShowsHyphenMinus(full, at, Unescape(body))) minus.Add(new Hit(Rel(root, f), n, body));
             }
         }
         foreach (var (name, _) in rules)
             yield return (hits[name].Count == 0, hits[name].Count == 0 ? $"no {name}" : $"{name}: {string.Join(", ", hits[name].Take(8))}");
+
+        // A negative number on screen takes U+2212 (spec 008 R9): a typed "-12" is a hyphen,
+        // shorter and lower than the minus every formatted readout already shows. Ratchet in
+        // NumberAllowList.txt (path + literal) with today's offenders.
+        var list = ReadRatchet(Path.Combine(root, RatchetDir, "NumberAllowList.txt"));
+        var allowed = list.ToHashSet();
+        var used = new HashSet<(string, string)>();
+        yield return RatchetVerdict("hyphen-minus before a digit in a view literal (use U+2212)", minus, allowed, used);
+        yield return RatchetStale("number allow-list", list, used);
+        yield return (true, $"number allow-list: {allowed.Count} entries (ratchet: may only shrink)");
+    }
+
+    /// <summary>A literal that puts a hyphen-minus in front of a number on screen ("-12",
+    /// "+6 / -48"). Not: format strings, key or shortcut text, path data, version strings, or
+    /// a hyphen inside a word or range ("track-1", "1-127" — the range rule is DESIGN.md's).</summary>
+    private static bool ShowsHyphenMinus(string code, int at, string text)
+    {
+        if (!Regex.IsMatch(text, @"(?<![\p{L}\p{N}_.\-])-[0-9]")) return false;
+        if (text.Contains('{') || text.Contains('#') || Regex.IsMatch(text, @"^[\s+\-0.,;%‰]*$")) return false;   // format
+        if (Regex.IsMatch(code[..at], @"(?:ToString|Format|TryParse|Parse)\(\s*$")) return false;                   // format / parse argument
+        if (Regex.IsMatch(text, @"Ctrl|Cmd|Shift|Alt\b|[⌘⌥⇧⌃]")) return false;                                    // key text
+        if (PathData.IsMatch(text) || Regex.IsMatch(text, @"[0-9]\s+[LlHhVvCcAaZz]\s*-?[0-9]")) return false;     // path data
+        if (Regex.IsMatch(text, @"\b\d+\.\d+\.\d+")) return false;                                                // version
+        return true;
     }
 
     /// <summary>Visualisers: one graph window, no fills under curves, meters on the almanac
@@ -445,6 +496,200 @@ internal static partial class DesignTokenCheck
 
     // Signature values of the Ember palette (0.52.1): brass accents, warm grounds.
     private static readonly string[] EmberHexes = { "#D8A03D", "#0B0A09", "#141310", "#E9E4D8", "#A87415", "#EAE5D7", "#241F17", "#F0C060" };
+
+    /// <summary>Icons: one icon set. Glyph draws every icon from its own path data, so path
+    /// geometry anywhere else in the app is an icon drawn outside the set (spec 008 R8).
+    /// Today's call sites sit in IconAllowList.txt as a per-file count that may only go down
+    /// — a file above its count has a new inline icon, a file below it must lower the count.
+    /// See DESIGN.md § Controls.</summary>
+    public static IEnumerable<(bool Ok, string Label)> RunIcons()
+    {
+        var root = RepoRoot();
+        if (root is null) { yield return (false, "repo root located"); yield break; }
+        var app = Path.Combine(root, "src/managed/Nota.App");
+
+        var parse = new Regex(@"\b(?:Stream|Path)?Geometry\.Parse\(");
+        var xamlPath = new Regex(@"\b(?:Data|Figures)=""\s*[MmFf]|<(?:StreamGeometry|PathGeometry)\b[^>]*>\s*[MmFf]");
+        var counts = new SortedDictionary<string, int>(StringComparer.Ordinal);
+        foreach (var f in SourceFiles(app, ".cs", ".axaml").Where(f => !Norm(f).EndsWith("/Controls/Glyph.cs")))
+        {
+            int n = 0;
+            if (f.EndsWith(".cs"))
+                foreach (var line in File.ReadLines(f))
+                {
+                    var code = CodeOf(line);
+                    // A parsed constant and the constant itself are two sites: both go when
+                    // the icon becomes a Glyph kind.
+                    n += Math.Max(parse.Matches(code).Count,
+                        Literals(code).Count(l => PathData.IsMatch(Unescape(l.Body))));
+                }
+            else
+                n = xamlPath.Matches(BlankXmlComments(File.ReadAllText(f))).Count;
+            if (n > 0) counts[Rel(root, f)] = n;
+        }
+
+        var allowed = new Dictionary<string, int>(StringComparer.Ordinal);
+        foreach (var (path, key) in ReadRatchet(Path.Combine(root, RatchetDir, "IconAllowList.txt")))
+            allowed[path] = int.TryParse(key, out var c) ? c : 0;
+        var over = counts.Where(kv => kv.Value > allowed.GetValueOrDefault(kv.Key))
+            .Select(kv => $"{kv.Key} ({kv.Value}, allowed {allowed.GetValueOrDefault(kv.Key)})").ToArray();
+        yield return (over.Length == 0,
+            over.Length == 0 ? "no new icon geometry outside Glyph (Geometry.Parse, Data=\"M…\", path strings)"
+                             : $"icon geometry outside Glyph: {string.Join(", ", over.Take(8))}");
+        var slack = allowed.Where(kv => kv.Value > counts.GetValueOrDefault(kv.Key))
+            .Select(kv => $"{kv.Key} {kv.Value} → {counts.GetValueOrDefault(kv.Key)}").ToArray();
+        yield return (slack.Length == 0,
+            slack.Length == 0 ? "icon allow-list counts are tight" : $"icon allow-list above today's count (lower it): {string.Join(", ", slack.Take(8))}");
+        yield return (true, $"icon allow-list: {allowed.Values.Sum()} sites in {allowed.Count} files (ratchet: may only shrink)");
+    }
+
+    // ---- shared by the ratchet checks (labels, icons, minus signs, radii) ---------------
+    //
+    // A ratchet starts green by listing today's offenders in a text file next to this one,
+    // so the check lands before the fixes do. Every later change can only remove lines:
+    // a new offender fails, and so does a line that no longer matches anything (stale).
+
+    private const string RatchetDir = "tests/Nota.SmokeTest";
+
+    /// <summary>The regular string literals on a C# line (comment already stripped), with
+    /// their index and body as written. Interpolated, verbatim and raw strings are not
+    /// returned — their text is built, not written — but a regular literal inside an
+    /// interpolation hole is.</summary>
+    private static List<(int Index, string Body)> Literals(string code)
+    {
+        var list = new List<(int, string)>();
+        for (int i = 0; i < code.Length;)
+            i = code[i] is '"' or '\'' or '$' or '@' ? Lex(code, i, list) : i + 1;
+        return list;
+    }
+
+    /// <summary>Scans the literal that starts at <paramref name="i"/> (if one does) and returns
+    /// the index after it, adding regular string literals to <paramref name="list"/>.</summary>
+    private static int Lex(string s, int i, List<(int, string)> list)
+    {
+        char c = s[i];
+        if (c == '\'')
+        {
+            for (i++; i < s.Length && s[i] != '\''; i += s[i] == '\\' ? 2 : 1) { }
+            return i + 1;
+        }
+        if (c == '"')
+        {
+            if (i + 2 < s.Length && s[i + 1] == '"' && s[i + 2] == '"') return s.Length;   // raw string: rest of the line
+            int start = i;
+            for (i++; i < s.Length && s[i] != '"'; i += s[i] == '\\' ? 2 : 1) { }
+            list.Add((start, s[(start + 1)..Math.Min(i, s.Length)]));
+            return i + 1;
+        }
+        int j = i;
+        while (j < s.Length && s[j] is '$' or '@') j++;
+        if (j >= s.Length || s[j] != '"') return i + 1;                                   // @identifier, $ elsewhere
+        bool verbatim = s[i..j].Contains('@'), interpolated = s[i..j].Contains('$');
+        int depth = 0;
+        for (i = j + 1; i < s.Length;)
+        {
+            char d = s[i];
+            if (depth > 0)
+            {
+                if (d is '"' or '\'' or '$' or '@') { i = Lex(s, i, list); continue; }
+                if (d == '{') depth++; else if (d == '}') depth--;
+                i++;
+            }
+            else if (d == '"')
+            {
+                if (verbatim && i + 1 < s.Length && s[i + 1] == '"') { i += 2; continue; }
+                return i + 1;
+            }
+            else if (d == '\\' && !verbatim) i += 2;
+            else if (d == '{' && interpolated)
+            {
+                if (i + 1 < s.Length && s[i + 1] == '{') { i += 2; continue; }
+                depth = 1; i++;
+            }
+            else i++;
+        }
+        return i;
+    }
+
+    /// <summary>SVG path data: an optional fill rule (F0/F1), then a move-to with two coordinates.</summary>
+    private static readonly Regex PathData = new(@"^\s*(?:F[01]\s*)?[Mm]\s*-?[0-9.]+[\s,]+-?[0-9.]");
+
+    private readonly record struct Hit(string Path, int Line, string Key);
+
+    private static string Norm(string path) => path.Replace('\\', '/');
+
+    /// <summary>Path relative to src/managed with forward slashes — the allow-list key.</summary>
+    private static string Rel(string root, string file) => Norm(Path.GetRelativePath(Path.Combine(root, "src/managed"), file));
+
+    private static IEnumerable<string> SourceFiles(string dir, params string[] exts) =>
+        Directory.EnumerateFiles(dir, "*.*", SearchOption.AllDirectories)
+            .Where(f => exts.Any(e => f.EndsWith(e)) && !Norm(f).Contains("/obj/") && !Norm(f).Contains("/bin/"))
+            .OrderBy(f => f, StringComparer.Ordinal);
+
+    /// <summary>A C# line without its // comment; a // inside a string or char literal stays
+    /// (the older checks split on "//" and lose the rest of a line holding a URL).</summary>
+    private static string CodeOf(string line)
+    {
+        var scratch = new List<(int, string)>();
+        for (int i = 0; i < line.Length;)
+        {
+            if (line[i] == '/' && i + 1 < line.Length && line[i + 1] == '/') return line[..i];
+            i = line[i] is '"' or '\'' or '$' or '@' ? Lex(line, i, scratch) : i + 1;
+        }
+        return line;
+    }
+
+    /// <summary>axaml with its comments blanked out; line breaks stay so line numbers hold.</summary>
+    private static string BlankXmlComments(string text) =>
+        Regex.Replace(text, "<!--.*?-->", m => Regex.Replace(m.Value, "[^\n]", " "), RegexOptions.Singleline);
+
+    /// <summary>The text a C# literal body stands for (\" \\ \uXXXX …).</summary>
+    private static string Unescape(string body)
+    {
+        try { return Regex.Unescape(body); } catch (ArgumentException) { return body; }
+    }
+
+    /// <summary>A ratchet allow-list: one `path&lt;TAB&gt;key&lt;TAB&gt;# reason` per line, where
+    /// path is relative to src/managed. Blank lines and lines starting with # are comments.</summary>
+    private static List<(string Path, string Key)> ReadRatchet(string file)
+    {
+        var list = new List<(string, string)>();
+        if (!File.Exists(file)) return list;
+        foreach (var raw in File.ReadLines(file))
+        {
+            if (raw.Length == 0 || raw.StartsWith('#')) continue;
+            var parts = raw.Split('\t');
+            if (parts.Length >= 2) list.Add((parts[0].Trim(), parts[1]));
+        }
+        return list;
+    }
+
+    /// <summary>One rule's verdict against a path+key ratchet. Allow-listed hits pass and are
+    /// marked used, so the caller can report the entries nothing matched.</summary>
+    private static (bool Ok, string Label) RatchetVerdict(string what, IReadOnlyList<Hit> hits,
+        HashSet<(string, string)> allowed, HashSet<(string, string)> used)
+    {
+        var fresh = new List<Hit>();
+        foreach (var h in hits)
+            if (allowed.Contains((h.Path, h.Key))) used.Add((h.Path, h.Key));
+            else fresh.Add(h);
+        var listed = hits.Count - fresh.Count;
+        return fresh.Count == 0
+            ? (true, $"no {what} ({listed} allow-listed)")
+            : (false, $"{what}: {string.Join(", ", fresh.Take(8).Select(h => $"{h.Path}:{h.Line} \"{h.Key}\""))}"
+                      + (fresh.Count > 8 ? $" (+{fresh.Count - 8} more)" : ""));
+    }
+
+    /// <summary>Entries that matched nothing: the offender was fixed, so the line must go.</summary>
+    private static (bool Ok, string Label) RatchetStale(string list, IEnumerable<(string Path, string Key)> entries,
+        HashSet<(string, string)> used)
+    {
+        var stale = entries.Distinct().Where(e => !used.Contains(e)).Select(e => $"{e.Path} \"{e.Key}\"").ToArray();
+        return stale.Length == 0
+            ? (true, $"{list} has no stale entries")
+            : (false, $"stale {list} entries (fixed — remove them): {string.Join(", ", stale.Take(8))}"
+                      + (stale.Length > 8 ? $" (+{stale.Length - 8} more)" : ""));
+    }
 
     /// <summary>Walk up from the test binary until the solution file appears.</summary>
     private static string? RepoRoot()

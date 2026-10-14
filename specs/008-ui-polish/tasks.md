@@ -40,15 +40,15 @@ workstream (plan § Complexity Tracking).
 
 **Purpose**: the guards go in first. Every later phase lands against them.
 
-- [ ] T005 Make `NotaText.Fixed` readable by the check: `internal` in `App/Theme/NotaText.cs`, parsed by regex like `KeyMap` is. Add the proper nouns and view names the label rule allows: Arrangement, Session, Modular, Mixer, Finder, Nota.
-- [ ] T006 Add `RunLabels()` to `Smoke/DesignTokenCheck.cs` per data-model.md § Label rules:
+- [X] T005 Make `NotaText.Fixed` readable by the check: `internal` in `App/Theme/NotaText.cs`, parsed by regex like `KeyMap` is. Add the proper nouns and view names the label rule allows: Arrangement, Session, Modular, Mixer, Finder, Nota.
+- [X] T006 Add `RunLabels()` to `Smoke/DesignTokenCheck.cs` per data-model.md § Label rules:
   - label-context literal extraction for `.cs` and `.axaml`;
   - the all-caps and Title Case rules, with the allow-list and data skips;
   - a **ratchet** allow-list `Smoke/LabelAllowList.txt` (`file:line  # reason`), seeded with today's hits so the check starts green. Failures name `file:line` and the literal.
-- [ ] T007 Add `RunIcons()` to `Smoke/DesignTokenCheck.cs`. In `App/`, outside `Controls/Glyph.cs`, these fail: `Geometry.Parse`, `StreamGeometry.Parse`, `PathGeometry.Parse`, an axaml `Data="M` attribute, or a string literal matching `^"?[MmFf][0-9 ]`. It uses a ratchet `Smoke/IconAllowList.txt` seeded with today's call sites.
-- [ ] T008 Extend `RunNumbers` in `Smoke/DesignTokenCheck.cs`: a view string literal containing a hyphen-minus directly before a digit (`"-12"`, `" -3"`) fails, except in format strings and in key or shortcut text. Seed a ratchet line for `App/MixerView.cs:363`.
-- [ ] T009 Extend `RunGeometry` in `Smoke/DesignTokenCheck.cs`: `Rectangle` `RadiusX`/`RadiusY` literals must be on the 0/1/2/3/4 scale. Seed a ratchet for `App/DeviceChainView.cs` and `App/DeviceCards/Rack/RackCardView.cs`, the add-device targets.
-- [ ] T010 Add the `-- design: labels --` and `-- design: icons --` sections to `Smoke/Program.cs`. Build and run `/tmp/claude-0/scripts/check.sh`; every check passes with the seeded ratchets.
+- [X] T007 Add `RunIcons()` to `Smoke/DesignTokenCheck.cs`. In `App/`, outside `Controls/Glyph.cs`, these fail: `Geometry.Parse`, `StreamGeometry.Parse`, `PathGeometry.Parse`, an axaml `Data="M` attribute, or a string literal matching `^"?[MmFf][0-9 ]`. It uses a ratchet `Smoke/IconAllowList.txt` seeded with today's call sites.
+- [X] T008 Extend `RunNumbers` in `Smoke/DesignTokenCheck.cs`: a view string literal containing a hyphen-minus directly before a digit (`"-12"`, `" -3"`) fails, except in format strings and in key or shortcut text. Seed a ratchet line for `App/MixerView.cs:363`.
+- [X] T009 Extend `RunGeometry` in `Smoke/DesignTokenCheck.cs`: `Rectangle` `RadiusX`/`RadiusY` literals must be on the 0/1/2/3/4 scale. Seed a ratchet for `App/DeviceChainView.cs` and `App/DeviceCards/Rack/RackCardView.cs`, the add-device targets.
+- [X] T010 Add the `-- design: labels --` and `-- design: icons --` sections to `Smoke/Program.cs`. Build and run `/tmp/claude-0/scripts/check.sh`; every check passes with the seeded ratchets.
 
 **Checkpoint**: the guards are in place. From here, each phase removes its ratchet lines.
 
