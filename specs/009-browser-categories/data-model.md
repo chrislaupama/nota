@@ -48,7 +48,7 @@ New members:
 | Member | Type | Rule |
 |---|---|---|
 | `DeviceCategory` | string (init) | Set on top-level device rows in `Rebuild()`. Built-ins use `DeviceCategories.For`; plug-ins use `ForPlugin(isInstrument, Category)`. Empty on presets, folders and groups. |
-| `IsFoldable` | bool (init) | True only on category header rows (`Kind == Group`). |
+| `IsFoldable` | bool (init) | True only on category header rows (`Kind == Group`), and false on them while a search is active (no caret, clicks ignored). |
 | `IsFolded` | bool (init) | For a category header: whether it is drawn folded. Always false while a search is active. |
 
 How a category header row is set up:
