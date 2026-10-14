@@ -20,7 +20,7 @@ public sealed class WhatsNewWindow : NotaWindow
 {
     public WhatsNewWindow(IReadOnlyList<ChangelogEntry> entries)
     {
-        Title = "What's New in Nota";
+        Title = "What's new in Nota";
         Width = 460;
         Height = 556;   // + title-bar band
         CanResize = false;

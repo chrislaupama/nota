@@ -37,7 +37,7 @@ public sealed class TagEditorWindow : NotaWindow
         _lib = library;
         _assignKey = assignToKey;
 
-        Title = "Edit Tags";
+        Title = "Edit tags";
         Width = 440;
         SizeToContent = SizeToContent.Height;
         CanResize = false;

@@ -22,11 +22,14 @@ public partial class MainWindow
 
         var win = new MixerWindow(this);
         win.EnableMidiLearn(_learn);   // faders/knobs stay MIDI-mappable in the window
-        win.WindowClosed += () => { if (_mixer is not null) _mixer.IsVisible = false; _mixerWindow = null; };
+        var mixer = _mixer;
+        void Fit() => win.FitWidth(mixer.StripsWidth);   // the window is as wide as its strips
+        win.WindowClosed += () => { mixer.StripsChanged -= Fit; mixer.IsVisible = false; _mixerWindow = null; };
         _mixerWindow = win;
 
         _mixer.IsVisible = true;       // so the tick loop updates its meters
         SetHost(win.Host, _mixer);
+        _mixer.StripsChanged += Fit;
         _mixer.Refresh();
         win.Show(this);
     }

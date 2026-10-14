@@ -50,6 +50,17 @@ public sealed class MixerView : UserControl
     public Action<float>? SetMasterVolume { get; set; }
     private VFader? _masterFader;
     private DragNumber? _masterDb;
+    private int _builtTrackCount = -1;
+
+    /// <summary>Raised after <see cref="Refresh"/> rebuilds the strips, so a host window can
+    /// fit its width to them.</summary>
+    public event Action? StripsChanged;
+
+    /// <summary>The width the strip row wants (all strips + master + margin), unclipped.</summary>
+    public double StripsWidth
+    {
+        get { _row.Measure(Size.Infinity); return _row.DesiredSize.Width; }
+    }
 
     public MixerView(IAudioEngine engine)
     {
@@ -83,11 +94,15 @@ public sealed class MixerView : UserControl
             _row.Children.Add(Strip(ti, c, returns));
         }
         _row.Children.Add(MasterStrip());
+        _builtTrackCount = n;
+        StripsChanged?.Invoke();
     }
 
     /// <summary>Pushes fresh meter readings to every strip (called at the UI clock).</summary>
     public void UpdateMeters()
     {
+        // A track added or removed while the mixer is open gets (or loses) its strip.
+        if (_builtTrackCount >= 0 && _engine.TrackCount != _builtTrackCount) Refresh();
         foreach (var (id, meter) in _meters)
         {
             if (id < 0) meter.Push(_engine.MasterMeter());

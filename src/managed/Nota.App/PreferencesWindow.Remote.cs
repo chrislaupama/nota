@@ -89,7 +89,7 @@ public sealed partial class PreferencesWindow
         {
             var connected = remote.Hub.Devices.Select(d => d.DeviceId).ToHashSet();
             var list = remote.Pairing.Trusted.OrderByDescending(d => d.LastSeen).ToList();
-            if (list.Count == 0) { trustedHost.Content = EmptyBox("No phone has paired yet. Turn Remote on and scan the code in Connect Phone."); return; }
+            if (list.Count == 0) { trustedHost.Content = EmptyBox("No phone has paired yet. Turn Remote on and scan the code in Connect phone."); return; }
             var rows = new List<Control>();
             foreach (var d in list)
             {

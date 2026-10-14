@@ -63,12 +63,14 @@ public sealed class ExportWindow : NotaWindow
     {
         _bpm = bpm;
         _rangeBeats = loopBeats > 0 ? loopBeats : fullBeats;
-        Title = "Export Audio";
+        Title = "Export audio";
         Width = 560;
         SizeToContent = SizeToContent.Height;
         CanResize = false;
         WindowStartupLocation = WindowStartupLocation.CenterOwner;
         Background = Panel;
+        // Escape is Cancel (an open drop-down handles its own Escape first).
+        KeyDown += (_, e) => { if (e.Key == Key.Escape && !e.Handled) { e.Handled = true; Close(null); } };
 
         var body = new StackPanel { Margin = new Thickness(18, 16), Spacing = 14 };
 

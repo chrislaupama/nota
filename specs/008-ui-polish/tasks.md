@@ -60,27 +60,29 @@ workstream (plan § Complexity Tracking).
 
 **Independent Test**: quickstart.md § 2, the defect runs.
 
-- [ ] T011 [US1] In `App/ArrangementView.cs`:
+- [X] T011 [US1] In `App/ArrangementView.cs`:
   - Draw a 1 px `Brush.Seam` top edge on the pinned return/master footer band, using a `Border` around `_footer` and `footerHeaderPanel` with `BorderThickness(0,1,0,0)`.
   - Paint the empty lane side below the last track with the lane colour, keeping the header side the header colour (`leftBackdrop`).
-- [ ] T012 [US1] In `App/ArrangementView.cs`, add `RevealTrack(int index)`, which sets `_scroller.Offset` so `RowTop(i)…RowTop(i)+RowHeight` is fully visible. Call it after `Refresh()` for a newly inserted track (`App/MainWindow.Dnd.cs` `ApplyInsertResult`, `OnArrangementDrop`) and on keyboard selection changes (`Select`).
-- [ ] T013 [US1] Verify F1 with `/tmp/claude-0/scripts/f1-repro.sh` adapted to fill the view with tracks first. The new track must be fully visible above the seam, both at once and after 5 s.
-- [ ] T014 [US1] In `App/ModularView.cs` and `App/MainWindow.axaml.cs`:
+- [X] T012 [US1] In `App/ArrangementView.cs`, add `RevealTrack(int index)`, which sets `_scroller.Offset` so `RowTop(i)…RowTop(i)+RowHeight` is fully visible. Call it after `Refresh()` for a newly inserted track (`App/MainWindow.Dnd.cs` `ApplyInsertResult`, `OnArrangementDrop`) and on keyboard selection changes (`Select`).
+- [X] T013 [US1] Verify F1 with `/tmp/claude-0/scripts/f1-repro.sh` adapted to fill the view with tracks first. The new track must be fully visible above the seam, both at once and after 5 s.
+- [X] T014 [US1] In `App/ModularView.cs` and `App/MainWindow.axaml.cs`:
   - `SetView(Modular)` always calls `RefreshSidebar()`.
   - When no track is selected, auto-select the first non-return track (`Show(t)`).
   - Remove the `_trackId > 0` guard on sidebar refresh in `Refresh()`.
-- [ ] T015 [US1] In `App/ModularView.cs`, add the empty states: "No tracks yet" in the sidebar for an empty project, and "Pick a track to see its signal graph" on the canvas when `_trackId <= 0`. Both use `TextBlock.Caption`, sentence case.
-- [ ] T016 [US1] Add `SessionInspectorOpen` (bool, default `true`) to `Application/Settings.cs` with a doc comment.
-- [ ] T017 [US1] In `App/SessionView.cs`:
+- [X] T015 [US1] In `App/ModularView.cs`, add the empty states: "No tracks yet" in the sidebar for an empty project, and "Pick a track to see its signal graph" on the canvas when `_trackId <= 0`. Both use `TextBlock.Caption`, sentence case.
+- [X] T016 [US1] Add `SessionInspectorOpen` (bool, default `true`) to `Application/Settings.cs` with a doc comment.
+- [X] T017 [US1] In `App/SessionView.cs`:
   - The inspector column becomes 260 wide (`InspectorW`) and collapsible.
   - Add an "Inspector" icon toggle (Glyph `Sidebar`) at the right end of the session toolbar, bound to `SessionInspectorOpen`.
   - When content overflows beside the inspector, show the existing horizontal scroll bar as a cue.
-- [ ] T018 [US1] In `App/SessionView.Toolbar.cs`, add priority collapse on `SizeChanged`:
+- [X] T018 [US1] In `App/SessionView.Toolbar.cs`, add priority collapse on `SizeChanged`:
   - Level 1: the right group's labels become icon-only keys with tooltips (I/O, Sends, Mixer, Stop all).
   - Level 2: "Back to arrangement" and the position readout move into a "⋯" overflow `MenuFlyout`.
 
   Every control stays reachable (P1.2). Thresholds are measured from the groups' desired sizes, not hard-coded.
-- [ ] T019 [US1] Verify US1 under Xvfb at 1200 × 800:
+
+  *Done as*: one fold order (readout → Back to arrangement → Capture scene → section toggles → Follow) into "⋯", which offers whatever is hidden. The icon-only level 1 lands with the icon set (US5). The arrangement has no keyboard track navigation, so T012's `Select` hook is not needed; drops go through `ApplyInsertResult`.
+- [X] T019 [US1] Verify US1 under Xvfb at 1200 × 800:
   - Session with the inspector open and closed shows nothing cut off;
   - Modular after opening a project with no selection lists the tracks and selects one;
   - an empty project shows both empty states.
@@ -95,10 +97,10 @@ workstream (plan § Complexity Tracking).
 
 **Independent Test**: quickstart.md § 3 on macOS; the Escape behaviour under Xvfb.
 
-- [ ] T020 [P] [US2] `App/MixerWindow.cs` + `App/MixerView.cs`: the mixer window width = the strips' desired width + master + padding, clamped to `[560, screen working-area width]`. Recompute on track add or remove while it's open. The height stays 460. Strips fill without a trailing dead area.
-- [ ] T021 [P] [US2] Escape closes the window: in `App/MixerWindow.cs` (`KeyDown` Escape → `Close()`, unless a text field has focus) and in `App/ExportWindow.cs` (Escape → the same path as Cancel).
-- [ ] T022 [P] [US2] Window titles in sentence case: `App/ExportWindow.cs` "Export audio", `App/TagEditorWindow.cs` "Edit tags", `App/Remote/ConnectPhoneView.cs` "Connect phone", `App/WhatsNewWindow.cs` "What's new", and any other `Title =` literal flagged by `RunLabels`. Remove their ratchet lines.
-- [ ] T023 [US2] Verify under Xvfb: the mixer width with 2, 5 and 12 tracks leaves 0 px of dead area (screenshot crop), and Escape closes the mixer and the export window. Commit "feat(008): US2".
+- [X] T020 [P] [US2] `App/MixerWindow.cs` + `App/MixerView.cs`: the mixer window width = the strips' desired width + master + padding, clamped to `[560, screen working-area width]`. Recompute on track add or remove while it's open. The height stays 460. Strips fill without a trailing dead area.
+- [X] T021 [P] [US2] Escape closes the window: in `App/MixerWindow.cs` (`KeyDown` Escape → `Close()`, unless a text field has focus) and in `App/ExportWindow.cs` (Escape → the same path as Cancel).
+- [X] T022 [P] [US2] Window titles in sentence case: `App/ExportWindow.cs` "Export audio", `App/TagEditorWindow.cs` "Edit tags", `App/Remote/ConnectPhoneView.cs` "Connect phone", `App/WhatsNewWindow.cs` "What's new", and any other `Title =` literal flagged by `RunLabels`. Remove their ratchet lines.
+- [X] T023 [US2] Verify under Xvfb: the mixer width with 2, 5 and 12 tracks leaves 0 px of dead area (screenshot crop), and Escape closes the mixer and the export window. Commit "feat(008): US2".
 
 ---
 
