@@ -23,28 +23,6 @@ Entry categories: `Added`, `Changed`, `Fixed`, `Removed`.
 ## [Unreleased]
 
 ### Added
-- **Note length and velocity from the keyboard:** in the piano roll, **⇧← / ⇧→** shorten
-  or lengthen every selected note by one grid step (starts stay put), and **⌥↑ / ⌥↓**
-  raise or lower their velocity by 10 — **⌥⇧↑ / ⌥⇧↓** by 1. Each press is one undo step.
-- **Stereo pan law:** panning a stereo track or return now moves its whole image instead
-  of dropping a channel — at full left, both channels play from the left speaker. Mono
-  material and centred tracks sound exactly as before. New projects use it; the Mixer
-  footer shows the project's **Pan law** (Stereo / Balance) and switches it during
-  playback without a click, as one undo step. Group strips are marked **BAL**: groups keep
-  their balance so grouping stays level-transparent.
-- **Undo for volume and pan:** fader, pan and master-volume moves can now be undone and
-  redone (**⌘Z** / **⌘⇧Z**) — from the Mixer, the track headers, the Return and Master
-  rows, the Session mixer, the transport's **MST**, Nota Remote, a MIDI controller and the
-  AI assistant. One move is one step, in the same history as every other edit; a reset or a
-  typed dB value is a step too, and a MIDI controller's movement ends after a 1 s pause.
-  While recording automation, the recorded lane and the value undo together. Automation
-  playback, opening a project and freezing never add steps.
-- **Stereo Map:** the Mixer window has a new **Stereo map** view (switch it in the window's
-  title bar). Every track, return and the master is a dot at its pan and fader, with a cloud
-  showing where its sound really is, how wide it is and how loud — a mono sound draws a narrow
-  cloud on its dot, a wide pad spans the map — plus the master's phase correlation. Drag a dot
-  to set pan and volume together (one undo step), double-click to centre it, ⌥ double-click
-  for 0 dB; hover for the numbers; click to select the track.
 - **Colour themes:** Preferences → Appearance now offers colour themes — Studio Dark,
   Studio Light, and **Ember Graphite** / **Ember Paper**, the warm browns and brass of
   Nota's earlier look, on the new layout. Choose **Dark**, **Light** or **Follow system**,
@@ -102,6 +80,45 @@ Entry categories: `Added`, `Changed`, `Fixed`, `Removed`.
 - **A slimmer "add device" target:** the end of a device chain is a narrow "+" instead of
   a large dashed tile; the dashed outline appears only while you drag a device over the
   chain.
+
+### Fixed
+- **New tracks scroll into view:** a track added to a full arrangement was drawn under the
+  pinned Return and Master rows. The arrangement now scrolls to show it, and the pinned
+  rows sit on a line of their own.
+- **The Session toolbar fits small windows:** controls no longer run off the edge — when
+  space runs out, the least-used ones move into a "⋯" menu. The inspector is narrower and
+  can be hidden with the new Inspector key (the sidebar icon); Nota remembers your choice.
+- **Modular lists your tracks on open:** opening Modular after loading a project showed an
+  empty track list. It now lists the tracks and opens on the first one, and an empty
+  project says "No tracks yet".
+
+## [0.53.1] — 2026-10-15
+
+### Added
+- **Note length and velocity from the keyboard:** in the piano roll, **⇧← / ⇧→** shorten
+  or lengthen every selected note by one grid step (starts stay put), and **⌥↑ / ⌥↓**
+  raise or lower their velocity by 10 — **⌥⇧↑ / ⌥⇧↓** by 1. Each press is one undo step.
+- **Stereo pan law:** panning a stereo track or return now moves its whole image instead
+  of dropping a channel — at full left, both channels play from the left speaker. Mono
+  material and centred tracks sound exactly as before. New projects use it; the Mixer
+  footer shows the project's **PAN LAW** (Stereo / Balance) and switches it during
+  playback without a click, as one undo step. Group strips are marked **BAL**: groups keep
+  their balance so grouping stays level-transparent.
+- **Undo for volume and pan:** fader, pan and master-volume moves can now be undone and
+  redone (**⌘Z** / **⌘⇧Z**) — from the Mixer, the track headers, the Return and Master
+  rows, the Session mixer, the transport's **MST**, Nota Remote, a MIDI controller and the
+  AI assistant. One move is one step, in the same history as every other edit; a reset or a
+  typed dB value is a step too, and a MIDI controller's movement ends after a 1 s pause.
+  While recording automation, the recorded lane and the value undo together. Automation
+  playback, opening a project and freezing never add steps.
+- **Stereo Map:** the Mixer window has a new **Stereo Map** view (switch it in the window's
+  title bar). Every track, return and the master is a dot at its pan and fader, with a cloud
+  showing where its sound really is, how wide it is and how loud — a mono sound draws a narrow
+  cloud on its dot, a wide pad spans the map — plus the master's phase correlation. Drag a dot
+  to set pan and volume together (one undo step), double-click to centre it, ⌥ double-click
+  for 0 dB; hover for the numbers; click to select the track.
+
+### Changed
 - **Existing projects keep the Balance pan law** and sound exactly as before; the Mixer
   marks them **Older project** until you switch them to Stereo. Projects are saved in
   format v21 — earlier Nota versions can't open them.
@@ -115,21 +132,19 @@ Entry categories: `Added`, `Changed`, `Fixed`, `Removed`.
   paste jumped to the playback cursor while the song played.
 
 ### Fixed
+- **Multi-output plug-ins no longer crash Nota when added:** Nota switched off a plug-in's
+  extra outputs, and some instruments (Vienna Synchron Pianos on Windows) still wrote to them
+  and crashed on the first block. Every output is now on; Nota plays the main stereo pair.
+- **No crash when audio restarts with plug-ins loaded:** after an export, a track freeze or
+  Apply in Preferences → Audio, Nota could play a few blocks while it was still getting the
+  project's plug-ins and devices ready for the audio device, which could crash inside a
+  plug-in. Audio now stays silent until everything is ready.
 - **Return tracks can be deleted in the arrangement:** the Return row's context menu has
   Delete track, and Delete / Backspace removes a selected Return, in one undo step. The
   Returns that stay keep sounding, and every track's sends stay on the same Returns.
 - **Plug-ins work on Linux:** VST3 plug-ins (including those from Get Plug-ins) play sound
   again, and their windows draw their interface and close with the close button. Before,
   they stayed silent behind a black window that only closed when Nota quit.
-- **New tracks scroll into view:** a track added to a full arrangement was drawn under the
-  pinned Return and Master rows. The arrangement now scrolls to show it, and the pinned
-  rows sit on a line of their own.
-- **The Session toolbar fits small windows:** controls no longer run off the edge — when
-  space runs out, the least-used ones move into a "⋯" menu. The inspector is narrower and
-  can be hidden with the new Inspector key (the sidebar icon); Nota remembers your choice.
-- **Modular lists your tracks on open:** opening Modular after loading a project showed an
-  empty track list. It now lists the tracks and opens on the first one, and an empty
-  project says "No tracks yet".
 
 ## [0.52.1] — 2026-10-13
 
