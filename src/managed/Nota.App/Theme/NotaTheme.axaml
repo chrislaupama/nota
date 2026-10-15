@@ -303,10 +303,12 @@
   <Style Selector="Button.tp-play.playing.session">
     <Setter Property="Background" Value="{DynamicResource Brush.Success}"/>
     <Setter Property="BorderBrush" Value="{DynamicResource Brush.Success}"/>
+    <Setter Property="Foreground" Value="{DynamicResource Brush.SuccessInk}"/>
   </Style>
   <Style Selector="Button.tp-play.playing.session:pointerover /template/ ContentPresenter#PART_ContentPresenter">
     <Setter Property="Background" Value="{DynamicResource Brush.Success}"/>
     <Setter Property="BorderBrush" Value="{DynamicResource Brush.Success}"/>
+    <Setter Property="Foreground" Value="{DynamicResource Brush.SuccessInk}"/>
   </Style>
 
   <!-- Chips: raised keys like any button, a little tighter. -->
